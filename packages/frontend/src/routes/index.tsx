@@ -1,4 +1,5 @@
 import { A } from "@solidjs/router";
+import { Button } from "~/components/Button";
 import Counter from "~/components/Counter";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
                 </a>{" "}
                 to learn how to build Solid apps.
             </p>
+            <Button>Click</Button>
             <p class="my-4">
                 <span>Home</span>
                 {" - "}
