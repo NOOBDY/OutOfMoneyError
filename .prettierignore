@@ -1,7 +1,10 @@
 .DS_Store
 node_modules
-/.output
-/.vinxi
+/packages/frontend/.output
+/packages/frontend/.vinxi
+/packages/frontend/dist
+/packages/contracts/artifacts
+/packages/contracts/cache
 .env
 .env.*
 !.env.example

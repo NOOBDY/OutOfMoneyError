@@ -1,5 +1,9 @@
 {
     "name": "contracts",
+    "scripts": {
+        "build": "hardhat compile",
+        "test": "hardhat test"
+    },
     "devDependencies": {
         "@nomicfoundation/hardhat-ignition": "^0.15.0",
         "@nomicfoundation/hardhat-ignition-viem": "^0.15.0",

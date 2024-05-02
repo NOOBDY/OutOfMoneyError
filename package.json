@@ -4,7 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "lint": "pnpm eslint"
+        "format": "prettier . --check",
+        "lint": "eslint"
     },
     "keywords": [],
     "author": "",
