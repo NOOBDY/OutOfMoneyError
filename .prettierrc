@@ -17,6 +17,12 @@
                 "singleQuote": false,
                 "bracketSpacing": false
             }
+        },
+        {
+            "files": "*.{yml,yaml}",
+            "options": {
+                "tabWidth": 2
+            }
         }
     ]
 }
