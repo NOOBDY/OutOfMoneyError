@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "format": "prettier . --check",
+        "format": "prettier . --list-different",
         "lint": "eslint"
     },
     "keywords": [],
