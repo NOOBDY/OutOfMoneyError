@@ -90,8 +90,8 @@ importers:
   packages/frontend:
     dependencies:
       '@kobalte/core':
-        specifier: ^0.12.6
-        version: 0.12.6(solid-js@1.8.17)
+        specifier: ^0.13.1
+        version: 0.13.1(solid-js@1.8.17)
       '@kobalte/tailwindcss':
         specifier: ^0.9.0
         version: 0.9.0(tailwindcss@3.4.3(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.0.4)))
@@ -1706,8 +1706,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
-  '@kobalte/core@0.12.6':
-    resolution: {integrity: sha512-+Ta2o2wEqZ2fCqLMkvjT40VHNmcFKdGe8TNDVQbbMPk66qoU6g/DDRFR/Ib7eAjb+C95VoIyk6zaafos2VOo0w==}
+  '@kobalte/core@0.13.1':
+    resolution: {integrity: sha512-ROFTM2EZhOS+PxCTD+a2LKvzi8ZA7uiDvAt9/rAHzlaAykJPWXCpRuB/PYKiA7iPssGU3Fno3GT5bgRoZAc3KQ==}
     peerDependencies:
       solid-js: ^1.8.15
 
@@ -9081,7 +9081,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@kobalte/core@0.12.6(solid-js@1.8.17)':
+  '@kobalte/core@0.13.1(solid-js@1.8.17)':
     dependencies:
       '@floating-ui/dom': 1.6.4
       '@internationalized/date': 3.5.2
