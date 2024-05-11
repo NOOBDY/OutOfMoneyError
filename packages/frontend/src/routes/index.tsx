@@ -8,7 +8,10 @@ function Card(props: (typeof data)[number]) {
             <div class="grow px-2 py-1">
                 <h1>{props.title}</h1>
             </div>
-            <Progress value={(props.current / props.goal) * 100} class="flex flex-col">
+            <Progress
+                value={(props.current / props.goal) * 100}
+                class="flex flex-col"
+            >
                 <Progress.Track class="h-2">
                     <Progress.Fill class="h-full w-[var(--kb-progress-fill-width)] bg-lime-400" />
                 </Progress.Track>
