@@ -2,15 +2,15 @@ import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
 import { FlowProps, Suspense } from "solid-js";
 import "./app.css";
-import Nav from "./components/Nav";
-import { DarkModeProvider, useDarkMode } from "./providers/DarkModeProvider";
+import Nav from "~/components/Nav";
+import { DarkModeProvider, useDarkMode } from "~/providers/DarkModeProvider";
 
 function Background(props: FlowProps) {
     const [darkMode] = useDarkMode();
 
     return (
         <div
-            class="h-full bg-white text-black transition dark:bg-neutral-950 dark:text-white"
+            class="h-full bg-white text-black dark:bg-neutral-950 dark:text-white"
             classList={{ dark: darkMode() }}
         >
             {props.children}

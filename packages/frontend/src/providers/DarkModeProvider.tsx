@@ -4,8 +4,10 @@ import {
     createSignal,
     useContext,
     createEffect,
-    Signal
+    Signal,
+    onMount
 } from "solid-js";
+import { isServer } from "solid-js/web";
 
 const DarkModeLocalStorageKey = "dark-mode";
 
@@ -13,17 +15,17 @@ const DarkModeContext = createContext<Signal<boolean>>();
 
 /**
  * Priority:
- * 1. `defaultDarkMode`
- * 2. `localStorage`
- * 3. `(prefers-color-scheme: dark)`
+ * 1. `localStorage`
+ * 2. `(prefers-color-scheme: dark)`
+ * 3. `defaultDarkMode`
  * 4. defaults to `false`
  *
  * @param defaultDarkMode
  * @returns whether to use dark mode or not by default
  */
 function getDefaultDarkModeValue(defaultDarkMode?: boolean): boolean {
-    if (defaultDarkMode !== undefined) {
-        return defaultDarkMode;
+    if (isServer) {
+        throw new Error("This function should only be run on the client");
     }
 
     const theme = localStorage.getItem(DarkModeLocalStorageKey);
@@ -35,7 +37,12 @@ function getDefaultDarkModeValue(defaultDarkMode?: boolean): boolean {
         window.matchMedia &&
         window.matchMedia("(prefers-color-scheme: dark)").matches
     ) {
+        console.log("system");
         return true;
+    }
+
+    if (defaultDarkMode !== undefined) {
+        return defaultDarkMode;
     }
 
     return false;
@@ -54,9 +61,11 @@ type Props = {
 };
 
 export function DarkModeProvider(props: FlowProps<Props>) {
-    const [darkMode, setDarkMode] = createSignal(
-        getDefaultDarkModeValue(props.defaultDarkMode)
-    );
+    const [darkMode, setDarkMode] = createSignal(false);
+
+    onMount(() => {
+        setDarkMode(getDefaultDarkModeValue(props.defaultDarkMode));
+    });
 
     createEffect(() => {
         localStorage.setItem(DarkModeLocalStorageKey, darkMode().toString());
