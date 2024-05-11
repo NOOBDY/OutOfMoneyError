@@ -8,10 +8,34 @@ export function DarkModeToggle() {
     };
 
     return (
-        <button type="button" onClick={handleToggle} class="px-2 font-mono">
-            <span class={darkMode() ? "" : "font-bold underline"}>light</span>
-            <span class="px-1">/</span>
-            <span class={darkMode() ? "font-bold underline" : ""}>dark</span>
-        </button>
+        <div class="px-2 font-mono">
+            <div class="hidden lg:block">
+                <button
+                    type="button"
+                    onClick={() => setDarkMode(false)}
+                    class={darkMode() ? "" : "font-bold underline"}
+                >
+                    light
+                </button>
+                <span class="px-1">/</span>
+                <button
+                    type="button"
+                    onClick={() => setDarkMode(true)}
+                    class={darkMode() ? "font-bold underline" : ""}
+                >
+                    dark
+                </button>
+            </div>
+
+            <div class="block lg:hidden">
+                <button
+                    type="button"
+                    onClick={handleToggle}
+                    class="font-bold underline"
+                >
+                    {darkMode() ? "dark" : "light"}
+                </button>
+            </div>
+        </div>
     );
 }
