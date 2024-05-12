@@ -10,7 +10,7 @@ function Background(props: FlowProps) {
 
     return (
         <div
-            class="h-full bg-white text-black dark:bg-neutral-950 dark:text-white"
+            class="min-h-screen bg-white text-black dark:bg-neutral-950 dark:text-white"
             classList={{ dark: darkMode() }}
         >
             {props.children}
