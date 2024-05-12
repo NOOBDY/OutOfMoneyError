@@ -10,7 +10,7 @@ function Card(props: Project) {
                 <h1>{props.title}</h1>
             </div>
 
-            <div class="px-2 text-end">
+            <div class="px-2 text-end font-bold">
                 <Link href={`/projects/${props.id}`}>See more</Link>
             </div>
 
