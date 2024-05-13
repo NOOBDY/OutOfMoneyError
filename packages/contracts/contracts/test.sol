@@ -27,13 +27,14 @@ contract NoneMoney {
     }
 
     address owner;
-    uint256[] project_arr;
-    mapping(uint256 => Donate_project) project_map;
-
-    uint256[] holder_arr;
+    uint256[] donate_project_arr;
+    mapping(uint256 => Donate_project) donate_project_map;
+    ///
     uint256[] user_arr;
     mapping(uint256 => User) user_map;
-    //
+    ///
+    uint256[] holder_arr;
+    ///
     modifier onlyOwner() {
         require(owner == msg.sender, "Only Owner"); //檢查是否為管理者
         _;
@@ -49,10 +50,10 @@ contract NoneMoney {
         string memory _web,
         uint256 _target_money
     ) public onlyOwner {
-        uint256 _id = project_arr.length;
+        uint256 _id = donate_project_arr.length;
 
-        Donate_project storage p = project_map[_id];
-        project_arr.push(_id);
+        Donate_project storage p = donate_project_map[_id];
+        donate_project_arr.push(_id);
 
         p.holder_id = _holder_id;
         p.name = _name;
@@ -60,24 +61,25 @@ contract NoneMoney {
         p.state = 0;
         p.target_money = _target_money;
         p.get_money = 0;
-        project_arr.push(_id);
+        donate_project_arr.push(_id);
+        holder_arr.push(_holder_id);
     }
 
     function add_project_donor(
         uint256 _project_id,
         uint256 _user_id,
         uint256 _donate_money
-    ) public onlyOwner {
-        uint256 _donor_id = project_map[_project_id].donor_arr.length;
-        project_map[_project_id].donor_map[_donor_id].user_id = _user_id;
-        project_map[_project_id]
+    ) public {
+        uint256 _donor_id = donate_project_map[_project_id].donor_arr.length;
+        donate_project_map[_project_id].donor_map[_donor_id].user_id = _user_id;
+        donate_project_map[_project_id]
             .donor_map[_donor_id]
             .donate_money = _donate_money;
-        project_map[_project_id].donor_arr.push(_user_id);
-        project_map[_project_id].get_money += _donate_money;
+        donate_project_map[_project_id].donor_arr.push(_user_id);
+        donate_project_map[_project_id].get_money += _donate_money;
     }
 
-    function add_user(address _account) public onlyOwner {
+    function add_user(address _account) public {
         uint256 _id = user_arr.length;
 
         User storage u = user_map[_id];
@@ -102,12 +104,12 @@ contract NoneMoney {
     {
         return (
             _id,
-            project_map[_id].holder_id,
-            project_map[_id].web,
-            project_map[_id].state,
-            project_map[_id].target_money,
-            project_map[_id].get_money,
-            project_map[_id].donor_arr
+            donate_project_map[_id].holder_id,
+            donate_project_map[_id].web,
+            donate_project_map[_id].state,
+            donate_project_map[_id].target_money,
+            donate_project_map[_id].get_money,
+            donate_project_map[_id].donor_arr
         );
     }
 
@@ -150,5 +152,9 @@ contract NoneMoney {
 
     function show_users_id() public view returns (uint256[] memory _user_arr) {
         return (user_arr);
+    }
+
+    function show_donate_projects_id() public view returns (uint256[] memory _donate_projects_arr) {
+        return (donate_project_arr);
     }
 }
