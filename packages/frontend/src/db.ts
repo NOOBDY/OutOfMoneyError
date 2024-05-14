@@ -1,3 +1,6 @@
+import { createRoot } from "solid-js";
+import { createStore } from "solid-js/store";
+
 export type Project = {
     id: number;
     title: string;
@@ -6,7 +9,7 @@ export type Project = {
     current: number;
 };
 
-export const data: Project[] = [
+const data: Project[] = [
     {
         id: 1,
         title: "Developing open-source software for educational purposes",
@@ -88,3 +91,12 @@ export const data: Project[] = [
         current: 20400
     }
 ];
+
+const store = createRoot(() => {
+    const [projects, setProjects] = createStore(data);
+    return [projects, setProjects] as ReturnType<typeof createStore<Project[]>>;
+});
+
+export function useProjects() {
+    return store;
+}

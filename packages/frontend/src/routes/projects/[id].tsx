@@ -1,7 +1,7 @@
 import { useParams } from "@solidjs/router";
 import { Show } from "solid-js";
 import Progress from "~/components/Progress";
-import { data } from "~/db";
+import { useProjects } from "~/db";
 
 function NotFound() {
     return (
@@ -15,8 +15,9 @@ function NotFound() {
 
 export default function () {
     const params = useParams();
+    const [projects] = useProjects();
 
-    const project = data.find(p => p.id === Number.parseInt(params.id));
+    const project = projects.find(p => p.id === Number.parseInt(params.id));
 
     return (
         <Show when={project} fallback={<NotFound />} keyed>

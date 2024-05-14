@@ -1,7 +1,7 @@
 import { For } from "solid-js";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
-import { Project, data } from "~/db";
+import { Project, useProjects } from "~/db";
 
 function Card(props: Project) {
     return (
@@ -20,9 +20,11 @@ function Card(props: Project) {
 }
 
 export default function () {
+    const [projects] = useProjects();
+
     return (
         <div class="mx-auto grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:w-2/3 lg:grid-cols-3">
-            <For each={data}>{Card}</For>
+            <For each={projects}>{Card}</For>
         </div>
     );
 }
