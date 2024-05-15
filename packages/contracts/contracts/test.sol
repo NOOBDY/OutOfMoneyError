@@ -17,7 +17,7 @@ contract NoneMoney {
     struct Donate_project {
         string web;
         string name;
-        uint256 state;
+        uint256 state; // 0:donate中 1:審核中 2:結束
         uint256 target_money;
         uint256 get_money;
         address holder_account;
@@ -28,6 +28,7 @@ contract NoneMoney {
     address owner;
     ///project 不可以holder address為id，因為user <-> project 一對多
     uint256[] donate_project_arr;
+    uint256[] review_donate_project_arr;
     mapping(uint256 => Donate_project) donate_project_map;
     ///
     address[] user_arr;
@@ -40,7 +41,10 @@ contract NoneMoney {
         _;
     }
 
-    constructor() {
+    constructor() payable {
+        
+        require(msg.value >= 10000, "Donation must be greater than 100");
+
         owner = msg.sender;
     }
 
@@ -71,39 +75,38 @@ contract NoneMoney {
 
     function add_project_donor(
         uint256 _project_id,
-        address _donor_address
+        address payable _donor_account
     ) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
 
-        donate_project_map[_project_id]
-            .donor_map[_donor_address]
-            .donate_money = msg.value;
+        uint256 input_money = msg.value; 
+        Donate_project storage project = donate_project_map[_project_id];
 
-        donate_project_map[_project_id].donor_arr.push(_donor_address);
+        uint256 temp_money = project.get_money + input_money;
+        uint256 target_money = project.target_money;
 
-        uint256 temp_money = donate_project_map[_project_id].get_money +
-            msg.value;
 
-        if (temp_money < donate_project_map[_project_id].target_money) {
-            donate_project_map[_project_id].get_money = temp_money;
+        // require(msg.value < ( address(this).balance - target_money), "Donation exceed target too much");
+
+
+        project.donor_map[_donor_account].donate_money = input_money;
+        project.donor_arr.push(_donor_account);
+
+
+        if (temp_money < target_money) {
+            user_map[_donor_account].all_donate_money = input_money;
+            project.get_money = temp_money;
+
         } else {
-            
-            donate_project_map[_project_id].get_money = donate_project_map[
-                _project_id
-            ].target_money;
-
-            address payable holder_account = payable(donate_project_map[_project_id].holder_account);
-            holder_account.transfer(donate_project_map[_project_id].get_money);
-
-            donate_project_map[_project_id].state = 1;
+            _donor_account.transfer(temp_money - target_money);
+            user_map[_donor_account].all_donate_money = input_money-(temp_money - target_money);
+            project.get_money = target_money;
+            project.state = 1;
+            review_donate_project_arr.push(_project_id);
         }
     }
 
     function add_user(address  _account) public {
-
-        user_map[_account].all_donate_money= 0;
-        user_map[_account].all_get_money = 0;
-
         user_arr.push(_account);
     }
 
@@ -133,7 +136,7 @@ contract NoneMoney {
         );
     }
 
-    function search_user(address _user_address)
+    function search_user_by_address(address _user_address)
         public
         view
         returns (
@@ -155,7 +158,7 @@ contract NoneMoney {
 
     ///////show all/////////
 
-    function show_users_id() public view returns (address[] memory _user_arr) {
+    function show_users_account() public view returns (address[] memory _user_arr) {
         return (user_arr);
     }
 
@@ -167,7 +170,15 @@ contract NoneMoney {
         return (donate_project_arr);
     }
 
-    function show_holders_id()
+    function show_review_project_id()
+        public
+        view
+        returns (uint256[] memory _holder_arr)
+    {
+        return (review_donate_project_arr);
+    }
+
+    function show_holders_account()
         public
         view
         returns (address[] memory _holder_arr)
@@ -177,9 +188,9 @@ contract NoneMoney {
 
     ///////private function////////
 
-    function _is_holder(address _address) private view returns (bool) {
+    function _is_holder(address _account) private view returns (bool) {
         for (uint256 i = 0; i < holder_arr.length; i++) {
-            if (holder_arr[i] == _address) {
+            if (holder_arr[i] == _account) {
                 return (true); //找到回傳true
             }
         }
@@ -192,11 +203,23 @@ contract NoneMoney {
         return address(this).balance; //合約金額
     }
 
-    /////////////
-    function transferToOwner() external  {
+    function transfer_to_owner() external  {
 
         address payable trs = payable(owner);
         trs.transfer(address(this).balance);
     }
+
+    
+    function review_finish_donate_arr(uint256 _project_id) external  {
+
+        Donate_project storage project = donate_project_map[_project_id];
+        address holder_account = project.holder_account;
+        address payable payable_holder_account = payable(holder_account);
+
+        user_map[holder_account].all_get_money += project.target_money;
+        payable_holder_account.transfer(project.target_money);
+        project.state = 2;
+    }
+
     //////////
 }
