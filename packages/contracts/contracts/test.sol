@@ -154,7 +154,7 @@ contract NoneMoney {
         return (user_arr);
     }
 
-    function show_donate_projects_id() public view returns (uint256[] memory _donate_projects_arr) {
+    function show_donate_projects_id() public pure returns (uint256[] memory _donate_projects_arr) {
         return (donate_project_arr);
     }
 }
