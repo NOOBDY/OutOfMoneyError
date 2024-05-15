@@ -17,7 +17,7 @@ export default function () {
     const params = useParams();
     const [projects] = useProjects();
 
-    const project = projects.find(p => p.id === Number.parseInt(params.id));
+    const project = projects.find(p => p.id === params.id);
 
     return (
         <Show when={project} fallback={<NotFound />} keyed>

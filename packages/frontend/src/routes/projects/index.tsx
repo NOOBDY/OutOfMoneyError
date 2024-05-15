@@ -23,8 +23,12 @@ export default function () {
     const [projects] = useProjects();
 
     return (
-        <div class="mx-auto grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:w-2/3 lg:grid-cols-3">
-            <For each={projects}>{Card}</For>
+        <div class="mx-auto px-4 lg:w-2/3">
+            <Link href="/projects/new">Create new project</Link>
+
+            <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <For each={projects}>{Card}</For>
+            </div>
         </div>
     );
 }
