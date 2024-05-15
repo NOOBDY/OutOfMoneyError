@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract NoneMoney {
+    /// id == address (address 相同者不可重複註冊，address 是唯一的)
     struct User {
         uint256 all_donate_money;
         uint256 all_get_money;
@@ -10,7 +11,6 @@ contract NoneMoney {
     }
 
     struct Donor {
-        // uint256 user_id;
         uint256 donate_money;
     }
 
@@ -26,7 +26,7 @@ contract NoneMoney {
     }
 
     address owner;
-    ///
+    ///project 不可以holder address為id，因為user <-> project 一對多
     uint256[] donate_project_arr;
     mapping(uint256 => Donate_project) donate_project_map;
     ///
@@ -75,10 +75,6 @@ contract NoneMoney {
     ) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
 
-        // uint256 _donor_id = donate_project_map[_project_id].donor_arr.length;
-
-        // donate_project_map[_project_id].donor_map[_donor_address] = _donor_address;
-
         donate_project_map[_project_id]
             .donor_map[_donor_address]
             .donate_money = msg.value;
@@ -96,7 +92,6 @@ contract NoneMoney {
                 _project_id
             ].target_money;
 
-            // uint256 _holder_id = donate_project_map[_project_id].holder_address;
             address payable holder_account = payable(donate_project_map[_project_id].holder_account);
             holder_account.transfer(donate_project_map[_project_id].get_money);
 
@@ -105,7 +100,6 @@ contract NoneMoney {
     }
 
     function add_user(address  _account) public {
-        // uint256 _id = user_arr.length;
 
         user_map[_account].all_donate_money= 0;
         user_map[_account].all_get_money = 0;
