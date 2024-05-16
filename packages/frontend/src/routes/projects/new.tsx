@@ -14,7 +14,6 @@ export default function () {
     const [goal, setGoal] = createSignal(100);
 
     const disabled = createMemo(() => {
-        console.log(title(), description(), goal());
         if (title().length === 0) {
             return true;
         }
@@ -85,7 +84,6 @@ export default function () {
                         dark:text-white"
                     />
                 </TextField>
-                {title()}
 
                 <TextField
                     name="description"
