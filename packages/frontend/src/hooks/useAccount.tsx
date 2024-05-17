@@ -7,7 +7,7 @@ import {
     reconnect,
     watchAccount
 } from "@wagmi/core";
-import { onMount } from "solid-js";
+import { onCleanup, onMount } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { useConfig } from "./useConfig";
 
@@ -19,12 +19,16 @@ type UseAccountReturnType = [
 export function useAccount(): UseAccountReturnType {
     const config = useConfig();
     const [account, setAccount] = createStore(getAccount(config));
-    watchAccount(config, {
+    const unwatch = watchAccount(config, {
         onChange: account => setAccount(reconcile(account))
     });
 
     onMount(async () => {
         await reconnect(config, { connectors: [injected()] });
+    });
+
+    onCleanup(() => {
+        unwatch();
     });
 
     const connectAccount = async () => {
