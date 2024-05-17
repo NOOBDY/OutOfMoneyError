@@ -92,9 +92,10 @@ const data: Project[] = [
     }
 ];
 
-const store = createRoot(() => {
+// in-memory projects store
+const store: ReturnType<typeof createStore<Project[]>> = createRoot(() => {
     const [projects, setProjects] = createStore(data);
-    return [projects, setProjects] as ReturnType<typeof createStore<Project[]>>;
+    return [projects, setProjects];
 });
 
 type AddProjectParams = {

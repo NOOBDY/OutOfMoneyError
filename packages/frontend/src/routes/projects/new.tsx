@@ -1,43 +1,17 @@
 import { NumberField } from "@kobalte/core/number-field";
 import { TextField } from "@kobalte/core/text-field";
-import { useNavigate } from "@solidjs/router";
+import { action, redirect } from "@solidjs/router";
 import { createMemo, createSignal } from "solid-js";
 import { Button } from "~/components/Button";
 import { useProjects } from "~/db";
 
 export default function () {
-    const navigate = useNavigate();
-    const [, { add }] = useProjects();
-
     const [title, setTitle] = createSignal("");
     const [description, setDescription] = createSignal("");
     const [goal, setGoal] = createSignal(100);
+    const [, { add }] = useProjects();
 
-    const disabled = createMemo(() => {
-        if (title().length === 0) {
-            return true;
-        }
-
-        if (description().length === 0) {
-            return true;
-        }
-
-        if (isNaN(goal())) {
-            return true;
-        }
-
-        if (goal() <= 0) {
-            return true;
-        }
-
-        return false;
-    });
-
-    const handleSubmit = (e: SubmitEvent) => {
-        e.preventDefault();
-
-        const formData = new FormData(e.target as HTMLFormElement);
-
+    const newProject = action(async (formData: FormData) => {
         const title = formData.get("title");
         if (!title || title.toString().length <= 0) {
             alert("no title");
@@ -62,13 +36,37 @@ export default function () {
             goal: Number.parseFloat(goal.toString())
         });
 
-        navigate("/projects");
-    };
+        return redirect("/projects");
+    }, "newProject");
+
+    const disabled = createMemo(() => {
+        if (title().length === 0) {
+            return true;
+        }
+
+        if (description().length === 0) {
+            return true;
+        }
+
+        if (isNaN(goal())) {
+            return true;
+        }
+
+        if (goal() <= 0) {
+            return true;
+        }
+
+        return false;
+    });
 
     return (
         <div class="mx-auto px-4 md:w-1/3">
             <h1 class="font-mono text-4xl">Create New Project</h1>
-            <form onSubmit={handleSubmit} class="flex flex-col space-y-2">
+            <form
+                action={newProject}
+                method="post"
+                class="flex flex-col space-y-2"
+            >
                 <TextField
                     name="title"
                     defaultValue=""
