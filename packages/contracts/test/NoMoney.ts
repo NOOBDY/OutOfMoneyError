@@ -1,13 +1,7 @@
-import {
-    time,
-    loadFixture
-} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
-import { assert, expect } from "chai";
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { expect } from "chai";
 import hre from "hardhat";
-import { string } from "hardhat/internal/core/params/argumentTypes";
-import { getAddress, parseGwei } from "viem";
-import { createTestClient, http } from "viem";
-import { foundry } from "viem/chains";
+import { getAddress } from "viem";
 
 describe("test NoneMoney contract", function () {
     async function depolyMainContract() {
@@ -20,7 +14,7 @@ describe("test NoneMoney contract", function () {
 
     describe("Deployment", function () {
         it("work", async function () {
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            await loadFixture(depolyMainContract);
         });
     });
 
