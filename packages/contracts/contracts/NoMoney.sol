@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 contract NoneMoney {
-    event Respone(bool success_holder,bool success_donor);
+    event Respone(bool success_holder, bool success_donor);
     /// id == address (address 相同者不可重複註冊，address 是唯一的)
 
     struct Donor {
@@ -33,7 +33,6 @@ contract NoneMoney {
     }
 
     constructor() payable {
-    
         owner = msg.sender;
     }
 
@@ -42,8 +41,7 @@ contract NoneMoney {
         string memory _name,
         string memory _description,
         uint256 _target_money
-    ) public  {
-        
+    ) public {
         uint256 _id = donate_project_arr.length;
 
         Donate_project storage p = donate_project_map[_id];
@@ -68,7 +66,7 @@ contract NoneMoney {
     ) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
 
-        uint256 input_money = msg.value; 
+        uint256 input_money = msg.value;
 
         Donate_project storage project = donate_project_map[_project_id];
 
@@ -78,28 +76,29 @@ contract NoneMoney {
         project.donor_map[_donor_account].donate_money = input_money;
         project.donor_arr.push(_donor_account);
 
-
         if (temp_money < target_money) {
             project.get_money = temp_money;
-
-        } else if(!project.state){
-
-            
+        } else if (!project.state) {
             address holder_account = project.holder_account;
             address payable payable_holder_account = payable(holder_account);
 
             project.get_money = target_money;
             project.state = true;
-            (bool success_holder,) = payable_holder_account.call{value:target_money}("");
-            (bool success_donor,) = _donor_account.call{value:(temp_money - target_money)}("");
-            emit Respone(success_holder,success_donor);
-
+            (bool success_holder, ) = payable_holder_account.call{
+                value: target_money
+            }("");
+            (bool success_donor, ) = _donor_account.call{
+                value: (temp_money - target_money)
+            }("");
+            emit Respone(success_holder, success_donor);
         }
     }
 
     ///////search/////////
 
-    function search_project_by_id(uint256 _id)
+    function search_project_by_id(
+        uint256 _id
+    )
         public
         view
         returns (
@@ -154,7 +153,7 @@ contract NoneMoney {
 
     /////////////////////////
 
-    function get_contract_balance() public view returns( uint256){
+    function get_contract_balance() public view returns (uint256) {
         return address(this).balance; //合約金額
     }
 
