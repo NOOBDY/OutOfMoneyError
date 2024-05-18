@@ -86,6 +86,7 @@ describe("Lock", function () {
                 const lockAsOtherAccount = await hre.viem.getContractAt("Lock", lock.address, {
                     client: { wallet: otherAccount }
                 });
+                
                 await expect(lockAsOtherAccount.write.withdraw()).to.be.rejectedWith(
                     "You aren't the owner"
                 );
