@@ -1,10 +1,17 @@
-import { GetAccountReturnType } from "@wagmi/core";
-import { ErrorBoundary, Match, Suspense, Switch, createEffect } from "solid-js";
+import { GetAccountReturnType, getBalance } from "@wagmi/core";
+import {
+    ErrorBoundary,
+    Match,
+    Suspense,
+    Switch,
+    createEffect,
+    createResource
+} from "solid-js";
 import { formatEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import { useAccount } from "~/hooks/useAccount";
-import { useBalance } from "~/hooks/useBalance";
+import { useConfig } from "~/hooks/useConfig";
 
 type ConnectedAccount = Extract<GetAccountReturnType, { status: "connected" }>;
 
@@ -21,8 +28,11 @@ type BalanceProps = {
 };
 
 function Balance(props: BalanceProps) {
-    // eslint-disable-next-line solid/reactivity
-    const [balance, { refetch }] = useBalance({ address: props.address });
+    const config = useConfig();
+    const [balanceString, { refetch }] = createResource(async () => {
+        const balance = await getBalance(config, { address: props.address });
+        return `${formatEther(balance.value)} ${balance.symbol}`;
+    });
 
     createEffect(() => {
         props.address;
@@ -30,12 +40,9 @@ function Balance(props: BalanceProps) {
     });
 
     return (
-        <Suspense>
-            <p class="font-mono">
-                {balance.state === "ready" &&
-                    `${formatEther(balance().value)} ${balance().symbol}`}
-            </p>
-        </Suspense>
+        <p class="font-mono">
+            <Suspense fallback={"loading"}>{balanceString()}</Suspense>
+        </p>
     );
 }
 
