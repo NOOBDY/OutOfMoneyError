@@ -13,7 +13,9 @@ type AccountProps = {
 };
 
 function Account(props: AccountProps) {
-    return <p class="font-mono">{props.account.address}</p>;
+    return (
+        <pre class="font-mono">{JSON.stringify(props.account, null, 2)}</pre>
+    );
 }
 
 type BalanceProps = {
