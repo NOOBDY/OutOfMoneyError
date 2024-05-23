@@ -1,5 +1,5 @@
 import { GetAccountReturnType } from "@wagmi/core";
-import { Match, Suspense, Switch, createEffect } from "solid-js";
+import { ErrorBoundary, Match, Suspense, Switch, createEffect } from "solid-js";
 import { formatEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
@@ -50,36 +50,41 @@ export default function () {
     const [account, { connect, disconnect }] = useAccount();
 
     return (
-        <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
-            <div>
-                <Link href="/projects">projects</Link>
+        <ErrorBoundary fallback={err => err}>
+            <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
+                <div>
+                    <Link href="/projects">projects</Link>
+                </div>
+
+                <Switch fallback={<p>Connecting</p>}>
+                    <Match when={account.status === "disconnected"}>
+                        <div class="mx-auto">
+                            <Button type="button" onClick={connect}>
+                                Connect
+                            </Button>
+                        </div>
+                    </Match>
+
+                    <Match
+                        when={account.status === "connected" && account}
+                        keyed
+                    >
+                        {account => (
+                            <>
+                                <Account account={account} />
+
+                                <Balance address={account.address} />
+
+                                <div class="mx-auto">
+                                    <Button type="button" onClick={disconnect}>
+                                        Disconnect
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                    </Match>
+                </Switch>
             </div>
-
-            <Switch fallback={<p>Connecting</p>}>
-                <Match when={account.status === "disconnected"}>
-                    <div class="mx-auto">
-                        <Button type="button" onClick={connect}>
-                            Connect
-                        </Button>
-                    </div>
-                </Match>
-
-                <Match when={account.status === "connected" && account} keyed>
-                    {account => (
-                        <>
-                            <Account account={account} />
-
-                            <Balance address={account.address} />
-
-                            <div class="mx-auto">
-                                <Button type="button" onClick={disconnect}>
-                                    Disconnect
-                                </Button>
-                            </div>
-                        </>
-                    )}
-                </Match>
-            </Switch>
-        </div>
+        </ErrorBoundary>
     );
 }
