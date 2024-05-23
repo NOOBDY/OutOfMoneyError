@@ -1,6 +1,5 @@
 import { GetAccountReturnType } from "@wagmi/core";
 import { ErrorBoundary, Match, Suspense, Switch, createEffect } from "solid-js";
-import { unwrap } from "solid-js/store";
 import { formatEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
@@ -14,14 +13,7 @@ type AccountProps = {
 };
 
 function Account(props: AccountProps) {
-    return (
-        <pre
-            class="max-h-72 overflow-auto bg-neutral-100 p-2 text-neutral-800
-            dark:bg-neutral-800 dark:text-neutral-200"
-        >
-            {JSON.stringify(unwrap(props.account), null, 2)}
-        </pre>
-    );
+    return <p class="font-mono">{props.account.address}</p>;
 }
 
 type BalanceProps = {
