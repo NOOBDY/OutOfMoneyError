@@ -49,10 +49,10 @@ describe("test NoneMoney contract", function () {
                 "test",
                 BigInt(200)
             ]); //project_id = 0;
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor.account.address],
-                { value: BigInt(50) }
-            );
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(50),
+                account: donor.account
+            });
 
             const project = await NoneMoney.read.search_project_by_id([
                 BigInt(0)
@@ -70,21 +70,21 @@ describe("test NoneMoney contract", function () {
         it("add_project_donor_finish", async function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
 
-            const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+            const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.add_project([
                 holder.account?.address,
                 "project",
                 "test",
                 BigInt(200)
             ]); //project_id = 0;
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor1.account.address],
-                { value: BigInt(100) }
-            );
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor2.account.address],
-                { value: BigInt(100) }
-            );
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(100),
+                account: donor.account
+            });
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(100),
+                account: donor.account
+            });
 
             const project = await NoneMoney.read.search_project_by_id([
                 BigInt(0)
@@ -109,14 +109,14 @@ describe("test NoneMoney contract", function () {
                 address: holder.account.address
             });
 
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor1.account.address],
-                { value: BigInt(3), account: donor1.account }
-            );
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor2.account.address],
-                { value: BigInt(7), account: donor2.account }
-            );
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(3),
+                account: donor1.account
+            });
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(7),
+                account: donor2.account
+            });
 
             const holderBalance_after = await publicClient.getBalance({
                 address: holder.account.address
@@ -213,10 +213,10 @@ describe("test NoneMoney contract", function () {
                 "description",
                 BigInt(100)
             ]);
-            await NoneMoney.write.add_project_donor(
-                [BigInt(0), donor.account.address],
-                { value: BigInt(40), account: donor.account }
-            );
+            await NoneMoney.write.add_project_donor([BigInt(0)], {
+                value: BigInt(40),
+                account: donor.account
+            });
 
             const contract_balance =
                 await NoneMoney.read.get_contract_balance();

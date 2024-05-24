@@ -2,8 +2,8 @@
 pragma solidity ^0.8.0;
 
 contract NoneMoney {
-    event Respone(bool success_holder, bool success_donor);
-    /// id == address (address 相同者不可重複註冊，address 是唯一的)
+    event give_money(bool success_holder);
+    event return_money(bool success_donor);
 
     struct Donor {
         uint256 donate_money;
@@ -21,7 +21,7 @@ contract NoneMoney {
     }
 
     address owner;
-    ///project 不可以holder address為id，因為user <-> project 一對多
+    ///
     uint256[] donate_project_arr;
     mapping(uint256 => Donate_project) donate_project_map;
     ///
@@ -63,11 +63,9 @@ contract NoneMoney {
         }
     }
 
-    function add_project_donor(
-        uint256 _project_id,
-        address payable _donor_account
-    ) public payable {
+    function add_project_donor(uint256 _project_id) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
+        address payable _donor_account = payable(msg.sender);
 
         uint256 input_money = msg.value;
 
@@ -90,10 +88,16 @@ contract NoneMoney {
             (bool success_holder, ) = payable_holder_account.call{
                 value: target_money
             }("");
-            (bool success_donor, ) = _donor_account.call{
-                value: (temp_money - target_money)
-            }("");
-            emit Respone(success_holder, success_donor);
+
+            emit give_money(success_holder);
+            
+            if((temp_money - target_money) > 0){
+                (bool success_donor, ) = _donor_account.call{
+                    value: (temp_money - target_money)
+                }("");
+                emit return_money(success_donor);
+            }
+
         }
     }
 
