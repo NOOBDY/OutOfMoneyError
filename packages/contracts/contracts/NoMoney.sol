@@ -42,6 +42,9 @@ contract NoneMoney {
         string memory _description,
         uint256 _target_money
     ) public {
+        require(_holder_account != address(0), "Holder account cannot be zero address");
+        require(bytes(_name).length > 0, "Project name is required");
+
         uint256 _id = donate_project_arr.length;
 
         Donate_project storage p = donate_project_map[_id];

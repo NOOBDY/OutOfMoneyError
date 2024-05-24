@@ -28,9 +28,10 @@ describe("test NoneMoney contract", function () {
         //     get_money: BigInt,
         // };
         it("add_project", async function () {
+            
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder] = await hre.viem.getWalletClients();
-            NoneMoney.write.add_project([
+            await NoneMoney.write.add_project([
                 holder.account.address,
                 "name",
                 "description",
@@ -39,8 +40,8 @@ describe("test NoneMoney contract", function () {
         });
 
         it("add_project_donor", async function () {
-            const { NoneMoney } = await loadFixture(depolyMainContract);
 
+            const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.add_project([
                 holder.account?.address,
