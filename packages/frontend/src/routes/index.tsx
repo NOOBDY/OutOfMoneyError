@@ -1,27 +1,33 @@
 import { A } from "@solidjs/router";
-import { Button } from "~/components/Button";
-import Counter from "~/components/Counter";
+import { For } from "solid-js";
+import Progress from "~/components/Progress";
+import { Project, data } from "~/db";
 
-export default function Home() {
+function Card(props: Project) {
     return (
-        <main class="mx-auto p-4 text-center text-gray-700">
-            <h1 class="max-6-xs my-16 text-6xl font-thin uppercase text-sky-700">Hello world!</h1>
-            <Counter />
-            <p class="mt-8">
-                Visit{" "}
-                <a href="https://solidjs.com" target="_blank" class="text-sky-600 hover:underline">
-                    solidjs.com
-                </a>{" "}
-                to learn how to build Solid apps.
-            </p>
-            <Button>Click</Button>
-            <p class="my-4">
-                <span>Home</span>
-                {" - "}
-                <A href="/about" class="text-sky-600 hover:underline">
-                    About Page
-                </A>{" "}
-            </p>
-        </main>
+        <div class="flex min-h-32 flex-col border font-mono">
+            <div class="grow px-2 py-1">
+                <h1>{props.title}</h1>
+            </div>
+
+            <div class="text-end">
+                <A
+                    href={`/projects/${props.id}`}
+                    class="px-2 text-green-600 underline transition-all hover:text-green-800 dark:text-lime-400 dark:hover:text-lime-600"
+                >
+                    See more
+                </A>
+            </div>
+
+            <Progress current={props.current} goal={props.goal} />
+        </div>
+    );
+}
+
+export default function () {
+    return (
+        <div class="mx-auto grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:w-2/3 lg:grid-cols-3">
+            <For each={data}>{Card}</For>
+        </div>
     );
 }

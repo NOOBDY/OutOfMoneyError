@@ -1,4 +1,7 @@
-import { time, loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import {
+    time,
+    loadFixture
+} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
 import hre from "hardhat";
 import { getAddress, parseGwei } from "viem";
@@ -34,7 +37,9 @@ describe("Lock", function () {
 
     describe("Deployment", function () {
         it("Should set the right unlockTime", async function () {
-            const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+            const { lock, unlockTime } = await loadFixture(
+                deployOneYearLockFixture
+            );
 
             expect(await lock.read.unlockTime()).to.equal(unlockTime);
         });
@@ -42,12 +47,15 @@ describe("Lock", function () {
         it("Should set the right owner", async function () {
             const { lock, owner } = await loadFixture(deployOneYearLockFixture);
 
-            expect(await lock.read.owner()).to.equal(getAddress(owner.account.address));
+            expect(await lock.read.owner()).to.equal(
+                getAddress(owner.account.address)
+            );
         });
 
         it("Should receive and store the funds to lock", async function () {
-            const { lock, lockedAmount, publicClient } =
-                await loadFixture(deployOneYearLockFixture);
+            const { lock, lockedAmount, publicClient } = await loadFixture(
+                deployOneYearLockFixture
+            );
 
             expect(
                 await publicClient.getBalance({
@@ -72,27 +80,36 @@ describe("Lock", function () {
             it("Should revert with the right error if called too soon", async function () {
                 const { lock } = await loadFixture(deployOneYearLockFixture);
 
-                await expect(lock.write.withdraw()).to.be.rejectedWith("You can't withdraw yet");
+                await expect(lock.write.withdraw()).to.be.rejectedWith(
+                    "You can't withdraw yet"
+                );
             });
 
             it("Should revert with the right error if called from another account", async function () {
-                const { lock, unlockTime, otherAccount } =
-                    await loadFixture(deployOneYearLockFixture);
+                const { lock, unlockTime, otherAccount } = await loadFixture(
+                    deployOneYearLockFixture
+                );
 
                 // We can increase the time in Hardhat Network
                 await time.increaseTo(unlockTime);
 
                 // We retrieve the contract with a different account to send a transaction
-                const lockAsOtherAccount = await hre.viem.getContractAt("Lock", lock.address, {
-                    client: { wallet: otherAccount }
-                });
-                await expect(lockAsOtherAccount.write.withdraw()).to.be.rejectedWith(
-                    "You aren't the owner"
+                const lockAsOtherAccount = await hre.viem.getContractAt(
+                    "Lock",
+                    lock.address,
+                    {
+                        client: { wallet: otherAccount }
+                    }
                 );
+                await expect(
+                    lockAsOtherAccount.write.withdraw()
+                ).to.be.rejectedWith("You aren't the owner");
             });
 
             it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-                const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
+                const { lock, unlockTime } = await loadFixture(
+                    deployOneYearLockFixture
+                );
 
                 // Transactions are sent using the first signer by default
                 await time.increaseTo(unlockTime);
