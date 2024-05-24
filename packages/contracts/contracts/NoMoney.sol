@@ -44,6 +44,7 @@ contract NoneMoney {
     ) public {
         require(_holder_account != address(0), "Holder account cannot be zero address");
         require(bytes(_name).length > 0, "Project name is required");
+        require(_target_money > 0, "Set _target_money must be greater than 0");
 
         uint256 _id = donate_project_arr.length;
 
