@@ -42,7 +42,10 @@ contract NoneMoney {
         string memory _description,
         uint256 _target_money
     ) public {
-        require(_holder_account != address(0), "Holder account cannot be zero address");
+        require(
+            _holder_account != address(0),
+            "Holder account cannot be zero address"
+        );
         require(bytes(_name).length > 0, "Project name is required");
         require(_target_money > 0, "Set _target_money must be greater than 0");
 
@@ -91,14 +94,13 @@ contract NoneMoney {
             }("");
 
             emit give_money(success_holder);
-            
-            if((temp_money - target_money) > 0){
+
+            if ((temp_money - target_money) > 0) {
                 (bool success_donor, ) = _donor_account.call{
                     value: (temp_money - target_money)
                 }("");
                 emit return_money(success_donor);
             }
-
         }
     }
 
