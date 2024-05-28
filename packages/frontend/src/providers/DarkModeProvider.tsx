@@ -2,7 +2,6 @@ import {
     FlowProps,
     createContext,
     createSignal,
-    useContext,
     createEffect,
     Signal,
     onMount
@@ -11,7 +10,7 @@ import { isServer } from "solid-js/web";
 
 const DarkModeLocalStorageKey = "dark-mode";
 
-const DarkModeContext = createContext<Signal<boolean>>();
+export const DarkModeContext = createContext<Signal<boolean>>();
 
 /**
  * Priority:
@@ -46,14 +45,6 @@ function getDefaultDarkModeValue(defaultDarkMode?: boolean): boolean {
     }
 
     return false;
-}
-
-export function useDarkMode() {
-    const context = useContext(DarkModeContext);
-    if (!context) {
-        throw new Error("DarkModeContext not found");
-    }
-    return context;
 }
 
 type Props = {
