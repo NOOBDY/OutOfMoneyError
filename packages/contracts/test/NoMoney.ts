@@ -328,7 +328,7 @@ describe("test NoneMoney contract", function () {
     describe("Sort", function () {
         it("sortProjectDonorByDonateMoney", async function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
-            const [holder, donor1,donor2] = await hre.viem.getWalletClients();
+            const [holder, donor1,donor2,donor3] = await hre.viem.getWalletClients();
 
             await NoneMoney.write.addProject([
                 holder.account.address,
@@ -347,12 +347,19 @@ describe("test NoneMoney contract", function () {
                 account: donor2.account
             });
 
-            const sort_result = NoneMoney.read.sortProjectDonorByDonateMoney([BigInt(0)])
+            await NoneMoney.write.addProjectDonor([BigInt(0)], {
+                value: BigInt(50),
+                account: donor3.account
+            });
 
-            // console.log(sort_result[0][0])
-            // expect(sort_result[0][0]).to.equal(donor1.account.address);
-            // expect(sort_result[0][1]).to.equal(donor1.account.address);
-            // expect(sort_result[donor2]).to.equal(0n);
+            const sort_result = await NoneMoney.read.sortProjectDonorByDonateMoney([BigInt(0)])
+
+            expect(sort_result[0][0]).to.equal(getAddress(donor2.account.address));
+            expect(sort_result[1][0]).to.equal(500n);
+            expect(sort_result[0][1]).to.equal(getAddress(donor1.account.address));
+            expect(sort_result[1][1]).to.equal(100n);
+            expect(sort_result[0][2]).to.equal(getAddress(donor3.account.address));
+            expect(sort_result[1][2]).to.equal(50n);
         });
     });
 });
