@@ -67,13 +67,13 @@ contract NoneMoney {
         }
     }
 
-    function add_project_donor(uint256 _project_id) public payable {
+    function add_project_donor(uint256 projectID) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
         address payable _donor_account = payable(msg.sender);
 
         uint256 input_money = msg.value;
 
-        Donate_project storage project = donate_project_map[_project_id];
+        Donate_project storage project = donate_project_map[projectID];
 
         uint256 temp_money = project.get_money + input_money;
         uint256 target_money = project.target_money;
