@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract NoneMoney {
+contract NoneMoney2 {
     event give_money(bool success_holder);
     event return_money(bool success_donor);
 
@@ -114,7 +114,7 @@ contract NoneMoney {
 
     ///////search/////////
 
-    function searchProjectByIDWithHolderAccount(
+    function searchProjectByID_with_HolderAccount(
         uint256 _id
     )
         public
@@ -138,7 +138,7 @@ contract NoneMoney {
         );
     }
 
-    function searchProjectByIDWithoutHolderAccount(
+    function searchProject_ByID_without_HolderAccount(
         uint256 _id
     )
         public
@@ -183,7 +183,7 @@ contract NoneMoney {
     }
 
     
-    function showProjectByIDFilterDeadline()
+    function showProjectByID_filterDeadline()
         public
         view
         returns (
