@@ -167,5 +167,7 @@ contract NoneMoney {
         return address(this).balance; //合約金額
     }
 
-    //////////
+    function getCurrentTimestamp() public view returns (uint256) {
+        return block.timestamp;
+    }
 }
