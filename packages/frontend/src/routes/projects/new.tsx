@@ -1,18 +1,24 @@
-import { SubmitHandler, createForm } from "@modular-forms/solid";
+import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useNavigate } from "@solidjs/router";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
+import { z } from "zod";
 import { useProjects } from "~/db";
 
-type NewProjectForm = {
-    title: string;
-    description: string;
-    goal: number;
-    address: Address;
-};
+const NewProjectSchema = z.object({
+    title: z.string(),
+    description: z.string(),
+    goal: z.number().int().gt(0),
+    address: z.custom<Address>(isAddress, "Invalid address") // ! remove after dropdown
+});
+
+type NewProjectForm = z.infer<typeof NewProjectSchema>;
 
 export default function () {
     const navigate = useNavigate();
-    const [newProjectForm, { Form, Field }] = createForm<NewProjectForm>();
+    const [newProjectForm, { Form, Field }] = createForm<NewProjectForm>({
+        validate: zodForm(NewProjectSchema),
+        revalidateOn: "input"
+    });
     const [, { add }] = useProjects();
 
     const handleSubmit: SubmitHandler<NewProjectForm> = (values, event) => {
@@ -43,6 +49,9 @@ export default function () {
                                 required
                                 class="text-black"
                             />
+                            {field.error && (
+                                <p class="text-red-600">{field.error}</p>
+                            )}
                         </div>
                     )}
                 </Field>
@@ -58,6 +67,9 @@ export default function () {
                                 required
                                 class="text-black"
                             />
+                            {field.error && (
+                                <p class="text-red-600">{field.error}</p>
+                            )}
                         </div>
                     )}
                 </Field>
@@ -74,6 +86,9 @@ export default function () {
                                 required
                                 class="text-black"
                             />
+                            {field.error && (
+                                <p class="text-red-600">{field.error}</p>
+                            )}
                         </div>
                     )}
                 </Field>
@@ -90,6 +105,9 @@ export default function () {
                                 required
                                 class="text-black"
                             />
+                            {field.error && (
+                                <p class="text-red-600">{field.error}</p>
+                            )}
                         </div>
                     )}
                 </Field>
