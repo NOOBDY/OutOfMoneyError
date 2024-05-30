@@ -1,17 +1,78 @@
-import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
+import { Select } from "@kobalte/core/select";
+import {
+    FieldElementProps,
+    SubmitHandler,
+    createForm,
+    zodForm
+} from "@modular-forms/solid";
 import { useNavigate } from "@solidjs/router";
-import { Address, isAddress } from "viem";
+import { Show, createEffect, createSignal } from "solid-js";
+import { Address } from "viem";
 import { z } from "zod";
 import { useProjects } from "~/db";
+import { useAccount } from "~/hooks/useAccount";
 
 const NewProjectSchema = z.object({
-    title: z.string(),
-    description: z.string(),
+    title: z.string().min(1, { message: "Title required" }),
+    description: z.string().min(1, { message: "Description required" }),
     goal: z.number().int().gt(0),
-    address: z.custom<Address>(isAddress, "Invalid address") // ! remove after dropdown
+    address: z.custom<Address>(data => data, "Address required")
 });
 
 type NewProjectForm = z.infer<typeof NewProjectSchema>;
+
+function AddressDropdown(
+    props: FieldElementProps<NewProjectForm, "address"> & {
+        value: Address | undefined;
+    }
+) {
+    const [value, setValue] = createSignal<Address>();
+    createEffect(() => {
+        setValue(props.value);
+    });
+
+    const [account] = useAccount();
+
+    return (
+        <Show
+            when={account.status === "connected" && [...account.addresses]}
+            keyed
+        >
+            {addresses => {
+                return (
+                    <Select
+                        value={value()}
+                        onChange={setValue}
+                        defaultValue={addresses[0]}
+                        placeholder="Select an Address"
+                        options={addresses}
+                        required
+                        itemComponent={props => (
+                            <Select.Item item={props.item}>
+                                <Select.ItemLabel>
+                                    {props.item.rawValue}
+                                </Select.ItemLabel>
+                            </Select.Item>
+                        )}
+                    >
+                        <Select.HiddenSelect {...props} />
+                        <Select.Trigger class="h-6 w-full border">
+                            <Select.Value<Address>>
+                                {state => state.selectedOption()}
+                            </Select.Value>
+                        </Select.Trigger>
+
+                        <Select.Portal>
+                            <Select.Content>
+                                <Select.Listbox />
+                            </Select.Content>
+                        </Select.Portal>
+                    </Select>
+                );
+            }}
+        </Show>
+    );
+}
 
 export default function () {
     const navigate = useNavigate();
@@ -23,6 +84,8 @@ export default function () {
 
     const handleSubmit: SubmitHandler<NewProjectForm> = (values, event) => {
         event.preventDefault();
+
+        console.log(values);
 
         add({
             title: values.title,
@@ -96,15 +159,7 @@ export default function () {
                 <Field name="address">
                     {(field, props) => (
                         <div>
-                            <label for={field.name}>Address</label>
-                            <input
-                                {...props}
-                                id={field.name}
-                                value={field.value}
-                                type="text"
-                                required
-                                class="text-black"
-                            />
+                            <AddressDropdown {...props} value={field.value} />
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
                             )}
