@@ -1,12 +1,14 @@
+import { NumberField } from "@kobalte/core/number-field";
 import { Select } from "@kobalte/core/select";
 import {
     FieldElementProps,
     SubmitHandler,
     createForm,
+    toCustom,
     zodForm
 } from "@modular-forms/solid";
 import { useNavigate } from "@solidjs/router";
-import { Show, createEffect, createSignal } from "solid-js";
+import { Show, createEffect, createSignal, splitProps } from "solid-js";
 import { Address } from "viem";
 import { z } from "zod";
 import { useProjects } from "~/db";
@@ -15,11 +17,23 @@ import { useAccount } from "~/hooks/useAccount";
 const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
     description: z.string().min(1, { message: "Description required" }),
-    goal: z.number().int().gt(0),
+    goal: z.coerce.number().int().gt(0),
     address: z.custom<Address>(data => data, "Address required")
 });
 
 type NewProjectForm = z.infer<typeof NewProjectSchema>;
+
+function GoalInput(
+    props: FieldElementProps<NewProjectForm, "goal"> & {
+        value: number | undefined;
+    }
+) {
+    const [, inputProps] = splitProps(props, ["value"]);
+    const [value, setValue] = createSignal<number>();
+    createEffect(() => {
+        setValue(props.value);
+    });
+}
 
 function AddressDropdown(
     props: FieldElementProps<NewProjectForm, "address"> & {
@@ -146,22 +160,65 @@ export default function () {
                     )}
                 </Field>
 
-                <Field name="goal" type="number">
+                <Field
+                    name="goal"
+                    type="number"
+                    transform={toCustom(
+                        value => {
+                            console.log("custom");
+                            return value;
+                        },
+                        { on: "input" }
+                    )}
+                >
                     {(field, props) => (
-                        <div>
-                            <label for={field.name}>Goal</label>
-                            <input
-                                {...props}
-                                id={field.name}
-                                value={field.value}
-                                type="number"
+                        <>
+                            <NumberField
+                                rawValue={field.value}
+                                defaultValue={100}
+                                minValue={0}
+                                format={false}
                                 required
-                                class="text-black"
-                            />
+                                class="flex flex-col"
+                            >
+                                <p>{typeof field.value}</p>
+                                <NumberField.Label class="font-mono">
+                                    Goal
+                                </NumberField.Label>
+                                <NumberField.HiddenInput {...props} />
+                                <div class="flex">
+                                    <NumberField.Input
+                                        class="grow border bg-neutral-100 px-2 dark:bg-neutral-800
+                    dark:text-white"
+                                    />
+                                    <div class="flex flex-col">
+                                        <NumberField.IncrementTrigger
+                                            class="flex h-4 w-6 items-center justify-center
+                        border-r border-t px-1 pb-0.5 font-mono transition
+                        hover:border-black hover:bg-black hover:text-white
+                        dark:hover:border-neutral-200 dark:hover:bg-neutral-200
+                        dark:hover:text-black"
+                                        >
+                                            +
+                                        </NumberField.IncrementTrigger>
+                                        <hr />
+                                        <NumberField.DecrementTrigger
+                                            class="flex h-4 w-6 items-center justify-center
+                        border-b border-r px-1 pb-0.5 font-mono transition
+                        hover:border-black hover:bg-black hover:text-white
+                        dark:hover:border-neutral-200 dark:hover:bg-neutral-200
+                        dark:hover:text-black"
+                                        >
+                                            -
+                                        </NumberField.DecrementTrigger>
+                                    </div>
+                                </div>
+                            </NumberField>
+                            {field.value}
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
                             )}
-                        </div>
+                        </>
                     )}
                 </Field>
 
