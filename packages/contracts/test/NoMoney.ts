@@ -31,7 +31,7 @@ describe("test NoneMoney contract", function () {
         //     target_money: BigInt,
         //     get_money: BigInt,
         // };
-        it("addProject", async function () {
+        it("addProject", async function () { //加入project
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject([
@@ -44,7 +44,7 @@ describe("test NoneMoney contract", function () {
             ]);
         });
 
-        it("addProjectDonor", async function () {
+        it("addProjectDonor", async function () { //對特定project 加入donor
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject([
@@ -72,7 +72,7 @@ describe("test NoneMoney contract", function () {
             expect(project[5]).to.equal(50n); //get
         });
 
-        it("addProjectDonor_finish", async function () {
+        it("addProjectDonor_finish", async function () { //如果金額達標，轉帳給holder
             const { NoneMoney } = await loadFixture(depolyMainContract);
 
             const [holder, donor] = await hre.viem.getWalletClients();
@@ -101,14 +101,14 @@ describe("test NoneMoney contract", function () {
             expect(project[5]).to.equal(200n);
         });
 
-        it("checkProjectDonor_finishReturn", async function () {
+        it("checkProjectDonor_finishReturn", async function () { //如果金額達標，轉帳給holder，多餘的錢退款給donor
             const { NoneMoney } = await loadFixture(depolyMainContract);
 
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             const publicClient = await hre.viem.getPublicClient();
 
             await NoneMoney.write.addProject(
-                [holder.account?.address, "project", "test",BigInt(200),BigInt(200), BigInt(5)],
+                [holder.account?.address, "project", "test", BigInt(200), BigInt(200), BigInt(5)],
                 { account: holder.account }
             ); //project_id = 0;
 
@@ -136,7 +136,7 @@ describe("test NoneMoney contract", function () {
     });
 
     describe("Show", function () {
-        it("show_project", async function () {
+        it("show_project", async function () { //show 出全部 project id
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject([
@@ -171,11 +171,12 @@ describe("test NoneMoney contract", function () {
             expect(project_id[2]).to.equal(2n);
         });
 
-        it("showHolder", async function () {
+        it("showHolder", async function () { //show 出全部的holder
             const { NoneMoney } = await loadFixture(depolyMainContract);
 
             const [holder1, holder2, holder3] =
                 await hre.viem.getWalletClients();
+
             await NoneMoney.write.addProject([
                 holder1.account?.address,
                 "project1",
@@ -184,6 +185,7 @@ describe("test NoneMoney contract", function () {
                 BigInt(100),
                 BigInt(100)
             ]);
+            
             await NoneMoney.write.addProject([
                 holder1.account?.address,
                 "project2",
@@ -192,6 +194,7 @@ describe("test NoneMoney contract", function () {
                 BigInt(100),
                 BigInt(200)
             ]);
+            
             await NoneMoney.write.addProject([
                 holder2.account?.address,
                 "project3",
@@ -200,6 +203,7 @@ describe("test NoneMoney contract", function () {
                 BigInt(100),
                 BigInt(300)
             ]);
+
             await NoneMoney.write.addProject([
                 holder3.account?.address,
                 "project4",
@@ -222,6 +226,46 @@ describe("test NoneMoney contract", function () {
             );
         });
 
+
+        it("showHoldersProjectArr", async function () { //show 特定holder所擁有的project
+            const { NoneMoney } = await loadFixture(depolyMainContract);
+
+            const [holder1, holder2] =
+                await hre.viem.getWalletClients();
+            await NoneMoney.write.addProject([
+                holder1.account?.address,
+                "project1",
+                "test1",
+                BigInt(100),
+                BigInt(100),
+                BigInt(100)
+            ]);
+            await NoneMoney.write.addProject([
+                holder2.account?.address,
+                "project3",
+                "test3",
+                BigInt(100),
+                BigInt(100),
+                BigInt(300)
+            ]);
+            await NoneMoney.write.addProject([
+                holder1.account?.address,
+                "project2",
+                "test2",
+                BigInt(100),
+                BigInt(100),
+                BigInt(200)
+            ]);
+
+            const holder_arr1 = await NoneMoney.read.showHoldersProjectArr([holder1.account.address]);
+            const holder_arr2 = await NoneMoney.read.showHoldersProjectArr([holder2.account.address]);
+
+            expect(holder_arr1[0]).to.equal(0n);
+            expect(holder_arr1[1]).to.equal(2n);
+            expect(holder_arr2[0]).to.equal(1n);
+        });
+
+
         it("showProjectByIDFilterDeadline", async function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const now = await NoneMoney.read.getCurrentTimestamp()
@@ -232,7 +276,7 @@ describe("test NoneMoney contract", function () {
                 "project1",
                 "test1",
                 BigInt(now),
-                BigInt(now+100n),
+                BigInt(now + 100n),
                 BigInt(100)
             ]);
             await NoneMoney.write.addProject([
@@ -240,7 +284,7 @@ describe("test NoneMoney contract", function () {
                 "project2",
                 "test2",
                 BigInt(100), //second
-                BigInt(now+1n),
+                BigInt(now + 1n),
                 BigInt(200)
             ]);
             await NoneMoney.write.addProject([
@@ -248,7 +292,7 @@ describe("test NoneMoney contract", function () {
                 "project3",
                 "test3",
                 BigInt(100),
-                BigInt(now+100n),
+                BigInt(now + 100n),
                 BigInt(300)
             ]);
 
@@ -271,7 +315,7 @@ describe("test NoneMoney contract", function () {
                 "project1",
                 "test1",
                 BigInt(now),
-                BigInt(now+100n),
+                BigInt(now + 100n),
                 BigInt(100)
             ]);
             await NoneMoney.write.addProject([
@@ -279,7 +323,7 @@ describe("test NoneMoney contract", function () {
                 "project2",
                 "test2",
                 BigInt(100), //second
-                BigInt(now+1n),
+                BigInt(now + 1n),
                 BigInt(200)
             ]);
             await NoneMoney.write.addProject([
@@ -287,7 +331,7 @@ describe("test NoneMoney contract", function () {
                 "project3",
                 "test3",
                 BigInt(100),
-                BigInt(now+100n),
+                BigInt(now + 100n),
                 BigInt(300)
             ]);
 
@@ -328,7 +372,7 @@ describe("test NoneMoney contract", function () {
     describe("Sort", function () {
         it("sortProjectDonorByDonateMoney", async function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
-            const [holder, donor1,donor2,donor3] = await hre.viem.getWalletClients();
+            const [holder, donor1, donor2, donor3] = await hre.viem.getWalletClients();
 
             await NoneMoney.write.addProject([
                 holder.account.address,
