@@ -160,20 +160,25 @@ export default function () {
 
                 <Field name="goal" type="number">
                     {(field, props) => (
-                        <div>
+                        <div class="flex flex-col">
                             <label for={field.name} class="font-mono">
                                 Goal
                             </label>
                             <br />
-                            <input
-                                {...props}
-                                id={field.name}
-                                value={field.value}
-                                type="number"
-                                min={0}
-                                required
-                                class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
-                            />
+                            <div class="flex">
+                                <input
+                                    {...props}
+                                    id={field.name}
+                                    value={field.value}
+                                    type="number"
+                                    min={0}
+                                    required
+                                    class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
+                                />
+                                <p class="border border-l-0 px-1 font-mono">
+                                    Wei
+                                </p>
+                            </div>
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
                             )}
