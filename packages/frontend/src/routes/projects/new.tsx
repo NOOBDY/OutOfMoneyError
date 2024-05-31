@@ -55,6 +55,7 @@ function AddressDropdown(
                             </Select.Item>
                         )}
                     >
+                        <Select.Label class="font-mono">Address</Select.Label>
                         <Select.HiddenSelect {...props} />
                         <Select.Trigger class="h-6 w-full border">
                             <Select.Value<Address>>
@@ -103,14 +104,18 @@ export default function () {
                 <Field name="title">
                     {(field, props) => (
                         <div>
-                            <label for={field.name}>Title</label>
+                            <label for={field.name} class="font-mono">
+                                Title
+                            </label>
+                            <br />
                             <input
                                 {...props}
                                 id={field.name}
                                 value={field.value}
                                 type="text"
                                 required
-                                class="text-black"
+                                // ! new line on class breaks compilation somehow
+                                class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
                             />
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
@@ -122,13 +127,17 @@ export default function () {
                 <Field name="description">
                     {(field, props) => (
                         <div>
-                            <label for={field.name}>Description</label>
+                            <label for={field.name} class="font-mono">
+                                Description
+                            </label>
+                            <br />
                             <textarea
                                 {...props}
                                 id={field.name}
                                 value={field.value}
                                 required
-                                class="text-black"
+                                // ! new line on class breaks compilation somehow
+                                class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
                             />
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
