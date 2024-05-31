@@ -28,7 +28,7 @@ export default function () {
                     </h1>
 
                     <div class="flex w-full flex-col lg:flex-row">
-                        <p class="mb-4 w-full grow text-xl lg:mr-6 lg:w-3/5">
+                        <p class="mb-4 w-full grow break-words text-xl lg:mr-6 lg:w-3/5">
                             {project.description}
                         </p>
 
