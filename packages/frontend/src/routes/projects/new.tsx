@@ -1,18 +1,18 @@
-import { NumberField } from "@kobalte/core/number-field";
 import { Select } from "@kobalte/core/select";
 import {
     FieldElementProps,
     SubmitHandler,
     createForm,
-    toCustom,
     zodForm
 } from "@modular-forms/solid";
 import { useNavigate } from "@solidjs/router";
-import { Show, createEffect, createSignal, splitProps } from "solid-js";
+import { Show, createEffect, createSignal } from "solid-js";
 import { Address } from "viem";
 import { z } from "zod";
+import { Button } from "~/components/Button";
 import { useProjects } from "~/db";
 import { useAccount } from "~/hooks/useAccount";
+import { useDarkMode } from "~/hooks/useDarkMode";
 
 const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
@@ -23,23 +23,12 @@ const NewProjectSchema = z.object({
 
 type NewProjectForm = z.infer<typeof NewProjectSchema>;
 
-function GoalInput(
-    props: FieldElementProps<NewProjectForm, "goal"> & {
-        value: number | undefined;
-    }
-) {
-    const [, inputProps] = splitProps(props, ["value"]);
-    const [value, setValue] = createSignal<number>();
-    createEffect(() => {
-        setValue(props.value);
-    });
-}
-
 function AddressDropdown(
     props: FieldElementProps<NewProjectForm, "address"> & {
         value: Address | undefined;
     }
 ) {
+    const [darkMode] = useDarkMode();
     const [value, setValue] = createSignal<Address>();
     createEffect(() => {
         setValue(props.value);
@@ -62,8 +51,14 @@ function AddressDropdown(
                         options={addresses}
                         required
                         itemComponent={props => (
-                            <Select.Item item={props.item}>
-                                <Select.ItemLabel>
+                            <Select.Item
+                                item={props.item}
+                                classList={{ dark: darkMode() }}
+                            >
+                                <Select.ItemLabel
+                                    class="w-full border bg-neutral-100
+                                    px-2 dark:bg-neutral-800 dark:text-white"
+                                >
                                     {props.item.rawValue}
                                 </Select.ItemLabel>
                             </Select.Item>
@@ -71,7 +66,10 @@ function AddressDropdown(
                     >
                         <Select.Label class="font-mono">Address</Select.Label>
                         <Select.HiddenSelect {...props} />
-                        <Select.Trigger class="h-6 w-full border">
+                        <Select.Trigger
+                            class="w-full border bg-neutral-100 px-2
+                            text-left dark:bg-neutral-800 dark:text-white"
+                        >
                             <Select.Value<Address>>
                                 {state => state.selectedOption()}
                             </Select.Value>
@@ -113,7 +111,7 @@ export default function () {
 
     return (
         <div class="mx-auto px-4 md:w-2/5">
-            <h1 class="font-mono text-4xl">Create New Project</h1>
+            <h1 class="mb-6 font-mono text-4xl">Create New Project</h1>
             <Form onSubmit={handleSubmit} class="flex flex-col space-y-4">
                 <Field name="title">
                     {(field, props) => (
@@ -160,65 +158,26 @@ export default function () {
                     )}
                 </Field>
 
-                <Field
-                    name="goal"
-                    type="number"
-                    transform={toCustom(
-                        value => {
-                            console.log("custom");
-                            return value;
-                        },
-                        { on: "input" }
-                    )}
-                >
+                <Field name="goal" type="number">
                     {(field, props) => (
-                        <>
-                            <NumberField
-                                rawValue={field.value}
-                                defaultValue={100}
-                                minValue={0}
-                                format={false}
+                        <div>
+                            <label for={field.name} class="font-mono">
+                                Goal
+                            </label>
+                            <br />
+                            <input
+                                {...props}
+                                id={field.name}
+                                value={field.value}
+                                type="number"
+                                min={0}
                                 required
-                                class="flex flex-col"
-                            >
-                                <p>{typeof field.value}</p>
-                                <NumberField.Label class="font-mono">
-                                    Goal
-                                </NumberField.Label>
-                                <NumberField.HiddenInput {...props} />
-                                <div class="flex">
-                                    <NumberField.Input
-                                        class="grow border bg-neutral-100 px-2 dark:bg-neutral-800
-                    dark:text-white"
-                                    />
-                                    <div class="flex flex-col">
-                                        <NumberField.IncrementTrigger
-                                            class="flex h-4 w-6 items-center justify-center
-                        border-r border-t px-1 pb-0.5 font-mono transition
-                        hover:border-black hover:bg-black hover:text-white
-                        dark:hover:border-neutral-200 dark:hover:bg-neutral-200
-                        dark:hover:text-black"
-                                        >
-                                            +
-                                        </NumberField.IncrementTrigger>
-                                        <hr />
-                                        <NumberField.DecrementTrigger
-                                            class="flex h-4 w-6 items-center justify-center
-                        border-b border-r px-1 pb-0.5 font-mono transition
-                        hover:border-black hover:bg-black hover:text-white
-                        dark:hover:border-neutral-200 dark:hover:bg-neutral-200
-                        dark:hover:text-black"
-                                        >
-                                            -
-                                        </NumberField.DecrementTrigger>
-                                    </div>
-                                </div>
-                            </NumberField>
-                            {field.value}
+                                class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
+                            />
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
                             )}
-                        </>
+                        </div>
                     )}
                 </Field>
 
@@ -233,13 +192,15 @@ export default function () {
                     )}
                 </Field>
 
-                <button
-                    type="submit"
-                    disabled={newProjectForm.invalid}
-                    class="bg-neutral-300 disabled:bg-neutral-700"
-                >
-                    Submit
-                </button>
+                <div class="mx-auto">
+                    <Button
+                        type="submit"
+                        disabled={newProjectForm.invalid}
+                        class="bg-neutral-300 disabled:bg-neutral-700"
+                    >
+                        Submit
+                    </Button>
+                </div>
             </Form>
         </div>
     );
