@@ -28,15 +28,15 @@ describe("test NoneMoney contract", function () {
                     //  _holder_account:
                     "name", // _name:
                     "description", // _description:
-                    BigInt(100), // _start_date:
-                    BigInt(100), // _deadline:
-                    BigInt(20000000000000000) // _target_money:
+                    100n, // _start_date:
+                    100n, // _deadline:
+                    20000000000000000n // _target_money:
                 ],
                 {
                     account: holder.account.address
                 }
             );
-            const project = await NoneMoney.read.getProjectByID([BigInt(0)]);
+            const project = await NoneMoney.read.getProjectByID([0n]);
 
             expect(project[0]).to.equal("name");
             expect(project[1]).to.equal("description");
@@ -53,23 +53,17 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(20000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 20000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(50),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 50n,
                 account: donor.account
             });
 
-            const project = await NoneMoney.read.getProjectByID([BigInt(0)]);
+            const project = await NoneMoney.read.getProjectByID([0n]);
 
             expect(project[0]).to.equal("project"); //project_name
             expect(project[1]).to.equal("test"); //project_description
@@ -86,31 +80,25 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(20000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 20000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(1700),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 1700n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(300),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 300n,
                 account: donor2.account
             });
 
-            await NoneMoney.write.settleOverdueProject([BigInt(0)], {
+            await NoneMoney.write.settleOverdueProject([0n], {
                 account: donor1.account
             });
 
-            await NoneMoney.write.settleOverdueProject([BigInt(0)], {
+            await NoneMoney.write.settleOverdueProject([0n], {
                 account: donor2.account
             });
         });
@@ -134,12 +122,12 @@ describe("test NoneMoney contract", function () {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(1000000000000000),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 1000000000000000n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(1000000000000000),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 1000000000000000n,
                 account: donor1.account
             });
 
@@ -151,49 +139,31 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test1",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(1000000000000000)
-                ],
+                ["project", "test1", 100n, 100n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(100),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 100n,
                 account: donor.account
             });
 
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test2",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(1000000000000000)
-                ],
+                ["project", "test2", 100n, 100n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test3",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(1000000000000000)
-                ],
+                ["project", "test3", 100n, 100n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
-            await NoneMoney.write.addProjectDonor([BigInt(2)], {
-                value: BigInt(190),
+            await NoneMoney.write.addProjectDonor([2n], {
+                value: 190n,
                 account: donor.account
             });
 
@@ -209,55 +179,37 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(100),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 100n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(100),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 100n,
                 account: donor2.account
             });
 
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
-            await NoneMoney.write.addProjectDonor([BigInt(2)], {
-                value: BigInt(100),
+            await NoneMoney.write.addProjectDonor([2n], {
+                value: 100n,
                 account: donor1.account
             });
 
@@ -288,37 +240,19 @@ describe("test NoneMoney contract", function () {
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
@@ -340,37 +274,19 @@ describe("test NoneMoney contract", function () {
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
@@ -391,37 +307,19 @@ describe("test NoneMoney contract", function () {
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder2.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(now_10),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, now_10, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
@@ -449,32 +347,26 @@ describe("test NoneMoney contract", function () {
                 await hre.viem.getWalletClients();
 
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    BigInt(100),
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 100n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(50),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 50n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(500),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 500n,
                 account: donor2.account
             });
-            await NoneMoney.write.addProjectDonor([BigInt(0)], {
-                value: BigInt(70),
+            await NoneMoney.write.addProjectDonor([0n], {
+                value: 70n,
                 account: donor3.account
             });
 
             const sort_project_donor =
-                await NoneMoney.read.sortProjectDonorByDonateMoney([BigInt(0)]);
+                await NoneMoney.read.sortProjectDonorByDonateMoney([0n]);
 
             expect(sort_project_donor[0][0]).to.equal(
                 getAddress(donor2.account.address)
