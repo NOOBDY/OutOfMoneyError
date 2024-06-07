@@ -71,7 +71,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             project.donor_arr.push(_donor_account);
         }
 
-        if ((temp_money < target_money) && (project.state == State.CAN_DONATE)) {
+        if (
+            (temp_money < target_money) && (project.state == State.CAN_DONATE)
+        ) {
             project.donor_map[_donor_account].donate_money += input_money;
             project.get_money = temp_money;
 

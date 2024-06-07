@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-enum State{ CAN_DONATE, FINISH , EXPIRED_SETTLED_FINIDH }
+enum State {
+    CAN_DONATE,
+    FINISH,
+    EXPIRED_SETTLED_FINIDH
+}
 
 contract FunctionInfo {
     struct ShowProjectinfo {
