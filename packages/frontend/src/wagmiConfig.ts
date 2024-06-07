@@ -1,13 +1,7 @@
 import { createConfig, http } from "@wagmi/core";
-import { sepolia, hardhat } from "@wagmi/core/chains";
+import { hardhat } from "@wagmi/core/chains";
 
-export const sepoliaConfig = createConfig({
-    chains: [sepolia],
-    ssr: true,
-    transports: { [sepolia.id]: http() }
-});
-
-export const hardhatConfig = createConfig({
+export const config = createConfig({
     chains: [hardhat],
     ssr: true,
     transports: { [hardhat.id]: http() }
