@@ -1,5 +1,12 @@
 import { GetAccountReturnType, getBalance } from "@wagmi/core";
-import { ErrorBoundary, Match, Show, Suspense, Switch, createResource } from "solid-js";
+import {
+    ErrorBoundary,
+    Match,
+    Show,
+    Suspense,
+    Switch,
+    createResource
+} from "solid-js";
 import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
