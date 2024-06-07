@@ -2,6 +2,12 @@
 pragma solidity ^0.8.0;
 import "./Info.sol";
 
+// TODO 
+// settleProject => trans by person v
+// to trans => remove addition v
+// addProjectDonor => just change type v
+// getProject => trans by holder v
+
 contract NoneMoney is INoneMoney, FunctionInfo {
     modifier onlyOwner() {
         require(owner == msg.sender, "Only Owner"); //檢查是否為管理者
@@ -20,10 +26,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         uint256 _deadline,
         uint256 _target_money
     ) public {
-        
         address _holder_account = msg.sender;
         require(bytes(_name).length > 0, "Project name is required");
-        require(_target_money > 0, "Set _target_money must be greater than 0");
+        require(_target_money >= 1000000000000000, "Set _target_money must be greater than 1000000000000000");
         require(_deadline > 0, "Set _target_money must be greater than 0");
 
         uint256 _id = donateProject_arr.length;
@@ -47,20 +52,17 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
     }
 
-    function addProjectDonor(uint256 _project_id)
-        public
-        payable
-        returns (bool pay_success, uint256 pay_money)
-    {
-        require(msg.value > 20, "Donation+fee must be greater than 20");
-
+    function addProjectDonor(
+        uint256 _project_id
+    ) public payable returns (bool pay_success, uint256 pay_money) {
+        require(msg.value > 0, "Donation must be greater than 20");
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
             "Project ID is not exist"
         );
 
-        uint256 input_money = (msg.value * 95) / 100;
+        uint256 input_money = msg.value;
         address payable _donor_account = payable(msg.sender);
 
         DonateProject storage project = donateProject_map[_project_id];
@@ -74,29 +76,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         if ((temp_money < target_money) && (project.state == 0)) {
             project.donor_map[_donor_account].donate_money += input_money;
-            project.donor_map[_donor_account].handling_fee +=
-                (msg.value * 5) / //5% handling fee
-                100;
             project.get_money = temp_money;
 
             return (true, input_money);
         } else if (project.state == 0) {
-            address holder_account = project.holder_account;
-            address payable payable_holder_account = payable(holder_account);
-
-            input_money =
-                ((msg.value - (temp_money - target_money)) * 95) /
-                100;
-            temp_money = project.get_money + input_money;
 
             project.get_money = target_money;
-
-            project.state = 1;
-
-            (bool success_holder, ) = payable_holder_account.call{
-                value: target_money
-            }("");
-            emit give_money(success_holder);
 
             if ((temp_money - target_money) > 0) {
                 (bool success_donor, ) = _donor_account.call{
@@ -108,17 +93,14 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             project.donor_map[_donor_account].donate_money +=
                 input_money -
                 (temp_money - target_money);
-            project.donor_map[_donor_account].handling_fee +=
-                (msg.value * 5) /
-                100;
+            
+            project.state = 1;
         }
     }
 
-    function settleProject(uint256 _project_id)
-        public
-        payable
-        returns (bool clear_success, uint256 addtional_money)
-    {
+    function settleOverdueProject(
+        uint256 _project_id
+    ) public payable returns (bool clear_success, uint256 addtional_money) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
@@ -126,29 +108,16 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
 
         DonateProject storage project = donateProject_map[_project_id];
+        address _donor_account =  msg.sender;
 
-        uint256 length = project.donor_arr.length;
 
-        for (uint256 i = 0; i < length; i++) {
-            address _donor_account = project.donor_arr[i];
-            address payable _payable_donor_account = payable(
-                project.donor_arr[i]
-            );
+        require(_is_donor(_project_id,_donor_account),"is not this project donor" );
+        require(!project.donor_map[_donor_account].is_return,"this donor can't settle this project");
+        require(project.state == 0,"this project can't settle");
 
-            (bool success_donor, ) = _payable_donor_account.call{
-                value: project.donor_map[_donor_account].donate_money
-            }("");
+        uint256 all_return = _get_donate_money(_project_id, _donor_account);
 
-            emit return_money(success_donor);
-
-            if (!success_donor) {
-                revert("error return to donor");
-            }
-        }
-
-        uint256 all_return = (project.get_money / 100) * 5;
-
-        address payable clear_donor = payable(msg.sender);
+        address payable clear_donor = payable(_donor_account);
         (bool success_return, ) = clear_donor.call{value: (all_return)}("");
 
         emit return_money(success_return);
@@ -156,9 +125,42 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             revert("error return , contract balance not enough to pay");
         }
 
-        project.state = 2;
+        project.donor_map[_donor_account].is_return = true;
+        
+        if(_is_settled(_project_id)){
+            project.state = 2;
+        }
 
         return (true, all_return);
+    }
+
+    
+    function settleFinishProject(
+        uint256 _project_id
+    ) public payable returns (bool clear_success, uint256 get_money) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+        
+        DonateProject storage project  = donateProject_map[_project_id];
+
+        require(_is_holder(_project_id,msg.sender),"is not this project donor" );
+        require(project.state == 1,"this project can't settle");
+
+
+        address payable _holder_account =  payable (msg.sender);
+        
+        (bool success_return, ) = _holder_account.call{value: ( (project.get_money/100)*95) }("");
+
+        emit return_money(success_return);
+        if (!success_return) {
+            revert("error return , contract balance not enough to pay");
+        }
+
+
+        return (true, 0);
     }
 
     //////////////get///////////////
@@ -169,16 +171,15 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         returns (
             bool have_settled_project,
             uint256 project_count,
-            uint256 sum_addition_fee
+            uint256 sum_return
         )
     {
-
         address _donor_account = msg.sender;
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline();
         uint256 k = _filterDeadline_id_arr.length;
 
         uint256 _project_count = 0;
-        uint256 _sum_addition_fee = 0;
+        uint256 _sum_return= 0;
         bool _have_settled_project = false;
 
         for (uint256 i = 0; i < k; i++) {
@@ -186,18 +187,18 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             bool flag = _is_donor(_filterDeadline_id_arr[i], _donor_account);
 
             if (flag) {
-                _sum_addition_fee +=
-                    (donateProject_map[_project_id].get_money / 100) *
-                    5; //此project的0.05
+                _sum_return += _get_donate_money(_project_id, _donor_account);
                 _project_count += 1;
                 _have_settled_project = true;
             }
         }
 
-        return (_have_settled_project, _project_count, _sum_addition_fee);
+        return (_have_settled_project, _project_count, _sum_return);
     }
 
-    function getProjectByID(uint256 _project_id)
+    function getProjectByID(
+        uint256 _project_id
+    )
         public
         view
         returns (
@@ -244,8 +245,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             uint256[] memory start_date_arr,
             uint256[] memory deadline_arr,
             uint256[] memory get_money,
-            uint256[] memory donor_donate_money,
-            uint256[] memory additional_money
+            uint256[] memory donor_donate_money
         )
     {
         address _donor_account = msg.sender;
@@ -271,7 +271,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         info._get_money_arr = new uint256[](k);
 
         info._donor_donate_money = new uint256[](k);
-        info._donor_addition_money = new uint256[](k);
 
         for (uint256 i = 0; i < k; i++) {
             uint256 _project_id = info._settled_project_id_arr[i];
@@ -285,9 +284,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 _donor_account
             );
             info._get_money_arr[i] = donateProject_map[_project_id].get_money;
-            info._donor_addition_money[i] =
-                (donateProject_map[_project_id].get_money / 100) *
-                5;
+
         }
 
         return (
@@ -296,12 +293,13 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             info._start_date_arr,
             info._deadline_arr,
             info._get_money_arr,
-            info._donor_donate_money,
-            info._donor_addition_money
+            info._donor_donate_money
         );
     }
 
-    function showHoldersProject(address _account)
+    function showHoldersProject(
+        address _account
+    )
         public
         view
         returns (
@@ -443,7 +441,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
     }
 
-    function sortProjectDonorByDonateMoney(uint256 _project_id)
+    function sortProjectDonorByDonateMoney(
+        uint256 _project_id
+    )
         public
         view
         returns (
@@ -494,7 +494,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     //////////////////
 
-    function getContractBalance() public view returns (uint256) {
+    function getContractBalance() external view returns (uint256) {
         return address(this).balance; //合約金額
     }
 

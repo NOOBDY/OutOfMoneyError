@@ -10,25 +10,19 @@ contract FunctionInfo {
         uint256[] _deadline_arr;
         uint256[] _target_money_arr;
         uint256[] _get_money_arr;
-
         uint256[] _donor_donate_money;
         uint256[] _donor_addition_money;
-        
         uint256[] _settled_project_id_arr;
     }
-
 }
 
-contract INoneMoney{
-
-    
+contract INoneMoney {
     event give_money(bool success_holder);
     event return_money(bool success_donor);
 
-
     struct Donor {
         uint256 donate_money;
-        uint256 handling_fee;
+        bool is_return;
     }
 
     struct DonateProject {
@@ -50,9 +44,10 @@ contract INoneMoney{
     mapping(uint256 => DonateProject) donateProject_map;
     ///
     address[] holder_arr;
+
     ///
-    
-    function _is_holder(address _account) internal  view returns (bool) {
+
+    function _is_holder(address _account) internal view returns (bool) {
         for (uint256 i = 0; i < holder_arr.length; i++) {
             if (holder_arr[i] == _account) {
                 return (true); //找到回傳true
@@ -61,8 +56,50 @@ contract INoneMoney{
         return (false);
     }
 
+    function _is_holder(uint256 _project_id, address _account)
+        internal
+        view
+        returns (bool)
+    {
+        require(_project_id >= 0, "_project_id not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "_project_id not exist"
+        );
+        DonateProject storage project = donateProject_map[_project_id];
+
+        if (project.holder_account != _account) {
+            return (false);
+        }
+
+        return (true);
+    }
+
+    function _is_settled(uint256 _project_id)
+        internal
+        view
+        returns (bool)
+    {
+        require(_project_id >= 0, "_project_id not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "_project_id not exist"
+        );
+
+        DonateProject storage  project = donateProject_map[_project_id];
+        uint256 length = project.donor_arr.length;
+        
+        for(uint256 i = 0;i<length;i++){
+            address _account = project.donor_arr[i];
+            if(!project.donor_map[_account].is_return){
+                return(false);
+            }
+        }
+        return (true);
+    }
+
     function _is_donor(uint256 _project_id, address _account)
-        internal 
+        internal
         view
         returns (bool)
     {
@@ -81,7 +118,6 @@ contract INoneMoney{
         return (true);
     }
 
-    
     function _get_donate_money(uint256 _project_id, address _donor_account)
         internal
         view
@@ -94,20 +130,6 @@ contract INoneMoney{
         );
     }
 
-    function _get_handling_fee(uint256 _project_id, address _donor_account)
-        internal
-        view
-        returns (uint256)
-    {
-        return (
-            donateProject_map[_project_id]
-                .donor_map[_donor_account]
-                .handling_fee
-        );
-    }
-
-    
-
     function _showProjectByIDFilterDeadline()
         internal
         view
@@ -119,7 +141,10 @@ contract INoneMoney{
         uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
-            if ((now_time < donateProject_map[i].deadline) && (donateProject_map[i].state == 0) ) {
+            if (
+                (now_time < donateProject_map[i].deadline) &&
+                (donateProject_map[i].state == 0)
+            ) {
                 filter_arr[k] = i;
                 k += 1;
             }
@@ -134,7 +159,7 @@ contract INoneMoney{
     }
 
     function _showProjectsAfterDeadline()
-        internal 
+        internal
         view
         returns (uint256[] memory _DonateProjects_arr)
     {
@@ -144,7 +169,10 @@ contract INoneMoney{
         uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
-            if ((now_time > donateProject_map[i].deadline)&& (donateProject_map[i].state == 0)) {
+            if (
+                (now_time > donateProject_map[i].deadline) &&
+                (donateProject_map[i].state == 0)
+            ) {
                 filter_arr[k] = i;
                 k += 1;
             }
@@ -158,18 +186,16 @@ contract INoneMoney{
         return (result);
     }
 
-    
     function _showDonateProjectsID()
-        internal 
+        internal
         view
         returns (uint256[] memory _DonateProjects_arr)
     {
         return (donateProject_arr);
     }
 
-    
     function _showHoldersProject(address _account)
-        internal 
+        internal
         view
         returns (uint256[] memory _hold_project_arr)
     {
@@ -198,7 +224,6 @@ contract INoneMoney{
         return (new_hold_pj_arr);
     }
 
-    
     function _showHolders()
         internal
         view
@@ -206,5 +231,4 @@ contract INoneMoney{
     {
         return (holder_arr);
     }
-   
 }
