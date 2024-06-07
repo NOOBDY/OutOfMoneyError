@@ -43,7 +43,11 @@ function Balance(props: BalanceProps) {
     return (
         <Suspense>
             <p class="font-mono">
-                <Show when={balance.state === "ready" && balance()} fallback={<span>Loading</span>} keyed>
+                <Show
+                    when={balance.state === "ready" && balance()}
+                    fallback={<span>Loading</span>}
+                    keyed
+                >
                     {balance => (
                         <BalanceText
                             currency="TWD"
