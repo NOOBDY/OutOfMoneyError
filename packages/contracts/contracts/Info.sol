@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+enum State{ CAN_DONATE, FINISH , EXPIRED_SETTLED_FINIDH }
+
 contract FunctionInfo {
     struct ShowProjectinfo {
         uint256[] _project_id_arr;
         string[] _name_arr;
-        uint8[] _state_arr;
+        State[] _state_arr;
         uint256[] _start_date_arr;
         uint256[] _deadline_arr;
         uint256[] _target_money_arr;
@@ -28,7 +30,7 @@ contract INoneMoney {
     struct DonateProject {
         string name;
         string description;
-        uint8 state; // 0:donate 中 1:結束(成功) 2:過期(失敗)
+        State state;
         uint256 start_date;
         uint256 deadline;
         uint256 target_money;
@@ -136,7 +138,7 @@ contract INoneMoney {
         for (uint256 i = 0; i < length; i++) {
             if (
                 (now_time < donateProject_map[i].deadline) &&
-                (donateProject_map[i].state == 0)
+                (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
                 k += 1;
@@ -164,7 +166,7 @@ contract INoneMoney {
         for (uint256 i = 0; i < length; i++) {
             if (
                 (now_time > donateProject_map[i].deadline) &&
-                (donateProject_map[i].state == 0)
+                (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
                 k += 1;

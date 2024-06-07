@@ -35,7 +35,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         p.holder_account = _holder_account;
         p.name = _name;
         p.description = _description;
-        p.state = 0;
+        p.state = State.CAN_DONATE;
         p.start_date = _start_date;
         p.deadline = _deadline;
         p.get_money = 0;
@@ -71,12 +71,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             project.donor_arr.push(_donor_account);
         }
 
-        if ((temp_money < target_money) && (project.state == 0)) {
+        if ((temp_money < target_money) && (project.state == State.CAN_DONATE)) {
             project.donor_map[_donor_account].donate_money += input_money;
             project.get_money = temp_money;
 
             return (true, input_money);
-        } else if (project.state == 0) {
+        } else if (project.state == State.CAN_DONATE) {
             project.get_money = target_money;
 
             if ((temp_money - target_money) > 0) {
@@ -90,7 +90,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 input_money -
                 (temp_money - target_money);
 
-            project.state = 1;
+            project.state = State.FINISH;
         }
     }
 
@@ -114,7 +114,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             !project.donor_map[_donor_account].is_return,
             "this donor can't settle this project"
         );
-        require(project.state == 0, "this project can't settle");
+        require(project.state == State.CAN_DONATE, "this project can't settle");
 
         uint256 all_return = _get_donate_money(_project_id, _donor_account);
 
@@ -129,7 +129,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         project.donor_map[_donor_account].is_return = true;
 
         if (_is_settled(_project_id)) {
-            project.state = 2;
+            project.state = State.EXPIRED_SETTLED_FINIDH;
         }
 
         return (true, all_return);
@@ -150,7 +150,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _is_holder(_project_id, msg.sender),
             "is not this project donor"
         );
-        require(project.state == 1, "this project can't settle");
+        require(project.state == State.FINISH, "this project can't settle");
 
         address payable _holder_account = payable(msg.sender);
 
@@ -208,7 +208,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             string memory name,
             string memory description,
             address holder_account,
-            uint8 state,
+            State state,
             uint256 start_date,
             uint256 deadline,
             uint256 target_money,
@@ -307,7 +307,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         returns (
             uint256[] memory filterDeadline_id_arr,
             string[] memory name_arr,
-            uint8[] memory state,
+            State[] memory state,
             uint256[] memory start_date_arr,
             uint256[] memory deadline_arr,
             uint256[] memory target_money_arr,
@@ -324,7 +324,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         ShowProjectinfo memory info;
         info._name_arr = new string[](k);
         info._start_date_arr = new uint256[](k);
-        info._state_arr = new uint8[](k);
+        info._state_arr = new State[](k);
         info._deadline_arr = new uint256[](k);
         info._target_money_arr = new uint256[](k);
         info._get_money_arr = new uint256[](k);
