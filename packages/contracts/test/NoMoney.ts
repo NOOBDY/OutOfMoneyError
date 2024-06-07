@@ -4,7 +4,7 @@ import hre from "hardhat";
 import { getAddress } from "viem";
 
 describe("test NoneMoney contract", function () {
-    async function depolyMainContract() {
+    async function deployMainContract() {
         const NoneMoney = await hre.viem.deployContract("NoneMoney", [], {});
 
         return {
@@ -14,14 +14,14 @@ describe("test NoneMoney contract", function () {
 
     describe("Deployment", function () {
         it("work", async function () {
-            await loadFixture(depolyMainContract);
+            await loadFixture(deployMainContract);
         });
     });
 
     describe("Add", function () {
         it("addProject", async function () {
             //加入project
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
                 [
@@ -50,7 +50,7 @@ describe("test NoneMoney contract", function () {
 
         it("addProjectDonor", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
                 ["project", "test", 100n, 100n, 20000000000000000n],
@@ -77,7 +77,7 @@ describe("test NoneMoney contract", function () {
     describe("ToSettleProject", function () {
         it("settleOverdueProject", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
                 ["project", "test", 100n, 100n, 20000000000000000n],
@@ -105,7 +105,7 @@ describe("test NoneMoney contract", function () {
 
         it("settleFinishProject", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1] = await hre.viem.getWalletClients();
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
@@ -136,7 +136,7 @@ describe("test NoneMoney contract", function () {
 
         it("getSettleableProjectCountAddition", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
                 ["project", "test1", 100n, 100n, 1000000000000000n],
@@ -176,7 +176,7 @@ describe("test NoneMoney contract", function () {
         });
 
         it("showSettledProjectByAccount", async function () {
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
                 ["project", "test", 100n, 100n, 2000000000000000n],
@@ -235,7 +235,7 @@ describe("test NoneMoney contract", function () {
     describe("Show", function () {
         it("showAllProject", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
@@ -269,7 +269,7 @@ describe("test NoneMoney contract", function () {
         });
         it("showProjectsFilterDeadline", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
@@ -302,7 +302,7 @@ describe("test NoneMoney contract", function () {
             expect(filter_project[0][1]).to.equal(2n);
         });
         it("showHoldersProject", async function () {
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, holder2] = await hre.viem.getWalletClients();
             const now = await NoneMoney.read.getCurrentTimestamp();
             const now_10 = now * 10n;
@@ -342,7 +342,7 @@ describe("test NoneMoney contract", function () {
     describe("Sort", function () {
         it("sortProjectDonorByDonateMoney", async function () {
             //對特定project 加入donor
-            const { NoneMoney } = await loadFixture(depolyMainContract);
+            const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2, donor3] =
                 await hre.viem.getWalletClients();
 
