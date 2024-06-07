@@ -1,4 +1,5 @@
-import { Show, createEffect, createSignal } from "solid-js";
+import { createAsync } from "@solidjs/router";
+import { Show, createSignal } from "solid-js";
 import { formatEther } from "viem";
 
 export type CurrencyType =
@@ -34,11 +35,8 @@ export type CurrencyType =
 export function BalanceText(props: {
     balanceValue: bigint;
     balanceSymbol: string;
-    currency: CurrencyType;
+    currencyType: CurrencyType;
 }) {
-    const balanceValue: bigint = props.balanceValue;
-    const balanceSymbol: string = props.balanceSymbol;
-    const currencyType: CurrencyType = props.currency;
     const [exchangeResult, setExchangeResult] = createSignal<
         Number | undefined
     >();
@@ -48,27 +46,27 @@ export function BalanceText(props: {
         return response.json();
     };
 
-    createEffect(async () => {
+    createAsync(async () => {
         const exchangeData = await getExchangeData();
         const formatEtherBalanceValue = Number.parseFloat(
-            formatEther(balanceValue)
+            formatEther(props.balanceValue)
         );
         setExchangeResult(
-            formatEtherBalanceValue * exchangeData[currencyType]["sell"]
+            formatEtherBalanceValue * exchangeData[props.currencyType]["sell"]
         );
     });
 
     return (
         <>
-            <Show when={balanceValue}>
+            <Show when={props.balanceValue}>
                 {balanceValue => (
-                    <span>{`${formatEther(balanceValue())} ${balanceSymbol}`}</span>
+                    <span>{`${formatEther(balanceValue())} ${props.balanceSymbol}`}</span>
                 )}
             </Show>
             <span> </span>
             <Show when={exchangeResult()}>
                 <span>
-                    ({exchangeResult()?.toString()} {currencyType})
+                    ({exchangeResult()?.toString()} {props.currencyType})
                 </span>
             </Show>
         </>

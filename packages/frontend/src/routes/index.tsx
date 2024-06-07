@@ -8,7 +8,6 @@ import {
     createEffect,
     createResource
 } from "solid-js";
-import { formatEther } from "viem";
 import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
@@ -50,10 +49,10 @@ function Balance(props: BalanceProps) {
                 >
                     {balance => (
                         <BalanceText
-                            currency="TWD"
+                            currencyType="TWD"
                             balanceValue={balance.value}
                             balanceSymbol={balance.symbol}
-                        ></BalanceText>
+                        />
                     )}
                 </Show>
             </p>
