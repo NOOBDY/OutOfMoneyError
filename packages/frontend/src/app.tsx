@@ -7,7 +7,7 @@ import { DarkModeProvider } from "~/providers/DarkModeProvider";
 import Footer from "./components/Footer";
 import { useDarkMode } from "./hooks/useDarkMode";
 import { WagmiProvider } from "~/providers/WagmiProvider";
-import { sepoliaConfig } from "~/wagmiConfig";
+import { hardhatConfig } from "~/wagmiConfig";
 
 function Background(props: FlowProps) {
     const [darkMode] = useDarkMode();
@@ -28,7 +28,7 @@ export default function App() {
         <Router
             root={props => (
                 <DarkModeProvider defaultDarkMode={true}>
-                    <WagmiProvider config={sepoliaConfig}>
+                    <WagmiProvider config={hardhatConfig}>
                         <Background>
                             <Nav />
                             <div class="grow">
