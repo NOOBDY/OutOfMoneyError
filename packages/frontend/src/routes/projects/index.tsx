@@ -1,10 +1,11 @@
+import { createAsync } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { For, createEffect, createResource } from "solid-js";
+import { For } from "solid-js";
 import { parseEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
-import { Project, data } from "~/db";
+import { Project, useProjects } from "~/db";
 import { noneMoneyAbi } from "~/generated";
 import { useAccount } from "~/hooks/useAccount";
 import { useConfig } from "~/hooks/useConfig";
@@ -12,7 +13,7 @@ import { useConfig } from "~/hooks/useConfig";
 function Card(props: Project) {
     return (
         <div class="flex min-h-32 flex-col border font-mono">
-            <div class="grow px-2 py-1">
+            <div class="grow break-words px-2 py-1">
                 <h1>{props.title}</h1>
             </div>
 
@@ -26,6 +27,8 @@ function Card(props: Project) {
 }
 
 export default function () {
+    const [mockProjects] = useProjects();
+
     const config = useConfig();
     const [account] = useAccount();
 
@@ -55,7 +58,7 @@ export default function () {
         }
     };
 
-    const [projects, projectsActions] = createResource(async () => {
+    const projects = createAsync(async () => {
         const idArr = await readContract(config, {
             abi: noneMoneyAbi,
             address: contractAddress,
@@ -79,15 +82,14 @@ export default function () {
         return projects;
     });
 
-    createEffect(() => {
-        account.status;
-        projectsActions.refetch();
-    });
-
     return (
         <>
-            <div class="mx-auto grid grid-cols-1 gap-4 px-4 md:grid-cols-2 lg:w-2/3 lg:grid-cols-3">
-                <For each={data}>{Card}</For>
+            <div class="mx-auto px-4 lg:w-2/3">
+                <Link href="/projects/new">Create new project</Link>
+
+                <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <For each={mockProjects}>{Card}</For>
+                </div>
             </div>
 
             <div class="flex w-full items-center justify-center">
