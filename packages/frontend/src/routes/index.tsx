@@ -2,12 +2,14 @@ import { GetAccountReturnType, getBalance } from "@wagmi/core";
 import {
     ErrorBoundary,
     Match,
+    Show,
     Suspense,
     Switch,
     createEffect,
     createResource
 } from "solid-js";
 import { formatEther } from "viem";
+import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import { useAccount } from "~/hooks/useAccount";
@@ -29,9 +31,8 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
-    const [balanceString, { refetch }] = createResource(async () => {
-        const balance = await getBalance(config, { address: props.address });
-        return `${formatEther(balance.value)} ${balance.symbol}`;
+    const [balance, { refetch }] = createResource(async () => {
+        return await getBalance(config, { address: props.address });
     });
 
     createEffect(() => {
@@ -40,9 +41,19 @@ function Balance(props: BalanceProps) {
     });
 
     return (
-        <p class="font-mono">
-            <Suspense fallback={"loading"}>{balanceString()}</Suspense>
-        </p>
+        <Suspense>
+            <p class="font-mono">
+                <Show when={balance.state === "ready" && balance()} fallback={<span>Loading</span>} keyed>
+                    {balance => (
+                        <BalanceText
+                            currency="TWD"
+                            balanceValue={balance.value}
+                            balanceSymbol={balance.symbol}
+                        ></BalanceText>
+                    )}
+                </Show>
+            </p>
+        </Suspense>
     );
 }
 
