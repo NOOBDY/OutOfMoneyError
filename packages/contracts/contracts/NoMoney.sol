@@ -2,12 +2,6 @@
 pragma solidity ^0.8.0;
 import "./Info.sol";
 
-// TODO 
-// settleProject => trans by person v
-// to trans => remove addition v
-// addProjectDonor => just change type v
-// getProject => trans by holder v
-
 contract NoneMoney is INoneMoney, FunctionInfo {
     modifier onlyOwner() {
         require(owner == msg.sender, "Only Owner"); //檢查是否為管理者
