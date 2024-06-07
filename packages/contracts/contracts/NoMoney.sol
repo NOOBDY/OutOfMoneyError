@@ -22,7 +22,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     ) public {
         address _holder_account = msg.sender;
         require(bytes(_name).length > 0, "Project name is required");
-        require(_target_money >= 1000000000000000, "Set _target_money must be greater than 1000000000000000");
+        require(
+            _target_money >= 1000000000000000,
+            "Set _target_money must be greater than 1000000000000000"
+        );
         require(_deadline > 0, "Set _target_money must be greater than 0");
 
         uint256 _id = donateProject_arr.length;
@@ -74,7 +77,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
             return (true, input_money);
         } else if (project.state == 0) {
-
             project.get_money = target_money;
 
             if ((temp_money - target_money) > 0) {
@@ -87,7 +89,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             project.donor_map[_donor_account].donate_money +=
                 input_money -
                 (temp_money - target_money);
-            
+
             project.state = 1;
         }
     }
@@ -102,12 +104,17 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
 
         DonateProject storage project = donateProject_map[_project_id];
-        address _donor_account =  msg.sender;
+        address _donor_account = msg.sender;
 
-
-        require(_is_donor(_project_id,_donor_account),"is not this project donor" );
-        require(!project.donor_map[_donor_account].is_return,"this donor can't settle this project");
-        require(project.state == 0,"this project can't settle");
+        require(
+            _is_donor(_project_id, _donor_account),
+            "is not this project donor"
+        );
+        require(
+            !project.donor_map[_donor_account].is_return,
+            "this donor can't settle this project"
+        );
+        require(project.state == 0, "this project can't settle");
 
         uint256 all_return = _get_donate_money(_project_id, _donor_account);
 
@@ -120,15 +127,14 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
 
         project.donor_map[_donor_account].is_return = true;
-        
-        if(_is_settled(_project_id)){
+
+        if (_is_settled(_project_id)) {
             project.state = 2;
         }
 
         return (true, all_return);
     }
 
-    
     function settleFinishProject(
         uint256 _project_id
     ) public payable returns (bool clear_success, uint256 get_money) {
@@ -137,22 +143,25 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _project_id < donateProject_arr.length,
             "Project ID is not exist"
         );
-        
-        DonateProject storage project  = donateProject_map[_project_id];
 
-        require(_is_holder(_project_id,msg.sender),"is not this project donor" );
-        require(project.state == 1,"this project can't settle");
+        DonateProject storage project = donateProject_map[_project_id];
 
+        require(
+            _is_holder(_project_id, msg.sender),
+            "is not this project donor"
+        );
+        require(project.state == 1, "this project can't settle");
 
-        address payable _holder_account =  payable (msg.sender);
-        
-        (bool success_return, ) = _holder_account.call{value: ( (project.get_money/100)*95) }("");
+        address payable _holder_account = payable(msg.sender);
+
+        (bool success_return, ) = _holder_account.call{
+            value: ((project.get_money / 100) * 95)
+        }("");
 
         emit return_money(success_return);
         if (!success_return) {
             revert("error return , contract balance not enough to pay");
         }
-
 
         return (true, 0);
     }
@@ -173,7 +182,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         uint256 k = _filterDeadline_id_arr.length;
 
         uint256 _project_count = 0;
-        uint256 _sum_return= 0;
+        uint256 _sum_return = 0;
         bool _have_settled_project = false;
 
         for (uint256 i = 0; i < k; i++) {
@@ -278,7 +287,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 _donor_account
             );
             info._get_money_arr[i] = donateProject_map[_project_id].get_money;
-
         }
 
         return (

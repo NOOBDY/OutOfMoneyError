@@ -56,11 +56,10 @@ contract INoneMoney {
         return (false);
     }
 
-    function _is_holder(uint256 _project_id, address _account)
-        internal
-        view
-        returns (bool)
-    {
+    function _is_holder(
+        uint256 _project_id,
+        address _account
+    ) internal view returns (bool) {
         require(_project_id >= 0, "_project_id not exist");
         require(
             _project_id < donateProject_arr.length,
@@ -75,34 +74,29 @@ contract INoneMoney {
         return (true);
     }
 
-    function _is_settled(uint256 _project_id)
-        internal
-        view
-        returns (bool)
-    {
+    function _is_settled(uint256 _project_id) internal view returns (bool) {
         require(_project_id >= 0, "_project_id not exist");
         require(
             _project_id < donateProject_arr.length,
             "_project_id not exist"
         );
 
-        DonateProject storage  project = donateProject_map[_project_id];
+        DonateProject storage project = donateProject_map[_project_id];
         uint256 length = project.donor_arr.length;
-        
-        for(uint256 i = 0;i<length;i++){
+
+        for (uint256 i = 0; i < length; i++) {
             address _account = project.donor_arr[i];
-            if(!project.donor_map[_account].is_return){
-                return(false);
+            if (!project.donor_map[_account].is_return) {
+                return (false);
             }
         }
         return (true);
     }
 
-    function _is_donor(uint256 _project_id, address _account)
-        internal
-        view
-        returns (bool)
-    {
+    function _is_donor(
+        uint256 _project_id,
+        address _account
+    ) internal view returns (bool) {
         require(_project_id >= 0, "_project_id not exist");
         require(
             _project_id < donateProject_arr.length,
@@ -118,11 +112,10 @@ contract INoneMoney {
         return (true);
     }
 
-    function _get_donate_money(uint256 _project_id, address _donor_account)
-        internal
-        view
-        returns (uint256)
-    {
+    function _get_donate_money(
+        uint256 _project_id,
+        address _donor_account
+    ) internal view returns (uint256) {
         return (
             donateProject_map[_project_id]
                 .donor_map[_donor_account]
@@ -194,11 +187,9 @@ contract INoneMoney {
         return (donateProject_arr);
     }
 
-    function _showHoldersProject(address _account)
-        internal
-        view
-        returns (uint256[] memory _hold_project_arr)
-    {
+    function _showHoldersProject(
+        address _account
+    ) internal view returns (uint256[] memory _hold_project_arr) {
         address holder = _account;
 
         uint256 length = donateProject_arr.length;
