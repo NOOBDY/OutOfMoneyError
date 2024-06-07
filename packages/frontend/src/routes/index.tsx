@@ -1,13 +1,7 @@
+import { createAsync } from "@solidjs/router";
 import { GetAccountReturnType, getBalance } from "@wagmi/core";
-import {
-    ErrorBoundary,
-    Match,
-    Show,
-    Suspense,
-    Switch,
-    createEffect,
-    createResource
-} from "solid-js";
+import { ErrorBoundary, Match, Show, Suspense, Switch, createResource } from "solid-js";
+import { formatEther } from "viem";
 import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
@@ -32,11 +26,6 @@ function Balance(props: BalanceProps) {
     const config = useConfig();
     const [balance, { refetch }] = createResource(async () => {
         return await getBalance(config, { address: props.address });
-    });
-
-    createEffect(() => {
-        props.address;
-        refetch();
     });
 
     return (
