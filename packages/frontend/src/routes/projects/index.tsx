@@ -6,7 +6,7 @@ import { Project, useProjects } from "~/db";
 function Card(props: Project) {
     return (
         <div class="flex min-h-32 flex-col border font-mono">
-            <div class="grow px-2 py-1">
+            <div class="grow break-words px-2 py-1">
                 <h1>{props.title}</h1>
             </div>
 
