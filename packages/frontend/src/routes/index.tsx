@@ -1,7 +1,5 @@
-import { createAsync } from "@solidjs/router";
 import { GetAccountReturnType, getBalance } from "@wagmi/core";
 import { ErrorBoundary, Match, Show, Suspense, Switch, createResource } from "solid-js";
-import { formatEther } from "viem";
 import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
