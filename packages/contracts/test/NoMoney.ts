@@ -85,7 +85,6 @@ describe("test NoneMoney contract", function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(depolyMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
-            const publicClient = await hre.viem.getPublicClient();
             await NoneMoney.write.addProject(
                 [
                     "project",
@@ -119,9 +118,8 @@ describe("test NoneMoney contract", function () {
         it("settleFinishProject", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(depolyMainContract);
-            const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+            const [holder, donor1] = await hre.viem.getWalletClients();
             const now = await NoneMoney.read.getCurrentTimestamp();
-            const publicClient = await hre.viem.getPublicClient();
             const now_10 = now * 10n;
 
             await NoneMoney.write.addProject(
@@ -145,15 +143,7 @@ describe("test NoneMoney contract", function () {
                 account: donor1.account
             });
 
-            const holderBalance_before = await publicClient.getBalance({
-                address: holder.account.address
-            });
-
             await NoneMoney.write.settleFinishProject([0n]);
-
-            const holderBalance_after = await publicClient.getBalance({
-                address: holder.account.address
-            });
         });
 
         it("getSettleableProjectCountAddition", async function () {
