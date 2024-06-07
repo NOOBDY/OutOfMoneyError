@@ -29,7 +29,7 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
-    const [balance, { refetch }] = createResource(async () => {
+    const [balance] = createResource(async () => {
         return await getBalance(config, { address: props.address });
     });
 
