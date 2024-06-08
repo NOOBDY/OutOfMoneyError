@@ -41,9 +41,9 @@ function Balance(props: BalanceProps) {
     });
 
     return (
-        <Suspense fallback={<p>Loading</p>}>
-            <p class="font-mono">{balanceString()}</p>
-        </Suspense>
+        <p class="font-mono">
+            <Suspense fallback={<p>Loading</p>}>{balanceString()}</Suspense>
+        </p>
     );
 }
 
