@@ -23,14 +23,25 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
+
+    const getExchangeData = async (value: bigint) => {
+        const response = await fetch(
+            "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
+        );
+        const data = await response.json();
+        return (
+            Number.parseFloat(formatEther(value)) * data["data"]["rates"]["TWD"]
+        );
+    };
+
     const balanceString = createAsync(async () => {
         const balance = await getBalance(config, { address: props.address });
-        return `${formatEther(balance.value)} ${balance.symbol}`;
+        return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`;
     });
 
     return (
         <p class="font-mono">
-            <Suspense fallback={"loading"}>{balanceString()}</Suspense>
+            <Suspense fallback={<p>Loading</p>}>{balanceString()}</Suspense>
         </p>
     );
 }
