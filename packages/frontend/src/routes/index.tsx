@@ -35,7 +35,6 @@ function Balance(props: BalanceProps) {
     };
 
     const balanceString = createAsync(async () => {
-        props.address;
         const balance = await getBalance(config, { address: props.address });
         return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`;
     });
