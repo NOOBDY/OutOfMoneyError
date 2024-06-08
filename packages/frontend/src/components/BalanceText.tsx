@@ -42,7 +42,7 @@ export function BalanceText(props: {
     >();
 
     const getExchangeData = async () => {
-        const response = await fetch("https://blockchain.info/ticker");
+        const response = await fetch("https://api.coinbase.com/v2/exchange-rates?currency=ETH");
         return response.json();
     };
 
@@ -53,7 +53,7 @@ export function BalanceText(props: {
             formatEther(props.balanceValue)
         );
         setExchangeResult(
-            formatEtherBalanceValue * exchangeData[props.currencyType]["sell"]
+            formatEtherBalanceValue * exchangeData["data"]["rates"][props.currencyType]
         );
     });
 
