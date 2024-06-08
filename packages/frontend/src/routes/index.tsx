@@ -1,3 +1,4 @@
+import { createAsync } from "@solidjs/router";
 import { GetAccountReturnType, getBalance } from "@wagmi/core";
 import {
     ErrorBoundary,
@@ -5,7 +6,8 @@ import {
     Show,
     Suspense,
     Switch,
-    createResource
+    createResource,
+    createSignal
 } from "solid-js";
 import { BalanceText } from "~/components/BalanceText";
 import { Button } from "~/components/Button";
@@ -29,23 +31,40 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
-    const [balance] = createResource(async () => {
-        return await getBalance(config, { address: props.address });
-    });
+    const [balanceData, setBalanceData] = createSignal<{
+        balanceAddress: string,
+        balanceValue: bigint,
+        balanceSymbol: string
+    } | undefined>(undefined)
+
+    createAsync(async () => {
+        props.address
+        setBalanceData(props.address === balanceData()?.balanceAddress ? balanceData() : undefined)
+    })
+
+    createAsync(async () => {
+        props.address
+        const balance = await getBalance(config, { address: props.address })
+        setBalanceData({
+            balanceAddress: props.address,
+            balanceValue: balance.value,
+            balanceSymbol: balance.symbol
+        })
+    })
 
     return (
         <Suspense>
             <p class="font-mono">
                 <Show
-                    when={balance.state === "ready" && balance()}
+                    when={balanceData()}
                     fallback={<span>Loading</span>}
                     keyed
                 >
-                    {balance => (
+                    {balanceData => (
                         <BalanceText
                             currencyType="TWD"
-                            balanceValue={balance.value}
-                            balanceSymbol={balance.symbol}
+                            balanceValue={balanceData.balanceValue}
+                            balanceSymbol={balanceData.balanceSymbol}
                         />
                     )}
                 </Show>
