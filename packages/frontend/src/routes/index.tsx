@@ -1,11 +1,6 @@
 import { createAsync } from "@solidjs/router";
 import { GetAccountReturnType, getBalance } from "@wagmi/core";
-import {
-    ErrorBoundary,
-    Match,
-    Suspense,
-    Switch,
-} from "solid-js";
+import { ErrorBoundary, Match, Suspense, Switch } from "solid-js";
 import { formatEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
@@ -30,22 +25,24 @@ function Balance(props: BalanceProps) {
     const config = useConfig();
 
     const getExchangeData = async (value: bigint) => {
-        const response = await fetch("https://api.coinbase.com/v2/exchange-rates?currency=ETH");
+        const response = await fetch(
+            "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
+        );
         const data = await response.json();
-        return Number.parseFloat(formatEther(value)) * data["data"]["rates"]["TWD"]
+        return (
+            Number.parseFloat(formatEther(value)) * data["data"]["rates"]["TWD"]
+        );
     };
 
     const balanceString = createAsync(async () => {
         props.address;
         const balance = await getBalance(config, { address: props.address });
-        return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`
-    })
+        return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`;
+    });
 
     return (
         <Suspense>
-            <p class="font-mono">
-                {balanceString()}
-            </p>
+            <p class="font-mono">{balanceString()}</p>
         </Suspense>
     );
 }
