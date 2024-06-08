@@ -3,12 +3,10 @@ import { GetAccountReturnType, getBalance } from "@wagmi/core";
 import {
     ErrorBoundary,
     Match,
-    Show,
     Suspense,
     Switch,
-    createSignal
 } from "solid-js";
-import { BalanceText } from "~/components/BalanceText";
+import { formatEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import { useAccount } from "~/hooks/useAccount";
@@ -30,50 +28,23 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
-    const [balanceData, setBalanceData] = createSignal<
-        | {
-              balanceAddress: string;
-              balanceValue: bigint;
-              balanceSymbol: string;
-          }
-        | undefined
-    >(undefined);
 
-    createAsync(async () => {
-        props.address;
-        setBalanceData(
-            props.address === balanceData()?.balanceAddress
-                ? balanceData()
-                : undefined
-        );
-    });
+    const getExchangeData = async (value: bigint) => {
+        const response = await fetch("https://api.coinbase.com/v2/exchange-rates?currency=ETH");
+        const data = await response.json();
+        return Number.parseFloat(formatEther(value)) * data["data"]["rates"]["TWD"]
+    };
 
-    createAsync(async () => {
+    const balanceString = createAsync(async () => {
         props.address;
         const balance = await getBalance(config, { address: props.address });
-        setBalanceData({
-            balanceAddress: props.address,
-            balanceValue: balance.value,
-            balanceSymbol: balance.symbol
-        });
-    });
+        return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`
+    })
 
     return (
         <Suspense>
             <p class="font-mono">
-                <Show
-                    when={balanceData()}
-                    fallback={<span>Loading</span>}
-                    keyed
-                >
-                    {balanceData => (
-                        <BalanceText
-                            currencyType="TWD"
-                            balanceValue={balanceData.balanceValue}
-                            balanceSymbol={balanceData.balanceSymbol}
-                        />
-                    )}
-                </Show>
+                {balanceString()}
             </p>
         </Suspense>
     );
