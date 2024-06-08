@@ -47,7 +47,7 @@ export function BalanceText(props: {
     };
 
     createAsync(async () => {
-        props.balanceValue
+        props.balanceValue;
         const exchangeData = await getExchangeData();
         const formatEtherBalanceValue = Number.parseFloat(
             formatEther(props.balanceValue)
@@ -55,7 +55,6 @@ export function BalanceText(props: {
         setExchangeResult(
             formatEtherBalanceValue * exchangeData[props.currencyType]["sell"]
         );
-        debugger
     });
 
     return (

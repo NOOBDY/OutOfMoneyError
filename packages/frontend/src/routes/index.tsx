@@ -6,7 +6,6 @@ import {
     Show,
     Suspense,
     Switch,
-    createResource,
     createSignal
 } from "solid-js";
 import { BalanceText } from "~/components/BalanceText";
@@ -31,26 +30,33 @@ type BalanceProps = {
 
 function Balance(props: BalanceProps) {
     const config = useConfig();
-    const [balanceData, setBalanceData] = createSignal<{
-        balanceAddress: string,
-        balanceValue: bigint,
-        balanceSymbol: string
-    } | undefined>(undefined)
+    const [balanceData, setBalanceData] = createSignal<
+        | {
+              balanceAddress: string;
+              balanceValue: bigint;
+              balanceSymbol: string;
+          }
+        | undefined
+    >(undefined);
 
     createAsync(async () => {
-        props.address
-        setBalanceData(props.address === balanceData()?.balanceAddress ? balanceData() : undefined)
-    })
+        props.address;
+        setBalanceData(
+            props.address === balanceData()?.balanceAddress
+                ? balanceData()
+                : undefined
+        );
+    });
 
     createAsync(async () => {
-        props.address
-        const balance = await getBalance(config, { address: props.address })
+        props.address;
+        const balance = await getBalance(config, { address: props.address });
         setBalanceData({
             balanceAddress: props.address,
             balanceValue: balance.value,
             balanceSymbol: balance.symbol
-        })
-    })
+        });
+    });
 
     return (
         <Suspense>
