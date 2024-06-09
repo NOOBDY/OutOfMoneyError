@@ -12,9 +12,6 @@ describe("test NoneMoney contract", function () {
         };
     }
 
-    function sleep(ms: number): Promise<void> {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     describe("Deployment", function () {
         it("work", async function () {
             await loadFixture(deployMainContract);
