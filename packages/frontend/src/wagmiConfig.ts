@@ -25,8 +25,7 @@ const xttConfig = createConfig({
     transports: { [xtt.id]: http() }
 });
 
-// TODO use env vars
-const dev = true;
+const dev = import.meta.env.VITE_DEV_MODE === "true";
 
 export const contractAddress = dev
     ? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
