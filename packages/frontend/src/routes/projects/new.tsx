@@ -1,110 +1,60 @@
-import { Select } from "@kobalte/core/select";
-import {
-    FieldElementProps,
-    SubmitHandler,
-    createForm,
-    zodForm
-} from "@modular-forms/solid";
+import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useNavigate } from "@solidjs/router";
-import { Show, createEffect, createSignal } from "solid-js";
-import { Address } from "viem";
+import { simulateContract, writeContract } from "@wagmi/core";
+import { Address, parseEther } from "viem";
 import { z } from "zod";
 import { Button } from "~/components/Button";
-import { useProjects } from "~/db";
-import { useAccount } from "~/hooks/useAccount";
-import { useDarkMode } from "~/hooks/useDarkMode";
+import { noneMoneyAbi } from "~/generated";
+import { useConfig } from "~/hooks/useConfig";
+import { contractAddress } from "~/wagmiConfig";
+import { AddressDropdown } from "~/components/AddressDropdown";
 
 const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
     description: z.string().min(1, { message: "Description required" }),
-    goal: z.coerce.number().int().gt(0),
+    goal: z.coerce.number().gt(0.001),
     address: z.custom<Address>(data => data, "Address required")
 });
 
-type NewProjectForm = z.infer<typeof NewProjectSchema>;
-
-function AddressDropdown(
-    props: FieldElementProps<NewProjectForm, "address"> & {
-        value: Address | undefined;
-    }
-) {
-    const [darkMode] = useDarkMode();
-    const [value, setValue] = createSignal<Address>();
-    createEffect(() => {
-        setValue(props.value);
-    });
-
-    const [account] = useAccount();
-
-    return (
-        <Show
-            when={account.status === "connected" && [...account.addresses]}
-            keyed
-        >
-            {addresses => {
-                return (
-                    <Select
-                        value={value()}
-                        onChange={setValue}
-                        defaultValue={addresses[0]}
-                        placeholder="Select an Address"
-                        options={addresses}
-                        required
-                        itemComponent={props => (
-                            <Select.Item
-                                item={props.item}
-                                classList={{ dark: darkMode() }}
-                            >
-                                <Select.ItemLabel
-                                    class="w-full border bg-neutral-100
-                                    px-2 dark:bg-neutral-800 dark:text-white"
-                                >
-                                    {props.item.rawValue}
-                                </Select.ItemLabel>
-                            </Select.Item>
-                        )}
-                    >
-                        <Select.Label class="font-mono">Address</Select.Label>
-                        <Select.HiddenSelect {...props} />
-                        <Select.Trigger
-                            class="w-full border bg-neutral-100 px-2
-                            text-left dark:bg-neutral-800 dark:text-white"
-                        >
-                            <Select.Value<Address>>
-                                {state => state.selectedOption()}
-                            </Select.Value>
-                        </Select.Trigger>
-
-                        <Select.Portal>
-                            <Select.Content>
-                                <Select.Listbox />
-                            </Select.Content>
-                        </Select.Portal>
-                    </Select>
-                );
-            }}
-        </Show>
-    );
-}
+export type NewProjectForm = z.infer<typeof NewProjectSchema>;
 
 export default function () {
     const navigate = useNavigate();
+    const config = useConfig();
     const [newProjectForm, { Form, Field }] = createForm<NewProjectForm>({
         validate: zodForm(NewProjectSchema),
         revalidateOn: "input"
     });
-    const [, { add }] = useProjects();
 
-    const handleSubmit: SubmitHandler<NewProjectForm> = (values, event) => {
+    const handleSubmit: SubmitHandler<NewProjectForm> = async (
+        values,
+        event
+    ) => {
         event.preventDefault();
 
         console.log(values);
 
-        add({
-            title: values.title,
-            description: values.description,
-            goal: values.goal
+        const toUnix = (date: Date) =>
+            BigInt((date.getTime() / 1000).toFixed(0));
+
+        // TODO: add date picker
+        const now = new Date();
+        const deadline = new Date(now);
+        deadline.setDate(now.getDate() + 1);
+        const { request } = await simulateContract(config, {
+            abi: noneMoneyAbi,
+            address: contractAddress,
+            functionName: "addProject",
+            args: [
+                values.title,
+                values.description,
+                toUnix(now),
+                toUnix(deadline),
+                parseEther(values.goal.toString())
+            ]
         });
+
+        await writeContract(config, request);
 
         navigate("/projects");
     };
@@ -176,7 +126,7 @@ export default function () {
                                     class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
                                 />
                                 <p class="border border-l-0 px-1 font-mono">
-                                    Wei
+                                    ETH
                                 </p>
                             </div>
                             {field.error && (

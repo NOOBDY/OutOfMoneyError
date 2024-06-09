@@ -1,13 +1,11 @@
 import { createAsync } from "@solidjs/router";
-import { readContract, simulateContract, writeContract } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { For } from "solid-js";
-import { formatEther, parseEther } from "viem";
-import { Button } from "~/components/Button";
+import { formatEther } from "viem";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
 import { Project } from "~/db";
 import { noneMoneyAbi } from "~/generated";
-import { useAccount } from "~/hooks/useAccount";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
 
@@ -32,38 +30,6 @@ function Card(props: Project) {
 
 export default function () {
     const config = useConfig();
-    const [account] = useAccount();
-
-    const addProject = async () => {
-        if (account.status === "connected") {
-            console.log("add");
-            try {
-                const toUnix = (date: Date) =>
-                    BigInt((date.getTime() / 1000).toFixed(0));
-
-                const now = new Date();
-                const deadline = new Date(now);
-                deadline.setDate(now.getDate() + 1);
-                const { request } = await simulateContract(config, {
-                    abi: noneMoneyAbi,
-                    address: contractAddress,
-                    functionName: "addProject",
-                    args: [
-                        "test",
-                        "description",
-                        toUnix(now),
-                        toUnix(deadline),
-                        parseEther("0.1")
-                    ]
-                });
-
-                const hash = await writeContract(config, request);
-                console.log(hash);
-            } catch (e) {
-                console.error(e);
-            }
-        }
-    };
 
     const projects = createAsync(async () => {
         const data = await readContract(config, {
@@ -76,8 +42,8 @@ export default function () {
             return {
                 id: v,
                 title: data[1][i],
-                goal: data[5][i],
-                current: 0n
+                goal: data[4][i],
+                current: data[5][i]
             } satisfies Project;
         });
 
@@ -92,10 +58,6 @@ export default function () {
                 <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <For each={projects()}>{Card}</For>
                 </div>
-            </div>
-
-            <div class="flex w-full items-center justify-center">
-                <Button onClick={addProject}>Add project</Button>
             </div>
         </>
     );
