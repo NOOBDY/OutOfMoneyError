@@ -5,7 +5,7 @@ import { parseEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
-import { Project, useProjects } from "~/db";
+import { Project } from "~/db";
 import { noneMoneyAbi } from "~/generated";
 import { useAccount } from "~/hooks/useAccount";
 import { useConfig } from "~/hooks/useConfig";
@@ -21,14 +21,15 @@ function Card(props: Project) {
                 <Link href={`/projects/${props.id}`}>See more</Link>
             </div>
 
-            <Progress current={props.current} goal={props.goal} />
+            <Progress
+                current={Number(props.current)}
+                goal={Number(props.goal)}
+            />
         </div>
     );
 }
 
 export default function () {
-    const [mockProjects] = useProjects();
-
     const config = useConfig();
     const [account] = useAccount();
 
@@ -38,14 +39,21 @@ export default function () {
         if (account.status === "connected") {
             console.log("add");
             try {
+                const toUnix = (date: Date) =>
+                    BigInt((date.getTime() / 1000).toFixed(0));
+
+                const now = new Date();
+                const deadline = new Date(now);
+                deadline.setDate(now.getDate() + 1);
                 const { request } = await simulateContract(config, {
                     abi: noneMoneyAbi,
                     address: contractAddress,
-                    functionName: "add_project",
+                    functionName: "addProject",
                     args: [
-                        account.address,
                         "test",
                         "description",
+                        toUnix(now),
+                        toUnix(deadline),
                         parseEther("0.1")
                     ]
                 });
@@ -59,25 +67,20 @@ export default function () {
     };
 
     const projects = createAsync(async () => {
-        const idArr = await readContract(config, {
+        const data = await readContract(config, {
             abi: noneMoneyAbi,
             address: contractAddress,
-            functionName: "show_donate_projects_id"
+            functionName: "showAllProject"
         });
 
-        const projects = await Promise.all(
-            idArr.map(
-                async id =>
-                    await readContract(config, {
-                        abi: noneMoneyAbi,
-                        address: contractAddress,
-                        functionName: "search_project_by_id",
-                        args: [id]
-                    })
-            )
-        );
-
-        console.log(projects);
+        const projects = data[0].map((v, i) => {
+            return {
+                id: v,
+                title: data[1][i],
+                goal: data[5][i],
+                current: 0n
+            } satisfies Project;
+        });
 
         return projects;
     });
@@ -88,7 +91,7 @@ export default function () {
                 <Link href="/projects/new">Create new project</Link>
 
                 <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <For each={mockProjects}>{Card}</For>
+                    <For each={projects()}>{Card}</For>
                 </div>
             </div>
 
