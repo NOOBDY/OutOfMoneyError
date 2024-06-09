@@ -26,7 +26,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _target_money >= 1000000000000000,
             "Set _target_money must be greater than 1000000000000000"
         );
-        require(_deadline > 0, "Set _target_money must be greater than 0");
+        require(_deadline > 0, "Set _deadline must be greater than 0");
 
         uint256 _id = donateProject_arr.length;
 
@@ -170,7 +170,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     //////////////get///////////////
 
-    function getSettleableProjectCountAddition()
+    function getSettleableProjectCountAddition(
+        uint256 now_time
+    )
         public
         view
         returns (
@@ -180,7 +182,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         )
     {
         address _donor_account = msg.sender;
-        uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline();
+        uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
+            now_time
+        );
         uint256 k = _filterDeadline_id_arr.length;
 
         uint256 _project_count = 0;
@@ -241,7 +245,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     /////////show////////////
 
-    function showSettledProjectByAccount()
+    function showSettledProjectByAccount(
+        uint256 now_time
+    )
         public
         view
         returns (
@@ -256,7 +262,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         address _donor_account = msg.sender;
         ShowProjectinfo memory info;
 
-        uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline();
+        uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
+            now_time
+        );
         uint256 length = _filterDeadline_id_arr.length;
         uint256 k = 0;
 
@@ -352,7 +360,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
     }
 
-    function showProjectsFilterDeadline()
+    function showProjectsFilterDeadline(
+        uint256 now_time
+    )
         public
         view
         returns (
@@ -365,7 +375,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         )
     {
         uint256[]
-            memory _filterDeadline_id_arr = _showProjectByIDFilterDeadline();
+            memory _filterDeadline_id_arr = _showProjectByIDFilterDeadline(
+                now_time
+            );
         uint256 k = _filterDeadline_id_arr.length;
 
         ShowProjectinfo memory info;

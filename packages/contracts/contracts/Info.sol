@@ -129,15 +129,12 @@ contract INoneMoney {
         );
     }
 
-    function _showProjectByIDFilterDeadline()
-        internal
-        view
-        returns (uint256[] memory _DonateProjects_arr)
-    {
+    function _showProjectByIDFilterDeadline(
+        uint256 now_time
+    ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
         uint256 k = 0;
-        uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
             if (
@@ -157,15 +154,12 @@ contract INoneMoney {
         return (result);
     }
 
-    function _showProjectsAfterDeadline()
-        internal
-        view
-        returns (uint256[] memory _DonateProjects_arr)
-    {
+    function _showProjectsAfterDeadline(
+        uint256 now_time
+    ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
         uint256 k = 0;
-        uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
             if (
