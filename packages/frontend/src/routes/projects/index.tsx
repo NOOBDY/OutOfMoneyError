@@ -1,7 +1,7 @@
 import { createAsync } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
 import { For } from "solid-js";
-import { parseEther } from "viem";
+import { formatEther, parseEther } from "viem";
 import { Button } from "~/components/Button";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
@@ -9,6 +9,7 @@ import { Project } from "~/db";
 import { noneMoneyAbi } from "~/generated";
 import { useAccount } from "~/hooks/useAccount";
 import { useConfig } from "~/hooks/useConfig";
+import { contractAddress } from "~/wagmiConfig";
 
 function Card(props: Project) {
     return (
@@ -22,8 +23,8 @@ function Card(props: Project) {
             </div>
 
             <Progress
-                current={Number(props.current)}
-                goal={Number(props.goal)}
+                current={Number(formatEther(props.current))}
+                goal={Number(formatEther(props.goal))}
             />
         </div>
     );
@@ -32,8 +33,6 @@ function Card(props: Project) {
 export default function () {
     const config = useConfig();
     const [account] = useAccount();
-
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
     const addProject = async () => {
         if (account.status === "connected") {

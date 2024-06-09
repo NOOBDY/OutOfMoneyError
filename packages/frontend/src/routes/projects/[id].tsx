@@ -1,10 +1,12 @@
 import { createAsync, useParams } from "@solidjs/router";
 import { readContract } from "@wagmi/core";
 import { Show } from "solid-js";
+import { formatEther } from "viem";
 import Progress from "~/components/Progress";
 import { Project } from "~/db";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
+import { contractAddress } from "~/wagmiConfig";
 
 function NotFound() {
     return (
@@ -19,8 +21,6 @@ function NotFound() {
 export default function () {
     const params = useParams();
     const config = useConfig();
-
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
     const project = createAsync(async () => {
         const id = BigInt(params.id);
@@ -64,8 +64,10 @@ export default function () {
                             </p>
                             <div class="border">
                                 <Progress
-                                    current={Number(project.current)}
-                                    goal={Number(project.goal)}
+                                    current={Number(
+                                        formatEther(project.current)
+                                    )}
+                                    goal={Number(formatEther(project.goal))}
                                 />
                             </div>
                         </div>
