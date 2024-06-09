@@ -7,7 +7,7 @@ const config: HardhatUserConfig = {
     solidity: "0.8.24",
     networks: {
         xtt: {
-            url: "https://eth.noobdy.com:8545",
+            url: "https://eth.noobdy.com",
             accounts: [XTT_PRIVATE_KEY]
         }
     }

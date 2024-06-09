@@ -14,7 +14,7 @@ const xtt = defineChain({
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://eth.noobdy.com:8545"]
+            http: ["https://eth.noobdy.com"]
         }
     }
 });
