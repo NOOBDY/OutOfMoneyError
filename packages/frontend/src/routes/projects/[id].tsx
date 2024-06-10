@@ -1,7 +1,7 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createResource, createSignal } from "solid-js";
+import { Show, createResource, createSignal, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
@@ -61,6 +61,10 @@ export default function () {
             current: data[7],
             deadline: deadline
         } satisfies Project;
+    });
+
+    onMount(() => {
+        refetch();
     });
 
     const handleSubmit: SubmitHandler<DonateForm> = async (values, event) => {
