@@ -96,6 +96,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 (temp_money - target_money);
 
             project.state = State.FINISH;
+
+            return (true, input_money - (temp_money - target_money));
         }
     }
 
