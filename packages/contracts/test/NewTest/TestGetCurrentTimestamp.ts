@@ -9,9 +9,11 @@ async function deployMainContract() {
 describe("GetCurrentTimestamp", () => {
     it("Test get contract timestamp should return correct timestamp", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const contractTimestamp = await NoneMoney.read.getCurrentTimestamp()
-        const latestBlockTimestamp = (await hre.ethers.provider.getBlock("latest"))?.timestamp!
+        const contractTimestamp = await NoneMoney.read.getCurrentTimestamp();
+        const latestBlockTimestamp = (
+            await hre.ethers.provider.getBlock("latest")
+        )?.timestamp!;
 
-        expect(contractTimestamp).to.be.equals(BigInt(latestBlockTimestamp))
-    })
-})
+        expect(contractTimestamp).to.be.equals(BigInt(latestBlockTimestamp));
+    });
+});

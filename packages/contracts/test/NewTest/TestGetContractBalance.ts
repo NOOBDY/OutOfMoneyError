@@ -10,20 +10,20 @@ async function deployMainContract() {
 describe("GetContractBalance", () => {
     it("Test get contract balance should return correct balance", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 20000000000000000n,
             account: donor.account
-        })
+        });
         await NoneMoney.write.addProjectDonor([1n], {
             value: 20000000000000000n,
             account: donor.account
-        })
+        });
 
-        const contractBalance = await NoneMoney.read.getContractBalance()
+        const contractBalance = await NoneMoney.read.getContractBalance();
 
-        expect(contractBalance).to.be.equal(40000000000000000n)
-    })
-})
+        expect(contractBalance).to.be.equal(40000000000000000n);
+    });
+});

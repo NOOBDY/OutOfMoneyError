@@ -10,118 +10,130 @@ async function deployMainContract() {
 describe("SettleOverdueProject", () => {
     it("Test settle overdue project with correct project ID should success", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
             account: donor.account
-        })
-        const prevBalance = await ethers.provider.getBalance(donor.account.address)
+        });
+        const prevBalance = await ethers.provider.getBalance(
+            donor.account.address
+        );
 
         await NoneMoney.write.settleOverdueProject([0n], {
             account: donor.account
-        })
+        });
 
-        const donatedBalance = await ethers.provider.getBalance(donor.account.address)
-        expect(prevBalance < donatedBalance).to.be.true
-    })
+        const donatedBalance = await ethers.provider.getBalance(
+            donor.account.address
+        );
+        expect(prevBalance < donatedBalance).to.be.true;
+    });
     it("Test settle overdue project with not completed settle should keep status CAN_DONATE", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor, donor2 ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor, donor2] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 5000000000000000n,
             account: donor.account
-        })
+        });
         await NoneMoney.write.addProjectDonor([0n], {
             value: 5000000000000000n,
             account: donor2.account
-        })
+        });
 
         await NoneMoney.write.settleOverdueProject([0n], {
             account: donor.account
-        })
-        
-        const project = await NoneMoney.read.getProjectByID([0n])
-        expect(project[3]).equal(0)
-    })
+        });
+
+        const project = await NoneMoney.read.getProjectByID([0n]);
+        expect(project[3]).equal(0);
+    });
     it("Test settle overdue project with completed settle should keep status EXPIRED_SETTLED_FINIDH", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor, donor2 ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor, donor2] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 5000000000000000n,
             account: donor.account
-        })
+        });
         await NoneMoney.write.addProjectDonor([0n], {
             value: 5000000000000000n,
             account: donor2.account
-        })
+        });
 
         await NoneMoney.write.settleOverdueProject([0n], {
             account: donor.account
-        })
+        });
         await NoneMoney.write.settleOverdueProject([0n], {
             account: donor2.account
-        })
-        
-        const project = await NoneMoney.read.getProjectByID([0n])
-        expect(project[3]).equal(2)
-    })
+        });
+
+        const project = await NoneMoney.read.getProjectByID([0n]);
+        expect(project[3]).equal(2);
+    });
     it("Test settle overdue project with negative project ID should be revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
             account: donor.account
-        })
+        });
 
-        await expect(NoneMoney.write.settleOverdueProject([-1n], {
-            account: donor.account
-        })).to.be.throw
-    })
+        await expect(
+            NoneMoney.write.settleOverdueProject([-1n], {
+                account: donor.account
+            })
+        ).to.be.throw;
+    });
     it("Test settle overdue project with absent project ID should be revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
             account: donor.account
-        })
+        });
 
-        await expect(NoneMoney.write.settleOverdueProject([3n], {
-            account: donor.account
-        })).to.be.throw
-    })
+        await expect(
+            NoneMoney.write.settleOverdueProject([3n], {
+                account: donor.account
+            })
+        ).to.be.throw;
+    });
     it("Test settle overdue project with absent project ID should be revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor, donor1 ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor, donor1] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
             account: donor.account
-        })
+        });
 
-        await expect(NoneMoney.write.settleOverdueProject([3n], {
-            account: donor.account
-        })).to.be.throw
-    })
+        await expect(
+            NoneMoney.write.settleOverdueProject([3n], {
+                account: donor.account
+            })
+        ).to.be.throw;
+    });
     it("Test settle overdue project with repeat settle should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [ holder, donor ] = await hre.viem.getWalletClients();
-        await addProject(NoneMoney, holder.account.address)
+        const [holder, donor] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
             account: donor.account
-        })
+        });
 
         await NoneMoney.write.settleOverdueProject([0n], {
             account: donor.account
-        })
-        
-        await expect(NoneMoney.write.settleOverdueProject([0n], {
-            account: donor.account
-        })).to.be.throw
-    })
-})
+        });
+
+        await expect(
+            NoneMoney.write.settleOverdueProject([0n], {
+                account: donor.account
+            })
+        ).to.be.throw;
+    });
+});
