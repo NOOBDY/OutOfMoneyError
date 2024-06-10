@@ -126,7 +126,7 @@ describe("test NoneMoney contract", function () {
             await NoneMoney.write.settleFinishProject([0n]);
         });
 
-        it("getSettleableProjectCountAddition", async function () {
+        it("getRefundation", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
@@ -159,10 +159,9 @@ describe("test NoneMoney contract", function () {
                 account: donor.account
             });
 
-            const info = await NoneMoney.read.getSettleableProjectCountAddition(
-                [200n],
-                { account: donor.account.address }
-            );
+            const info = await NoneMoney.read.getRefundation([200n], {
+                account: donor.account.address
+            });
             expect(info[0]).to.equal(true);
             expect(info[1]).to.equal(2n);
             expect(info[2]).to.equal(100n + 190n);
