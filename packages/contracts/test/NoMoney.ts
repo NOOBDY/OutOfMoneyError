@@ -68,8 +68,6 @@ describe("test NoneMoney contract", function () {
 
             const project = await NoneMoney.read.getProjectByID([0n]);
 
-            console.log(project.donor_arr[0]);
-            console.log(donor.account.address);
             expect(project.donor_arr[0]).to.equal(
                 getAddress(donor.account.address)
             );
@@ -258,7 +256,7 @@ describe("test NoneMoney contract", function () {
             expect(all_project[2].name).to.equal("project2");
             expect(all_project[2].description).to.equal("test2");
         });
-        it("showProjectsFilterDeadline", async function () {
+        it("showAvailableProject", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
