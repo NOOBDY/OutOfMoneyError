@@ -282,13 +282,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return (return_p);
     }
 
-    function showProjectsFilterDeadline(
+    function showAvailableProject(
         uint256 _now_time
     ) public view returns (ReturnProject[] memory return_project) {
-        uint256[]
-            memory _filterDeadline_id_arr = _showProjectByIDFilterDeadline(
-                _now_time
-            );
+        uint256[] memory _filterDeadline_id_arr = _showAvailableProject(
+            _now_time
+        );
         ReturnProject[] memory return_p = _copy_data(_filterDeadline_id_arr);
         return (return_p);
     }

@@ -129,7 +129,7 @@ contract INoneMoney {
         );
     }
 
-    function _showProjectByIDFilterDeadline(
+    function _showAvailableProject(
         uint256 now_time
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
