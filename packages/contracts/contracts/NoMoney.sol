@@ -53,7 +53,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     function donate(
         uint256 _project_id
     ) public payable returns (bool pay_success, uint256 pay_money) {
-        require(msg.value > 0, "Donation must be greater than 20");
+        require(msg.value > 0, "Donation must be greater than 0");
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
