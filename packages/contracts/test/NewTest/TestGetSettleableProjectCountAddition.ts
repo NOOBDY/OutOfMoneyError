@@ -1,7 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
-import hre, { ethers } from "hardhat";
-import { getAddress } from "viem";
+import hre from "hardhat";
 import { addProject } from "./util";
 
 async function deployMainContract() {

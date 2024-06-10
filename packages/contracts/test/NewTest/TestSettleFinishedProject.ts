@@ -35,7 +35,7 @@ describe("SettleFinishedProject", () => {
     });
     it("Test settle finished project with unfinished status should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+        const [holder, donor1] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
@@ -65,7 +65,7 @@ describe("SettleFinishedProject", () => {
     });
     it("Test settle finished project with negative project ID should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+        const [holder, donor1] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,
@@ -80,7 +80,7 @@ describe("SettleFinishedProject", () => {
     });
     it("Test settle finished project with absent project ID should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+        const [holder, donor1] = await hre.viem.getWalletClients();
         addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,

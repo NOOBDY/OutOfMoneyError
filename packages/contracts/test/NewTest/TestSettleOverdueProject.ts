@@ -104,7 +104,7 @@ describe("SettleOverdueProject", () => {
     });
     it("Test settle overdue project with absent project ID should be revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [holder, donor, donor1] = await hre.viem.getWalletClients();
+        const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
         await NoneMoney.write.addProjectDonor([0n], {
             value: 10000000000000000n,

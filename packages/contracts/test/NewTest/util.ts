@@ -1,5 +1,3 @@
-const abs = (n: bigint) => (n < 0n ? -n : n);
-
 export async function addProject(NoneMoney: any, address: `0x${string}`) {
     await NoneMoney.write.addProject(
         [
