@@ -28,6 +28,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
 
         require(_deadline > 0, "Set _deadline must be greater than 0");
+        require(
+            _start_date < _deadline,
+            "_start_date should less then _deadline"
+        );
 
         uint256 _id = donateProject_arr.length;
 
@@ -50,9 +54,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
     }
 
-    function donate(
-        uint256 _project_id
-    ) public payable returns (bool pay_success, uint256 pay_money) {
+    function donate(uint256 _project_id) public payable {
         require(msg.value > 0, "Donation must be greater than 0");
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -79,8 +81,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         ) {
             project.donor_map[_donor_account].donate_money += input_money;
             project.get_money = temp_money;
-
-            return (true, input_money);
         } else if (project.state == State.CAN_DONATE) {
             project.get_money = target_money;
 
@@ -100,13 +100,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 (temp_money - target_money);
 
             project.state = State.FINISH;
-
-            return (true, input_money - (temp_money - target_money));
         }
     }
 
     function settleOverdueProject(
-        uint256 _project_id
+        uint256 _project_id,
+        uint256 _now_time
     ) public payable returns (bool clear_success, uint256 addtional_money) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -116,6 +115,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         DonateProject storage project = donateProject_map[_project_id];
         address _donor_account = msg.sender;
+
+        require(project.deadline < _now_time, "Project not Overdue");
 
         require(
             _is_donor(_project_id, _donor_account),
@@ -134,7 +135,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         emit return_money(success_return);
         if (!success_return) {
-            revert("error return , contract balance not enough to pay");
+            revert("error return");
         }
 
         project.donor_map[_donor_account].is_return = true;
@@ -180,7 +181,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     //////////////get///////////////
 
     function getSettleableProjectCountAddition(
-        uint256 now_time
+        uint256 _now_time
     )
         public
         view
@@ -192,7 +193,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     {
         address _donor_account = msg.sender;
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
-            now_time
+            _now_time
         );
         uint256 k = _filterDeadline_id_arr.length;
 
