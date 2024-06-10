@@ -13,7 +13,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function addProject(
-        // address _holder_account,
         string memory _name,
         string memory _description,
         uint256 _start_date,
@@ -21,11 +20,13 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         uint256 _target_money
     ) public {
         address _holder_account = msg.sender;
+
         require(bytes(_name).length > 0, "Project name is required");
         require(
             _target_money >= 1000000000000000,
             "Set _target_money must be greater than 1000000000000000"
         );
+
         require(_deadline > 0, "Set _deadline must be greater than 0");
 
         uint256 _id = donateProject_arr.length;
@@ -49,7 +50,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
     }
 
-    function addProjectDonor(
+    function donate(
         uint256 _project_id
     ) public payable returns (bool pay_success, uint256 pay_money) {
         require(msg.value > 0, "Donation must be greater than 20");
@@ -63,6 +64,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         address payable _donor_account = payable(msg.sender);
 
         DonateProject storage project = donateProject_map[_project_id];
+
+        require(project.state == State.CAN_DONATE, "this can't donate");
 
         uint256 temp_money = project.get_money + input_money;
         uint256 target_money = project.target_money;
@@ -131,7 +134,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         project.donor_map[_donor_account].is_return = true;
 
         if (_is_settled(_project_id)) {
-            project.state = State.EXPIRED_SETTLED_FINIDH;
+            project.state = State.EXPIRED_SETTLED_FINISH;
         }
 
         return (true, all_return);
@@ -205,256 +208,94 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return (_have_settled_project, _project_count, _sum_return);
     }
 
+    ////////////////////
     function getProjectByID(
         uint256 _project_id
-    )
-        public
-        view
-        returns (
-            string memory name,
-            string memory description,
-            address holder_account,
-            State state,
-            uint256 start_date,
-            uint256 deadline,
-            uint256 target_money,
-            uint256 get_money,
-            address[] memory donor_arr
-        )
-    {
+    ) public view returns (ReturnProject memory return_project) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
             "Project ID is not exist"
         );
+        uint256[] memory _arr = new uint256[](1);
+        _arr[0] = _project_id;
+        ReturnProject[] memory return_p = _copy_data(_arr);
 
-        DonateProject storage project = donateProject_map[_project_id];
-
-        return (
-            project.name,
-            project.description,
-            project.holder_account,
-            project.state,
-            project.start_date,
-            project.deadline,
-            project.target_money,
-            project.get_money,
-            project.donor_arr
-        );
+        return (return_p[0]);
     }
 
     /////////show////////////
 
     function showSettledProjectByAccount(
-        uint256 now_time
+        uint256 _now_time
     )
         public
         view
-        returns (
-            uint256[] memory project_id_arr,
-            string[] memory name_arr,
-            uint256[] memory start_date_arr,
-            uint256[] memory deadline_arr,
-            uint256[] memory get_money,
-            uint256[] memory donor_donate_money
-        )
+        returns (uint256[] memory arr, ReturnProject[] memory return_project)
     {
         address _donor_account = msg.sender;
-        ShowProjectinfo memory info;
 
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
-            now_time
+            _now_time
         );
         uint256 length = _filterDeadline_id_arr.length;
         uint256 k = 0;
 
-        info._settled_project_id_arr = new uint256[](length);
+        uint256[] memory _settled_project_id_arr = new uint256[](length);
 
         for (uint256 i = 0; i < length; i++) {
             if (_is_donor(_filterDeadline_id_arr[i], _donor_account)) {
-                info._settled_project_id_arr[k] = _filterDeadline_id_arr[i];
+                _settled_project_id_arr[k] = _filterDeadline_id_arr[i];
                 k += 1;
             }
         }
 
-        info._project_id_arr = new uint256[](k);
-        info._name_arr = new string[](k);
-        info._start_date_arr = new uint256[](k);
-        info._deadline_arr = new uint256[](k);
-        info._get_money_arr = new uint256[](k);
-
-        info._donor_donate_money = new uint256[](k);
+        uint256[] memory _have_project_arr = new uint256[](k);
 
         for (uint256 i = 0; i < k; i++) {
-            uint256 _project_id = info._settled_project_id_arr[i];
-
-            info._project_id_arr[i] = _project_id;
-            info._name_arr[i] = donateProject_map[_project_id].name;
-            info._start_date_arr[i] = donateProject_map[_project_id].start_date;
-            info._deadline_arr[i] = donateProject_map[_project_id].deadline;
-            info._donor_donate_money[i] = _get_donate_money(
-                _project_id,
-                _donor_account
-            );
-            info._get_money_arr[i] = donateProject_map[_project_id].get_money;
+            _have_project_arr[i] = _settled_project_id_arr[i];
         }
 
-        return (
-            info._project_id_arr,
-            info._name_arr,
-            info._start_date_arr,
-            info._deadline_arr,
-            info._get_money_arr,
-            info._donor_donate_money
-        );
+        ReturnProject[] memory return_p = _copy_data(_have_project_arr);
+
+        return (_have_project_arr, return_p);
     }
 
     function showHoldersProject(
         address _account
-    )
-        public
-        view
-        returns (
-            uint256[] memory filterDeadline_id_arr,
-            string[] memory name_arr,
-            State[] memory state,
-            uint256[] memory start_date_arr,
-            uint256[] memory deadline_arr,
-            uint256[] memory target_money_arr,
-            uint256[] memory get_money_arr
-        )
-    {
+    ) public view returns (ReturnProject[] memory return_project) {
         require(
             _account != address(0),
             "Holder account cannot be zero address"
         );
-        uint256[] memory arr = _showHoldersProject(_account);
-        uint256 k = arr.length;
+        uint256[] memory _arr = _showHoldersProject(_account);
 
-        ShowProjectinfo memory info;
-        info._name_arr = new string[](k);
-        info._start_date_arr = new uint256[](k);
-        info._state_arr = new State[](k);
-        info._deadline_arr = new uint256[](k);
-        info._target_money_arr = new uint256[](k);
-        info._get_money_arr = new uint256[](k);
+        ReturnProject[] memory return_p = _copy_data(_arr);
 
-        for (uint256 i = 0; i < k; i++) {
-            uint256 _id = arr[i];
-            info._name_arr[i] = donateProject_map[_id].name;
-            info._start_date_arr[i] = donateProject_map[_id].start_date;
-            info._state_arr[i] = donateProject_map[_id].state;
-            info._deadline_arr[i] = donateProject_map[_id].deadline;
-            info._target_money_arr[i] = donateProject_map[_id].target_money;
-            info._get_money_arr[i] = donateProject_map[_id].get_money;
-        }
-
-        return (
-            arr,
-            info._name_arr,
-            info._state_arr,
-            info._start_date_arr,
-            info._deadline_arr,
-            info._target_money_arr,
-            info._get_money_arr
-        );
+        return (return_p);
     }
 
     function showProjectsFilterDeadline(
-        uint256 now_time
-    )
-        public
-        view
-        returns (
-            uint256[] memory filterDeadline_id_arr,
-            string[] memory name_arr,
-            uint256[] memory start_date_arr,
-            uint256[] memory deadline_arr,
-            uint256[] memory target_money_arr,
-            uint256[] memory get_money_arr
-        )
-    {
+        uint256 _now_time
+    ) public view returns (ReturnProject[] memory return_project) {
         uint256[]
             memory _filterDeadline_id_arr = _showProjectByIDFilterDeadline(
-                now_time
+                _now_time
             );
-        uint256 k = _filterDeadline_id_arr.length;
-
-        ShowProjectinfo memory info;
-
-        info._name_arr = new string[](k);
-        info._start_date_arr = new uint256[](k);
-        info._deadline_arr = new uint256[](k);
-        info._target_money_arr = new uint256[](k);
-        info._get_money_arr = new uint256[](k);
-
-        for (uint256 j = 0; j < k; j++) {
-            info._name_arr[j] = donateProject_map[_filterDeadline_id_arr[j]]
-                .name;
-            info._start_date_arr[j] = donateProject_map[
-                _filterDeadline_id_arr[j]
-            ].start_date;
-            info._deadline_arr[j] = donateProject_map[_filterDeadline_id_arr[j]]
-                .deadline;
-            info._target_money_arr[j] = donateProject_map[
-                _filterDeadline_id_arr[j]
-            ].target_money;
-            info._get_money_arr[j] = donateProject_map[
-                _filterDeadline_id_arr[j]
-            ].get_money;
-        }
-
-        return (
-            _filterDeadline_id_arr,
-            info._name_arr,
-            info._start_date_arr,
-            info._deadline_arr,
-            info._target_money_arr,
-            info._get_money_arr
-        );
+        ReturnProject[] memory return_p = _copy_data(_filterDeadline_id_arr);
+        return (return_p);
     }
 
     function showAllProject()
         public
         view
-        returns (
-            uint256[] memory _project_arr,
-            string[] memory name_arr,
-            uint256[] memory start_date_arr,
-            uint256[] memory deadline_arr,
-            uint256[] memory target_money_arr,
-            uint256[] memory get_money_arr
-        )
+        returns (ReturnProject[] memory return_project)
     {
         uint256[] memory _arr = _showDonateProjectsID();
-        uint256 k = _arr.length;
 
-        ShowProjectinfo memory info;
+        ReturnProject[] memory return_p = _copy_data(_arr);
 
-        info._name_arr = new string[](k);
-        info._start_date_arr = new uint256[](k);
-        info._deadline_arr = new uint256[](k);
-        info._target_money_arr = new uint256[](k);
-        info._get_money_arr = new uint256[](k);
-
-        for (uint256 j = 0; j < k; j++) {
-            uint256 _project_id = _arr[j];
-            info._name_arr[j] = donateProject_map[_project_id].name;
-            info._start_date_arr[j] = donateProject_map[_project_id].start_date;
-            info._deadline_arr[j] = donateProject_map[_project_id].deadline;
-            info._target_money_arr[j] = donateProject_map[_project_id]
-                .target_money;
-            info._get_money_arr[j] = donateProject_map[_project_id].get_money;
-        }
-
-        return (
-            _arr,
-            info._name_arr,
-            info._start_date_arr,
-            info._deadline_arr,
-            info._target_money_arr,
-            info._get_money_arr
-        );
+        return (return_p);
     }
 
     function sortProjectDonorByDonateMoney(
@@ -518,5 +359,29 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return block.timestamp; //合約時間
     }
 
-    ///////////////////F
+    ///////////////////
+
+    function _copy_data(
+        uint256[] memory _project_id_arr
+    ) private view returns (ReturnProject[] memory return_project) {
+        uint256 k = _project_id_arr.length;
+
+        ReturnProject[] memory return_p = new ReturnProject[](k);
+
+        for (uint256 i = 0; i < k; i++) {
+            uint256 _id = _project_id_arr[i];
+            return_p[i].id = _id;
+            return_p[i].name = donateProject_map[_id].name;
+            return_p[i].description = donateProject_map[_id].description;
+            return_p[i].state = donateProject_map[_id].state;
+            return_p[i].start_date = donateProject_map[_id].start_date;
+            return_p[i].deadline = donateProject_map[_id].deadline;
+            return_p[i].target_money = donateProject_map[_id].target_money;
+            return_p[i].get_money = donateProject_map[_id].get_money;
+            return_p[i].holder_account = donateProject_map[_id].holder_account;
+            return_p[i].donor_arr = donateProject_map[_id].donor_arr;
+        }
+
+        return (return_p);
+    }
 }

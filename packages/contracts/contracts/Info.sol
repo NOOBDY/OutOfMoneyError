@@ -4,21 +4,21 @@ pragma solidity ^0.8.0;
 enum State {
     CAN_DONATE,
     FINISH,
-    EXPIRED_SETTLED_FINIDH
+    EXPIRED_SETTLED_FINISH
 }
 
 contract FunctionInfo {
-    struct ShowProjectinfo {
-        uint256[] _project_id_arr;
-        string[] _name_arr;
-        State[] _state_arr;
-        uint256[] _start_date_arr;
-        uint256[] _deadline_arr;
-        uint256[] _target_money_arr;
-        uint256[] _get_money_arr;
-        uint256[] _donor_donate_money;
-        uint256[] _donor_addition_money;
-        uint256[] _settled_project_id_arr;
+    struct ReturnProject {
+        uint256 id;
+        string name;
+        string description;
+        State state;
+        uint256 start_date;
+        uint256 deadline;
+        uint256 target_money;
+        uint256 get_money;
+        address holder_account;
+        address[] donor_arr;
     }
 }
 
