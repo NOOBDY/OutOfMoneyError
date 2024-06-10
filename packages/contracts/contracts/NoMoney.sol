@@ -119,7 +119,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         DonateProject storage project = donateProject_map[_project_id];
         address _donor_account = msg.sender;
 
-        require(project.deadline < _now, "Project not Overdue");
+        require(project.deadline < _now, "Project is not overdue now.");
 
         require(
             _is_donor(_project_id, _donor_account),
@@ -175,7 +175,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         emit return_money(success_return);
         if (!success_return) {
-            revert("error return , contract balance not enough to pay");
+            revert("error return");
         }
 
         return (true, 0);
@@ -183,7 +183,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     //////////////get///////////////
 
-    function getSettleableProjectCountAddition(
+    function getRefundation(
         uint256 _now
     )
         public
