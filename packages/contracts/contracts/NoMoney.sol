@@ -221,7 +221,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     ////////////////////
     function getProjectByID(
         uint256 _project_id
-    ) public view returns (ReturnProject memory return_project) {
+    ) public view returns (Project memory return_project) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
@@ -229,7 +229,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
         uint256[] memory _arr = new uint256[](1);
         _arr[0] = _project_id;
-        ReturnProject[] memory return_p = _copy_data(_arr);
+        Project[] memory return_p = _make_project_object(_arr);
 
         return (return_p[0]);
     }
@@ -238,7 +238,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     function showSettledProjectByAccount(
         uint256 _now
-    ) public view returns (ReturnProject[] memory return_project) {
+    ) public view returns (Project[] memory return_project) {
         address _donor_account = msg.sender;
 
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
@@ -262,41 +262,43 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _have_project_arr[i] = _settled_project_id_arr[i];
         }
 
-        ReturnProject[] memory return_p = _copy_data(_have_project_arr);
+        Project[] memory return_p = _make_project_object(_have_project_arr);
 
         return (return_p);
     }
 
     function showProjectByHolders(
         address _account
-    ) public view returns (ReturnProject[] memory return_project) {
+    ) public view returns (Project[] memory return_project) {
         require(
             _account != address(0),
             "Holder account cannot be zero address"
         );
         uint256[] memory _arr = _showProjectByHolders(_account);
 
-        ReturnProject[] memory return_p = _copy_data(_arr);
+        Project[] memory return_p = _make_project_object(_arr);
 
         return (return_p);
     }
 
     function showAvailableProject(
         uint256 _now
-    ) public view returns (ReturnProject[] memory return_project) {
+    ) public view returns (Project[] memory return_project) {
         uint256[] memory _filterDeadline_id_arr = _showAvailableProject(_now);
-        ReturnProject[] memory return_p = _copy_data(_filterDeadline_id_arr);
+        Project[] memory return_p = _make_project_object(
+            _filterDeadline_id_arr
+        );
         return (return_p);
     }
 
     function showAllProject()
         public
         view
-        returns (ReturnProject[] memory return_project)
+        returns (Project[] memory return_project)
     {
         uint256[] memory _arr = _showDonateProjectsID();
 
-        ReturnProject[] memory return_p = _copy_data(_arr);
+        Project[] memory return_p = _make_project_object(_arr);
 
         return (return_p);
     }
@@ -364,12 +366,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     ///////////////////
 
-    function _copy_data(
+    function _make_project_object(
         uint256[] memory _project_id_arr
-    ) private view returns (ReturnProject[] memory return_project) {
+    ) private view returns (Project[] memory return_project) {
         uint256 k = _project_id_arr.length;
 
-        ReturnProject[] memory return_p = new ReturnProject[](k);
+        Project[] memory return_p = new Project[](k);
 
         for (uint256 i = 0; i < k; i++) {
             uint256 _id = _project_id_arr[i];

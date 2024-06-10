@@ -8,7 +8,7 @@ enum State {
 }
 
 contract FunctionInfo {
-    struct ReturnProject {
+    struct Project {
         uint256 id;
         string name;
         string description;
