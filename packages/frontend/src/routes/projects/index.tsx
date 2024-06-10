@@ -1,4 +1,4 @@
-import { createAsync } from "@solidjs/router";
+import { cache, createAsync } from "@solidjs/router";
 import { readContract } from "@wagmi/core";
 import { For } from "solid-js";
 import { formatEther } from "viem";
@@ -8,6 +8,26 @@ import { Project } from "~/db";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
+
+const showAllProject = cache(async () => {
+    const config = useConfig();
+    const data = await readContract(config, {
+        abi: noneMoneyAbi,
+        address: contractAddress,
+        functionName: "showAllProject"
+    });
+
+    const projects = data[0].map((v, i) => {
+        return {
+            id: v,
+            title: data[1][i],
+            goal: data[4][i],
+            current: data[5][i]
+        } satisfies Project;
+    });
+
+    return projects;
+}, "showAllProject");
 
 function Card(props: Project) {
     return (
@@ -29,26 +49,7 @@ function Card(props: Project) {
 }
 
 export default function () {
-    const config = useConfig();
-
-    const projects = createAsync(async () => {
-        const data = await readContract(config, {
-            abi: noneMoneyAbi,
-            address: contractAddress,
-            functionName: "showAllProject"
-        });
-
-        const projects = data[0].map((v, i) => {
-            return {
-                id: v,
-                title: data[1][i],
-                goal: data[4][i],
-                current: data[5][i]
-            } satisfies Project;
-        });
-
-        return projects;
-    });
+    const projects = createAsync(async () => showAllProject());
 
     return (
         <>

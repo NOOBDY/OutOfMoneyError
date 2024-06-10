@@ -4,10 +4,9 @@ import { Show, createEffect, createSignal } from "solid-js";
 import { Address } from "viem";
 import { useAccount } from "~/hooks/useAccount";
 import { useDarkMode } from "~/hooks/useDarkMode";
-import { NewProjectForm } from "../routes/projects/new";
 
 export function AddressDropdown(
-    props: FieldElementProps<NewProjectForm, "address"> & {
+    props: FieldElementProps<{ address: Address }, "address"> & {
         value: Address | undefined;
     }
 ) {
@@ -39,8 +38,8 @@ export function AddressDropdown(
                                 classList={{ dark: darkMode() }}
                             >
                                 <Select.ItemLabel
-                                    class="w-full border bg-neutral-100
-                                    px-2 dark:bg-neutral-800 dark:text-white"
+                                    class="w-full border bg-neutral-100 px-2
+                                    font-mono dark:bg-neutral-800 dark:text-white"
                                 >
                                     {props.item.rawValue}
                                 </Select.ItemLabel>
@@ -50,8 +49,8 @@ export function AddressDropdown(
                         <Select.Label class="font-mono">Address</Select.Label>
                         <Select.HiddenSelect {...props} />
                         <Select.Trigger
-                            class="w-full border bg-neutral-100 px-2
-                            text-left dark:bg-neutral-800 dark:text-white"
+                            class="w-full overflow-hidden border bg-neutral-100
+                            px-2 text-left font-mono dark:bg-neutral-800 dark:text-white"
                         >
                             <Select.Value<Address>>
                                 {state => state.selectedOption()}

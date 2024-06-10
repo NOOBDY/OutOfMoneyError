@@ -16,7 +16,7 @@ const NewProjectSchema = z.object({
     address: z.custom<Address>(data => data, "Address required")
 });
 
-export type NewProjectForm = z.infer<typeof NewProjectSchema>;
+type NewProjectForm = z.infer<typeof NewProjectSchema>;
 
 export default function () {
     const navigate = useNavigate();
@@ -31,8 +31,6 @@ export default function () {
         event
     ) => {
         event.preventDefault();
-
-        console.log(values);
 
         const toUnix = (date: Date) =>
             BigInt((date.getTime() / 1000).toFixed(0));
@@ -51,7 +49,8 @@ export default function () {
                 toUnix(now),
                 toUnix(deadline),
                 parseEther(values.goal.toString())
-            ]
+            ],
+            account: values.address
         });
 
         await writeContract(config, request);
