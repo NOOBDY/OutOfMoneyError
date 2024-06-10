@@ -49,7 +49,7 @@ export default function () {
             args: [id]
         });
 
-        const deadline = new Date(Math.floor(Number(data[5]) * 1000));
+        const deadline = new Date(Number(data[5]) * 1000);
 
         setState(data[3] as State);
 
@@ -120,7 +120,7 @@ export default function () {
 
                             <div class="mb-4">
                                 <p class="font-mono">
-                                    {project.deadline.toLocaleString()}
+                                    {project.deadline.toLocaleDateString()}
                                 </p>
                             </div>
 
