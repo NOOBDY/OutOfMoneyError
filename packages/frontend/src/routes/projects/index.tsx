@@ -4,7 +4,7 @@ import { For } from "solid-js";
 import { formatEther } from "viem";
 import Link from "~/components/Link";
 import Progress from "~/components/Progress";
-import { Project } from "~/db";
+import { Project } from "~/types";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";

@@ -1,14 +1,13 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createResource } from "solid-js";
-import { isServer } from "solid-js/web";
+import { Show, createResource, createSignal } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
 import { Button } from "~/components/Button";
 import Progress from "~/components/Progress";
-import { Project } from "~/db";
+import { Project, State } from "~/types";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
@@ -34,6 +33,8 @@ export default function () {
     const config = useConfig();
     const params = useParams();
 
+    const [state, setState] = createSignal<State>();
+
     const [donateForm, { Form, Field }] = createForm<DonateForm>({
         validate: zodForm(DonateSchema),
         revalidateOn: "input"
@@ -48,6 +49,8 @@ export default function () {
             args: [id]
         });
 
+        setState(data[3] as State);
+
         return {
             id: id,
             title: data[0],
@@ -60,13 +63,8 @@ export default function () {
     const handleSubmit: SubmitHandler<DonateForm> = async (values, event) => {
         event.preventDefault();
 
-        console.log("submit");
-
         try {
             const id = BigInt(params.id);
-
-            console.log(isServer);
-            console.log(config.connectors);
 
             const { request } = await simulateContract(config, {
                 abi: noneMoneyAbi,
@@ -117,68 +115,74 @@ export default function () {
                                 />
                             </div>
 
-                            <Form
-                                onSubmit={handleSubmit}
-                                class="flex flex-col space-y-4"
-                            >
-                                <Field name="address">
-                                    {(field, props) => (
-                                        <div>
-                                            <AddressDropdown
-                                                {...props}
-                                                value={field.value}
-                                            />
-                                            {field.error && (
-                                                <p class="text-red-600">
-                                                    {field.error}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                </Field>
-
-                                <Field name="value" type="number">
-                                    {(field, props) => (
-                                        <div class="flex flex-col">
-                                            <label
-                                                for={field.name}
-                                                class="font-mono"
-                                            >
-                                                Value
-                                            </label>
-                                            <br />
-                                            <div class="flex">
-                                                <input
+                            <Show when={state() === 0}>
+                                <Form
+                                    onSubmit={handleSubmit}
+                                    class="flex flex-col space-y-4"
+                                >
+                                    <Field name="address">
+                                        {(field, props) => (
+                                            <div>
+                                                <AddressDropdown
                                                     {...props}
-                                                    id={field.name}
                                                     value={field.value}
-                                                    type="number"
-                                                    min={0}
-                                                    required
-                                                    class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
                                                 />
-                                                <p class="border border-l-0 px-1 font-mono">
-                                                    ETH
-                                                </p>
+                                                {field.error && (
+                                                    <p class="text-red-600">
+                                                        {field.error}
+                                                    </p>
+                                                )}
                                             </div>
-                                            {field.error && (
-                                                <p class="text-red-600">
-                                                    {field.error}
-                                                </p>
-                                            )}
-                                        </div>
-                                    )}
-                                </Field>
+                                        )}
+                                    </Field>
 
-                                <div class="mx-auto">
-                                    <Button
-                                        type="submit"
-                                        disabled={donateForm.invalid}
-                                    >
-                                        Donate
-                                    </Button>
-                                </div>
-                            </Form>
+                                    <Field name="value" type="number">
+                                        {(field, props) => (
+                                            <div class="flex flex-col">
+                                                <label
+                                                    for={field.name}
+                                                    class="font-mono"
+                                                >
+                                                    Value
+                                                </label>
+                                                <br />
+                                                <div class="flex">
+                                                    <input
+                                                        {...props}
+                                                        id={field.name}
+                                                        value={field.value}
+                                                        type="number"
+                                                        min={0}
+                                                        required
+                                                        class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
+                                                    />
+                                                    <p class="border border-l-0 px-1 font-mono">
+                                                        ETH
+                                                    </p>
+                                                </div>
+                                                {field.error && (
+                                                    <p class="text-red-600">
+                                                        {field.error}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        )}
+                                    </Field>
+
+                                    <div class="mx-auto">
+                                        <Button
+                                            type="submit"
+                                            disabled={donateForm.invalid}
+                                        >
+                                            Donate
+                                        </Button>
+                                    </div>
+                                </Form>
+                            </Show>
+
+                            <Show when={state() === 1}>
+                                <p class="font-mono">Goal Achieved!</p>
+                            </Show>
                         </div>
                     </div>
                 </div>
