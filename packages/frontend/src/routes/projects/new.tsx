@@ -13,7 +13,13 @@ const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
     description: z.string().min(1, { message: "Description required" }),
     goal: z.coerce.number().gt(0.001),
-    address: z.custom<Address>(data => data, "Address required")
+    address: z.custom<Address>(data => data, "Address required"),
+    deadline: z
+        .string()
+        .date()
+        .refine(data => new Date(data) > new Date(), {
+            message: "Date must be greater than now"
+        })
 });
 
 type NewProjectForm = z.infer<typeof NewProjectSchema>;
@@ -35,10 +41,9 @@ export default function () {
         const toUnix = (date: Date) =>
             BigInt((date.getTime() / 1000).toFixed(0));
 
-        // TODO: add date picker
         const now = new Date();
-        const deadline = new Date(now);
-        deadline.setDate(now.getDate() + 1);
+        const deadline = new Date(values.deadline);
+
         const { request } = await simulateContract(config, {
             abi: noneMoneyAbi,
             address: contractAddress,
@@ -128,6 +133,28 @@ export default function () {
                                     ETH
                                 </p>
                             </div>
+                            {field.error && (
+                                <p class="text-red-600">{field.error}</p>
+                            )}
+                        </div>
+                    )}
+                </Field>
+
+                <Field name="deadline">
+                    {(field, props) => (
+                        <div class="flex flex-col">
+                            <label for={field.name} class="font-mono">
+                                Deadline
+                            </label>
+                            <br />
+                            <input
+                                {...props}
+                                id={field.name}
+                                value={field.value}
+                                type="date"
+                                required
+                                class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
+                            />
                             {field.error && (
                                 <p class="text-red-600">{field.error}</p>
                             )}
