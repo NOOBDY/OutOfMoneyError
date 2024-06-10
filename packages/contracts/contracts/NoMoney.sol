@@ -235,11 +235,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     function showSettledProjectByAccount(
         uint256 _now_time
-    )
-        public
-        view
-        returns (uint256[] memory arr, ReturnProject[] memory return_project)
-    {
+    ) public view returns (ReturnProject[] memory return_project) {
         address _donor_account = msg.sender;
 
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
@@ -265,7 +261,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         ReturnProject[] memory return_p = _copy_data(_have_project_arr);
 
-        return (_have_project_arr, return_p);
+        return (return_p);
     }
 
     function showProjectByHolders(
