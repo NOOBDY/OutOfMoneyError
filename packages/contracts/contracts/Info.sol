@@ -187,7 +187,7 @@ contract INoneMoney {
         return (donateProject_arr);
     }
 
-    function _showHoldersProject(
+    function _showProjectByHolders(
         address _account
     ) internal view returns (uint256[] memory _hold_project_arr) {
         address holder = _account;

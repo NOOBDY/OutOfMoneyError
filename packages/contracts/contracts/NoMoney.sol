@@ -268,14 +268,14 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return (_have_project_arr, return_p);
     }
 
-    function showHoldersProject(
+    function showProjectByHolders(
         address _account
     ) public view returns (ReturnProject[] memory return_project) {
         require(
             _account != address(0),
             "Holder account cannot be zero address"
         );
-        uint256[] memory _arr = _showHoldersProject(_account);
+        uint256[] memory _arr = _showProjectByHolders(_account);
 
         ReturnProject[] memory return_p = _copy_data(_arr);
 
