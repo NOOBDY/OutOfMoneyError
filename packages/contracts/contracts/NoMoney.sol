@@ -89,6 +89,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                     value: (temp_money - target_money)
                 }("");
                 emit return_money(success_donor);
+
+                if (!success_donor) {
+                    revert("return money error");
+                }
             }
 
             project.donor_map[_donor_account].donate_money +=
