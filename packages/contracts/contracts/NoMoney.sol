@@ -29,7 +29,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         require(_deadline > 0, "Set _deadline must be greater than 0");
         require(
-            _start_date < _deadline,
+            _start_date <= _deadline,
             "_start_date should less then _deadline"
         );
 
