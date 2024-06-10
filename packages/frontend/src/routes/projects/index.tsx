@@ -18,11 +18,13 @@ const showAllProject = cache(async () => {
     });
 
     const projects = data[0].map((v, i) => {
+        const deadline = new Date(Math.floor(Number(data[3][i]) * 1000));
         return {
             id: v,
             title: data[1][i],
             goal: data[4][i],
-            current: data[5][i]
+            current: data[5][i],
+            deadline: deadline
         } satisfies Project;
     });
 
@@ -33,7 +35,8 @@ function Card(props: Project) {
     return (
         <div class="flex min-h-32 flex-col border font-mono">
             <div class="grow break-words px-2 py-1">
-                <h1>{props.title}</h1>
+                <h1 class="font-bold">{props.title}</h1>
+                <p class="text-sm">{props.deadline.toLocaleDateString()}</p>
             </div>
 
             <div class="px-2 text-end font-bold">

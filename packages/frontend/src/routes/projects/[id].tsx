@@ -49,6 +49,8 @@ export default function () {
             args: [id]
         });
 
+        const deadline = new Date(Math.floor(Number(data[5]) * 1000));
+
         setState(data[3] as State);
 
         return {
@@ -56,7 +58,8 @@ export default function () {
             title: data[0],
             description: data[1],
             goal: data[6],
-            current: data[7]
+            current: data[7],
+            deadline: deadline
         } satisfies Project;
     });
 
@@ -113,6 +116,12 @@ export default function () {
                                     )}
                                     goal={Number(formatEther(project.goal))}
                                 />
+                            </div>
+
+                            <div class="mb-4">
+                                <p class="font-mono">
+                                    {project.deadline.toLocaleString()}
+                                </p>
                             </div>
 
                             <Show when={state() === 0}>

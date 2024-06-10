@@ -9,4 +9,5 @@ export type Project = {
     description?: string;
     goal: bigint;
     current: bigint;
+    deadline: Date;
 };
