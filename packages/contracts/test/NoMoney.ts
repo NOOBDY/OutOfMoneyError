@@ -219,7 +219,6 @@ describe("test NoneMoney contract", function () {
         it("showAllProject", async function () {
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
-            const now = await NoneMoney.read.getCurrentTimestamp();
             await NoneMoney.write.addProject(
                 ["project", "test", 100n, 101n, 2000000000000000n],
                 {
