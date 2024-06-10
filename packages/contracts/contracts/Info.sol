@@ -130,7 +130,7 @@ contract INoneMoney {
     }
 
     function _showAvailableProject(
-        uint256 now_time
+        uint256 _now
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
@@ -138,7 +138,7 @@ contract INoneMoney {
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (now_time < donateProject_map[i].deadline) &&
+                (_now < donateProject_map[i].deadline) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
@@ -155,7 +155,7 @@ contract INoneMoney {
     }
 
     function _showProjectsAfterDeadline(
-        uint256 now_time
+        uint256 _now
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
@@ -163,7 +163,7 @@ contract INoneMoney {
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (now_time > donateProject_map[i].deadline) &&
+                (_now > donateProject_map[i].deadline) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;

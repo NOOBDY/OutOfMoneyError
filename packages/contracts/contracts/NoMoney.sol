@@ -67,7 +67,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         DonateProject storage project = donateProject_map[_project_id];
 
-        require(project.state == State.CAN_DONATE, "this can't donate");
+        require(
+            project.state == State.CAN_DONATE,
+            "The specific project is unable to donate"
+        );
 
         uint256 temp_money = project.get_money + input_money;
         uint256 target_money = project.target_money;
@@ -105,7 +108,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     function settleOverdueProject(
         uint256 _project_id,
-        uint256 _now_time
+        uint256 _now
     ) public payable returns (bool clear_success, uint256 addtional_money) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -116,7 +119,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         DonateProject storage project = donateProject_map[_project_id];
         address _donor_account = msg.sender;
 
-        require(project.deadline < _now_time, "Project not Overdue");
+        require(project.deadline < _now, "Project not Overdue");
 
         require(
             _is_donor(_project_id, _donor_account),
@@ -181,7 +184,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     //////////////get///////////////
 
     function getSettleableProjectCountAddition(
-        uint256 _now_time
+        uint256 _now
     )
         public
         view
@@ -193,7 +196,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     {
         address _donor_account = msg.sender;
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
-            _now_time
+            _now
         );
         uint256 k = _filterDeadline_id_arr.length;
 
@@ -234,12 +237,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     /////////show////////////
 
     function showSettledProjectByAccount(
-        uint256 _now_time
+        uint256 _now
     ) public view returns (ReturnProject[] memory return_project) {
         address _donor_account = msg.sender;
 
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
-            _now_time
+            _now
         );
         uint256 length = _filterDeadline_id_arr.length;
         uint256 k = 0;
@@ -279,11 +282,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function showAvailableProject(
-        uint256 _now_time
+        uint256 _now
     ) public view returns (ReturnProject[] memory return_project) {
-        uint256[] memory _filterDeadline_id_arr = _showAvailableProject(
-            _now_time
-        );
+        uint256[] memory _filterDeadline_id_arr = _showAvailableProject(_now);
         ReturnProject[] memory return_p = _copy_data(_filterDeadline_id_arr);
         return (return_p);
     }
