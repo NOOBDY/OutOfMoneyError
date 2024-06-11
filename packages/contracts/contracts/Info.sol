@@ -4,21 +4,21 @@ pragma solidity ^0.8.0;
 enum State {
     CAN_DONATE,
     FINISH,
-    EXPIRED_SETTLED_FINIDH
+    EXPIRED_SETTLED_FINISH
 }
 
 contract FunctionInfo {
-    struct ShowProjectinfo {
-        uint256[] _project_id_arr;
-        string[] _name_arr;
-        State[] _state_arr;
-        uint256[] _start_date_arr;
-        uint256[] _deadline_arr;
-        uint256[] _target_money_arr;
-        uint256[] _get_money_arr;
-        uint256[] _donor_donate_money;
-        uint256[] _donor_addition_money;
-        uint256[] _settled_project_id_arr;
+    struct Project {
+        uint256 id;
+        string name;
+        string description;
+        State state;
+        uint256 start_date;
+        uint256 deadline;
+        uint256 target_money;
+        uint256 get_money;
+        address holder_account;
+        address[] donor_arr;
     }
 }
 
@@ -129,19 +129,16 @@ contract INoneMoney {
         );
     }
 
-    function _showProjectByIDFilterDeadline()
-        internal
-        view
-        returns (uint256[] memory _DonateProjects_arr)
-    {
+    function _showAvailableProject(
+        uint256 _now
+    ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
         uint256 k = 0;
-        uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (now_time < donateProject_map[i].deadline) &&
+                (_now < donateProject_map[i].deadline) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
@@ -157,19 +154,16 @@ contract INoneMoney {
         return (result);
     }
 
-    function _showProjectsAfterDeadline()
-        internal
-        view
-        returns (uint256[] memory _DonateProjects_arr)
-    {
+    function _showProjectsAfterDeadline(
+        uint256 _now
+    ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
         uint256 k = 0;
-        uint256 now_time = block.timestamp;
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (now_time > donateProject_map[i].deadline) &&
+                (_now > donateProject_map[i].deadline) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
@@ -193,7 +187,7 @@ contract INoneMoney {
         return (donateProject_arr);
     }
 
-    function _showHoldersProject(
+    function _showProjectByHolders(
         address _account
     ) internal view returns (uint256[] memory _hold_project_arr) {
         address holder = _account;
