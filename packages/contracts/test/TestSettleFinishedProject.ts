@@ -46,10 +46,6 @@ describe("SettleFinishedProject", () => {
             value: 10000000000000000n,
             account: donor2.account
         });
-        const prevBalance = await ethers.provider.getBalance(
-            holder.account.address
-        );
-
         await NoneMoney.write.settleFinishProject([0n], {
             account: holder.account
         });
