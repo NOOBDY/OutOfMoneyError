@@ -16,7 +16,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[0]).to.deep.equal([0n, 1n]);
+        expect(projects[0].id).to.be.equal(0n);
+        expect(projects[1].id).to.be.equal(1n);
     });
     it("Test show all project should return correct project name array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -26,7 +27,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[1]).to.deep.equal(["name", "name"]);
+        expect(projects[0].name).to.deep.equal("name");
+        expect(projects[1].name).to.deep.equal("name");
     });
     it("Test show all project should return correct project start date array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -36,7 +38,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[2]).to.deep.equal([100n, 100n]);
+        expect(projects[0].start_date).to.deep.equal(100n);
+        expect(projects[1].start_date).to.deep.equal(100n);
     });
     it("Test show all project should return correct project deadline array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -46,7 +49,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[3]).to.deep.equal([100n, 100n]);
+        expect(projects[0].deadline).to.deep.equal(100n);
+        expect(projects[1].deadline).to.deep.equal(100n);
     });
     it("Test show all project should return correct project target_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -56,10 +60,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[4]).to.deep.equal([
-            20000000000000000n,
-            20000000000000000n
-        ]);
+        expect(projects[0].target_money).to.deep.equal(20000000000000000n);
+        expect(projects[1].target_money).to.deep.equal(20000000000000000n);
     });
     it("Test show all project should return correct project get_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -69,6 +71,7 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[5]).to.deep.equal([0n, 0n]);
+        expect(projects[0].get_money).to.deep.equal(0n);
+        expect(projects[1].get_money).to.deep.equal(0n);
     });
 });

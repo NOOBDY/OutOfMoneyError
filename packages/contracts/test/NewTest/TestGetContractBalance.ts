@@ -13,11 +13,11 @@ describe("GetContractBalance", () => {
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
         await addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 20000000000000000n,
             account: donor.account
         });
-        await NoneMoney.write.addProjectDonor([1n], {
+        await NoneMoney.write.donate([1n], {
             value: 20000000000000000n,
             account: donor.account
         });

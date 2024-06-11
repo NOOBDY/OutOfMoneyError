@@ -12,11 +12,11 @@ describe("SettleFinishedProject", () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor1.account
         });
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor2.account
         });
@@ -37,7 +37,7 @@ describe("SettleFinishedProject", () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor1.account
         });
@@ -52,7 +52,7 @@ describe("SettleFinishedProject", () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor1.account
         });
@@ -67,7 +67,7 @@ describe("SettleFinishedProject", () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor1.account
         });
@@ -81,8 +81,8 @@ describe("SettleFinishedProject", () => {
     it("Test settle finished project with absent project ID should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1] = await hre.viem.getWalletClients();
-        addProject(NoneMoney, holder.account.address);
-        await NoneMoney.write.addProjectDonor([0n], {
+        await addProject(NoneMoney, holder.account.address);
+        await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor1.account
         });
