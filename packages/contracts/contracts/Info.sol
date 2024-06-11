@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 enum State {
     CAN_DONATE,
     FINISH,
-    EXPIRED_SETTLED_FINISH
+    EXPIRED_SETTLED_FINISH,
+    GOAL_ACHIEVED_SETTLED_FINISH
 }
 
 contract FunctionInfo {
@@ -51,6 +52,33 @@ contract INoneMoney {
     address[] holder_arr;
 
     ///
+
+    function _is_return(
+        uint256 _project_id,
+        address _account
+    ) internal view returns (bool) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+        DonateProject storage project = donateProject_map[_project_id];
+        return (project.donor_map[_account].is_return);
+    }
+
+    function _is_return(uint256 _project_id) internal view returns (bool) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+        DonateProject storage project = donateProject_map[_project_id];
+
+        if (project.state == State.GOAL_ACHIEVED_SETTLED_FINISH) {
+            return (true);
+        }
+        return (false);
+    }
 
     function _is_holder(address _account) internal view returns (bool) {
         for (uint256 i = 0; i < holder_arr.length; i++) {

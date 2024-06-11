@@ -174,6 +174,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             revert("error return");
         }
 
+        project.state = State.GOAL_ACHIEVED_SETTLED_FINISH;
+
         return (true, 0);
     }
 
@@ -348,6 +350,37 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
 
         return (donor_arr, donate_money_arr);
+    }
+
+    function donor_is_return(
+        uint256 _project_id
+    ) public view returns (bool is_return) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+
+        address _account = msg.sender;
+        require(_is_donor(_project_id, _account), "not this project donor");
+
+        return (_is_return(_project_id, _account));
+    }
+
+    function holder_is_return(
+        uint256 _project_id
+    ) public view returns (bool is_return) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+
+        address _account = msg.sender;
+
+        require(_is_holder(_project_id, _account), "not this project holder");
+
+        return (_is_return(_project_id));
     }
 
     //////////////////
