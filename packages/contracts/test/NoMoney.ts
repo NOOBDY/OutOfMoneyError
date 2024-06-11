@@ -45,8 +45,8 @@ describe("test NoneMoney contract", function () {
                 getAddress(holder.account.address)
             );
             expect(project.state).to.equal(0); //state
-            expect(project.start_date).to.equal(100n); //start_date
-            expect(project.deadline).to.equal(101n); //deadline
+            expect(project.start_date_timestamp).to.equal(100n); //start_date_timestamp
+            expect(project.deadline_timestamp).to.equal(101n); //deadline_timestamp
             expect(project.target_money).to.equal(20000000000000000n); //target
             expect(project.get_money).to.equal(0n); //get
         });
@@ -243,8 +243,8 @@ describe("test NoneMoney contract", function () {
                 getAddress(holder.account.address)
             );
             expect(all_project[0].state).to.equal(0);
-            expect(all_project[0].start_date).to.equal(100n);
-            expect(all_project[0].deadline).to.equal(101n);
+            expect(all_project[0].start_date_timestamp).to.equal(100n);
+            expect(all_project[0].deadline_timestamp).to.equal(101n);
             expect(all_project[0].target_money).to.equal(2000000000000000n);
             expect(all_project[0].get_money).to.equal(0n);
 
@@ -289,8 +289,8 @@ describe("test NoneMoney contract", function () {
                 getAddress(holder.account.address)
             );
             expect(avaliable_project[0].state).to.equal(0);
-            expect(avaliable_project[0].start_date).to.equal(100n);
-            expect(avaliable_project[0].deadline).to.equal(110n);
+            expect(avaliable_project[0].start_date_timestamp).to.equal(100n);
+            expect(avaliable_project[0].deadline_timestamp).to.equal(110n);
             expect(avaliable_project[0].target_money).to.equal(
                 2000000000000000n
             );
@@ -330,8 +330,8 @@ describe("test NoneMoney contract", function () {
                 getAddress(holder1.account.address)
             );
             expect(holder1_have_project[0].state).to.equal(0);
-            expect(holder1_have_project[0].start_date).to.equal(100n);
-            expect(holder1_have_project[0].deadline).to.equal(101n);
+            expect(holder1_have_project[0].start_date_timestamp).to.equal(100n);
+            expect(holder1_have_project[0].deadline_timestamp).to.equal(101n);
             expect(holder1_have_project[0].target_money).to.equal(
                 2000000000000000n
             );

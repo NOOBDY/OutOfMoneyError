@@ -3,10 +3,7 @@ pragma solidity ^0.8.0;
 import "./Info.sol";
 
 contract NoneMoney is INoneMoney, FunctionInfo {
-    modifier onlyOwner() {
-        require(owner == msg.sender, "Only Owner"); //檢查是否為管理者
-        _;
-    }
+    address owner;
 
     constructor() {
         owner = msg.sender;
@@ -15,7 +12,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     function addProject(
         string memory _name,
         string memory _description,
-        uint256 _start_date,
+        uint256 _start_date_timestamp,
         uint256 _deadline,
         uint256 _target_money
     ) public {
@@ -29,8 +26,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         require(_deadline > 0, "Set _deadline must be greater than 0");
         require(
-            _start_date <= _deadline,
-            "_start_date should less then _deadline"
+            _start_date_timestamp <= _deadline,
+            "_start_date_timestamp should less then _deadline"
         );
 
         uint256 _id = donateProject_arr.length;
@@ -41,8 +38,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         p.name = _name;
         p.description = _description;
         p.state = State.CAN_DONATE;
-        p.start_date = _start_date;
-        p.deadline = _deadline;
+        p.start_date_timestamp = _start_date_timestamp;
+        p.deadline_timestamp = _deadline;
         p.get_money = 0;
         p.target_money = _target_money;
         p.get_money = 0;
@@ -119,7 +116,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         DonateProject storage project = donateProject_map[_project_id];
         address _donor_account = msg.sender;
 
-        require(project.deadline < _now, "Project is not overdue now.");
+        require(
+            project.deadline_timestamp < _now,
+            "Project is not overdue now."
+        );
 
         require(
             _is_donor(_project_id, _donor_account),
@@ -379,8 +379,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             return_p[i].name = donateProject_map[_id].name;
             return_p[i].description = donateProject_map[_id].description;
             return_p[i].state = donateProject_map[_id].state;
-            return_p[i].start_date = donateProject_map[_id].start_date;
-            return_p[i].deadline = donateProject_map[_id].deadline;
+            return_p[i].start_date_timestamp = donateProject_map[_id]
+                .start_date_timestamp;
+            return_p[i].deadline_timestamp = donateProject_map[_id]
+                .deadline_timestamp;
             return_p[i].target_money = donateProject_map[_id].target_money;
             return_p[i].get_money = donateProject_map[_id].get_money;
             return_p[i].holder_account = donateProject_map[_id].holder_account;
