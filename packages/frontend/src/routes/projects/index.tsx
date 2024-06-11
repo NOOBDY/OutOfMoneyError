@@ -8,6 +8,7 @@ import { Project } from "~/types";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
+import { fromUnix } from "~/lib/unix";
 
 const showAllProject = cache(async () => {
     const config = useConfig();
@@ -18,15 +19,15 @@ const showAllProject = cache(async () => {
     });
 
     const projects = data.map(v => {
-        const deadline = new Date(
-            Math.floor(Number(v.deadline_timestamp) * 1000)
-        );
+        const deadline = fromUnix(v.deadline_timestamp);
+
         return {
             id: v.id,
             title: v.name,
             goal: v.target_money,
             current: v.get_money,
-            deadline: deadline
+            deadline: deadline,
+            owner: v.holder_account
         } satisfies Project;
     });
 

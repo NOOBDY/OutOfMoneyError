@@ -1,3 +1,5 @@
+import { Address } from "viem";
+
 export type State =
     | 0 // CAN_DONATE
     | 1 // FINISH
@@ -10,4 +12,5 @@ export type Project = {
     goal: bigint;
     current: bigint;
     deadline: Date;
+    owner: Address;
 };

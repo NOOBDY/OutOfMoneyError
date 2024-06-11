@@ -8,6 +8,7 @@ import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
 import { AddressDropdown } from "~/components/AddressDropdown";
+import { toUnix } from "~/lib/unix";
 
 const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
@@ -37,9 +38,6 @@ export default function () {
         event
     ) => {
         event.preventDefault();
-
-        const toUnix = (date: Date) =>
-            BigInt((date.getTime() / 1000).toFixed(0));
 
         const now = new Date();
         const deadline = new Date(values.deadline);

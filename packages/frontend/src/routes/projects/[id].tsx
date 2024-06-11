@@ -11,6 +11,8 @@ import { Project, State } from "~/types";
 import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
+import { useAccount } from "~/hooks/useAccount";
+import { toUnix } from "~/lib/unix";
 
 const DonateSchema = z.object({
     value: z.coerce.number().gt(0),
@@ -32,6 +34,8 @@ function NotFound() {
 export default function () {
     const config = useConfig();
     const params = useParams();
+
+    const [account] = useAccount();
 
     const [state, setState] = createSignal<State>();
 
@@ -59,7 +63,8 @@ export default function () {
             description: data.description,
             goal: data.target_money,
             current: data.get_money,
-            deadline: deadline
+            deadline: deadline,
+            owner: data.holder_account
         } satisfies Project;
     });
 
@@ -88,6 +93,41 @@ export default function () {
         }
 
         refetch();
+    };
+
+    const settleFinishProject = async () => {
+        try {
+            const id = BigInt(params.id);
+
+            const { request } = await simulateContract(config, {
+                abi: noneMoneyAbi,
+                address: contractAddress,
+                functionName: "settleFinishProject",
+                args: [id]
+            });
+
+            await writeContract(config, request);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const settleOverdueProject = async () => {
+        try {
+            const id = BigInt(params.id);
+            const now = toUnix(new Date());
+
+            const { request } = await simulateContract(config, {
+                abi: noneMoneyAbi,
+                address: contractAddress,
+                functionName: "settleOverdueProject",
+                args: [id, now]
+            });
+
+            await writeContract(config, request);
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (
@@ -194,7 +234,18 @@ export default function () {
                             </Show>
 
                             <Show when={state() === 1}>
-                                <p class="font-mono">Goal Achieved!</p>
+                                <div class="w-full text-center">
+                                    <p class="mb-4 font-mono text-lg">
+                                        🎉 Goal Achieved! 🎉
+                                    </p>
+                                    <Show
+                                        when={project.owner === account.address}
+                                    >
+                                        <Button onClick={settleFinishProject}>
+                                            Receive Funds
+                                        </Button>
+                                    </Show>
+                                </div>
                             </Show>
                         </div>
                     </div>

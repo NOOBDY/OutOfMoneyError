@@ -8,7 +8,7 @@ export function Button<T extends ValidComponent = "button">(
     return (
         <KButton
             {...props}
-            class="min-w-32 border border-black px-1 pb-1 pt-0.5 font-mono
+            class="min-w-32 border border-black px-4 pb-1 pt-0.5 font-mono
             transition hover:border-green-600 hover:bg-green-600
             disabled:border-neutral-200 disabled:bg-neutral-200
             disabled:text-neutral-600 dark:border-white
