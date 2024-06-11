@@ -85,7 +85,9 @@ describe("Add Project", () => {
 
         const project = await NoneMoney.read.getProjectByID([0n]);
 
-        expect(project.holder_account).to.equal(getAddress(holder.account.address));
+        expect(project.holder_account).to.equal(
+            getAddress(holder.account.address)
+        );
     });
     it("Test to add the project with correct parameter should have correct state", async () => {
         const NoneMoney = await loadFixture(deployMainContract);

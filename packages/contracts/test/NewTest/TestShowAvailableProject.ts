@@ -32,106 +32,108 @@ const setupExampleProject = async (NoneMoney: any, address: `0x${string}`) => {
             account: address
         }
     );
-}
+};
 
 describe("ShowAvailableProject", () => {
     it("Test show available project should return correct project ID", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].id).to.be.equal(1n)
-    })
+        expect(projects[0].id).to.be.equal(1n);
+    });
     it("Test show available project should return correct name", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].name).to.be.equal("name")
-    })
+        expect(projects[0].name).to.be.equal("name");
+    });
     it("Test show available project should return correct description", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].description).to.be.equal("description")
-    })
+        expect(projects[0].description).to.be.equal("description");
+    });
     it("Test show available project should return correct state", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].state).to.be.equal(0)
-    })
+        expect(projects[0].state).to.be.equal(0);
+    });
     it("Test show available project should return correct start_date", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].start_date).to.be.equal(100n)
-    })
+        expect(projects[0].start_date).to.be.equal(100n);
+    });
     it("Test show available project should return correct deadline", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].deadline).to.be.equal(200n)
-    })
+        expect(projects[0].deadline).to.be.equal(200n);
+    });
     it("Test show available project should return correct target_money", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].target_money).to.be.equal(10000000000000000n)
-    })
+        expect(projects[0].target_money).to.be.equal(10000000000000000n);
+    });
     it("Test show available project should return correct get_money", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].get_money).to.be.equal(0n)
-    })
+        expect(projects[0].get_money).to.be.equal(0n);
+    });
     it("Test show available project should return correct holder_account", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
-        await setupExampleProject(NoneMoney, holder.account.address)
+        await setupExampleProject(NoneMoney, holder.account.address);
 
         const projects = await NoneMoney.read.showAvailableProject([150n], {
             account: holder.account.address
-        })
+        });
 
-        expect(projects[0].holder_account).to.be.equal(getAddress(holder.account.address))
-    })
-})
+        expect(projects[0].holder_account).to.be.equal(
+            getAddress(holder.account.address)
+        );
+    });
+});

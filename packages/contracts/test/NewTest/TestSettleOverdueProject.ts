@@ -1,4 +1,7 @@
-import { loadFixture, time } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import {
+    loadFixture,
+    time
+} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { addProject } from "./util";

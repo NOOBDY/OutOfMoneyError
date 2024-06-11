@@ -16,17 +16,21 @@ describe("SortProjectDonorByDonateMoney", () => {
         await NoneMoney.write.donate([0n], {
             value: 48763n,
             account: donor1.account.address
-        })
+        });
         await NoneMoney.write.donate([0n], {
             value: 88888n,
             account: donor2.account.address
-        })
+        });
 
-        const donorRecordArray = await NoneMoney.read.sortProjectDonorByDonateMoney([0n], {
-            account: holder.account.address
-        })
+        const donorRecordArray =
+            await NoneMoney.read.sortProjectDonorByDonateMoney([0n], {
+                account: holder.account.address
+            });
 
-        expect(donorRecordArray[0]).to.deep.equal([getAddress(donor2.account.address), getAddress(donor1.account.address)])
-        expect(donorRecordArray[1]).to.deep.equal([88888n, 48763n])
-    })
-})
+        expect(donorRecordArray[0]).to.deep.equal([
+            getAddress(donor2.account.address),
+            getAddress(donor1.account.address)
+        ]);
+        expect(donorRecordArray[1]).to.deep.equal([88888n, 48763n]);
+    });
+});

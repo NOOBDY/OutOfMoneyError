@@ -33,7 +33,9 @@ describe("Donate", () => {
 
         const project = await NoneMoney.read.getProjectByID([0n]);
 
-        expect(project.donor_arr).to.deep.equal([getAddress(donor.account.address)]);
+        expect(project.donor_arr).to.deep.equal([
+            getAddress(donor.account.address)
+        ]);
     });
     it("Test donate the project with correct value should add donor address into donor_map", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
