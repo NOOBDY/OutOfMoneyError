@@ -29,7 +29,7 @@ describe("test NoneMoney contract", function () {
                     "name", // _name:
                     "description", // _description:
                     100n, // _start_date:
-                    100n, // _deadline:
+                    101n, // _deadline:
                     20000000000000000n // _target_money:
                 ],
                 {
@@ -38,39 +38,39 @@ describe("test NoneMoney contract", function () {
             );
             const project = await NoneMoney.read.getProjectByID([0n]);
 
-            expect(project[0]).to.equal("name");
-            expect(project[1]).to.equal("description");
-            expect(project[2]).to.equal(getAddress(holder.account.address));
-            expect(project[3]).to.equal(0); //state
-            expect(project[4]).to.equal(100n); //start_date
-            expect(project[5]).to.equal(100n); //deadline
-            expect(project[6]).to.equal(20000000000000000n); //target
-            expect(project[7]).to.equal(0n); //get
+            expect(project.id).to.equal(0n);
+            expect(project.name).to.equal("name");
+            expect(project.description).to.equal("description");
+            expect(project.holder_account).to.equal(
+                getAddress(holder.account.address)
+            );
+            expect(project.state).to.equal(0); //state
+            expect(project.start_date_timestamp).to.equal(100n); //start_date_timestamp
+            expect(project.deadline_timestamp).to.equal(101n); //deadline_timestamp
+            expect(project.target_money).to.equal(20000000000000000n); //target
+            expect(project.get_money).to.equal(0n); //get
         });
 
-        it("addProjectDonor", async function () {
+        it("donate", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 20000000000000000n],
+                ["project", "test", 100n, 101n, 20000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 50n,
                 account: donor.account
             });
 
             const project = await NoneMoney.read.getProjectByID([0n]);
 
-            expect(project[0]).to.equal("project"); //project_name
-            expect(project[1]).to.equal("test"); //project_description
-            expect(project[2]).to.equal(getAddress(holder.account.address));
-            expect(project[3]).to.equal(0); //state false:open true:finish
-            expect(project[6]).to.equal(20000000000000000n); //target
-            expect(project[7]).to.equal(50n); //get
+            expect(project.donor_arr[0]).to.equal(
+                getAddress(donor.account.address)
+            );
         });
     });
 
@@ -80,96 +80,86 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 20000000000000000n],
+                ["project", "test", 100n, 101n, 20000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 1700n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 300n,
                 account: donor2.account
             });
 
-            await NoneMoney.write.settleOverdueProject([0n], {
+            await NoneMoney.write.settleOverdueProject([0n, 105n], {
                 account: donor1.account
             });
 
-            await NoneMoney.write.settleOverdueProject([0n], {
+            await NoneMoney.write.settleOverdueProject([0n, 105n], {
                 account: donor2.account
             });
         });
 
         it("settleFinishProject", async function () {
-            //對特定project 加入donor
+            //         //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1] = await hre.viem.getWalletClients();
-            const now = await NoneMoney.read.getCurrentTimestamp();
-            const now_10 = now * 10n;
-
             await NoneMoney.write.addProject(
-                [
-                    "project",
-                    "test",
-                    BigInt(100),
-                    now_10,
-                    BigInt(2000000000000000)
-                ],
+                ["project", "test", 100n, 101n, BigInt(2000000000000000)],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 1000000000000000n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 1000000000000000n,
                 account: donor1.account
             });
-
             await NoneMoney.write.settleFinishProject([0n]);
         });
 
-        it("getSettleableProjectCountAddition", async function () {
+        it("getRefundation", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                ["project", "test1", 100n, 100n, 1000000000000000n],
+                ["project", "test1", 100n, 101n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 100n,
                 account: donor.account
             });
 
             await NoneMoney.write.addProject(
-                ["project", "test2", 100n, 100n, 1000000000000000n],
+                ["project", "test2", 100n, 101n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
             await NoneMoney.write.addProject(
-                ["project", "test3", 100n, 100n, 1000000000000000n],
+                ["project", "test3", 100n, 101n, 1000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
-            await NoneMoney.write.addProjectDonor([2n], {
+            await NoneMoney.write.donate([2n], {
                 value: 190n,
                 account: donor.account
             });
 
-            const info = await NoneMoney.read.getSettleableProjectCountAddition(
-                { account: donor.account.address }
-            );
+            const info = await NoneMoney.read.getRefundation([200n], {
+                account: donor.account.address
+            });
             expect(info[0]).to.equal(true);
             expect(info[1]).to.equal(2n);
             expect(info[2]).to.equal(100n + 190n);
@@ -179,163 +169,172 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2] = await hre.viem.getWalletClients();
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
-            await NoneMoney.write.addProjectDonor([0n], {
-                value: 100n,
+            await NoneMoney.write.donate([0n], {
+                value: 101n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([0n], {
-                value: 100n,
+            await NoneMoney.write.donate([0n], {
+                value: 101n,
                 account: donor2.account
             });
 
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
 
-            await NoneMoney.write.addProjectDonor([2n], {
-                value: 100n,
+            await NoneMoney.write.donate([2n], {
+                value: 101n,
                 account: donor1.account
             });
 
             const donor1_settle_project =
-                await NoneMoney.read.showSettledProjectByAccount({
+                await NoneMoney.read.showSettledProjectByAccount([200n], {
                     account: donor1.account?.address
                 });
 
-            expect(donor1_settle_project[0][0]).to.equal(0n); //id
-            expect(donor1_settle_project[1][0]).to.equal("project"); //project_name
-            expect(donor1_settle_project[2][0]).to.equal(100n); //start date
-            expect(donor1_settle_project[3][0]).to.equal(100n); //deadline
-
-            const project = await NoneMoney.read.getProjectByID([BigInt(0)]);
-
-            expect(donor1_settle_project[4][0]).to.equal(project[7]); //get_money
-            expect(donor1_settle_project[5][0]).to.equal(100n); //donor_donate_money
-
-            expect(donor1_settle_project[0][1]).to.equal(2n); //id
+            expect(donor1_settle_project[0].id).to.equal(0n);
+            expect(donor1_settle_project[1].id).to.equal(2n);
         });
     });
 
     describe("Show", function () {
         it("showAllProject", async function () {
-            //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
-            const now = await NoneMoney.read.getCurrentTimestamp();
-            const now_10 = now * 10n;
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project1", "test1", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project2", "test2", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             const all_project = await NoneMoney.read.showAllProject();
-            expect(all_project[0][0]).to.equal(0n); //id
-            expect(all_project[1][0]).to.equal("project"); //project_name
-            expect(all_project[2][0]).to.equal(100n); //start date
-            expect(all_project[3][0]).to.equal(now_10); //deadline
-            expect(all_project[4][0]).to.equal(2000000000000000n); //target
-            expect(all_project[5][0]).to.equal(0n); //get
-            expect(all_project[0][1]).to.equal(1n);
-            expect(all_project[0][2]).to.equal(2n);
+            expect(all_project[0].id).to.equal(0n);
+            expect(all_project[0].name).to.equal("project");
+            expect(all_project[0].description).to.equal("test");
+            expect(all_project[0].holder_account).to.equal(
+                getAddress(holder.account.address)
+            );
+            expect(all_project[0].state).to.equal(0);
+            expect(all_project[0].start_date_timestamp).to.equal(100n);
+            expect(all_project[0].deadline_timestamp).to.equal(101n);
+            expect(all_project[0].target_money).to.equal(2000000000000000n);
+            expect(all_project[0].get_money).to.equal(0n);
+
+            expect(all_project[1].id).to.equal(1n);
+            expect(all_project[1].name).to.equal("project1");
+            expect(all_project[1].description).to.equal("test1");
+
+            expect(all_project[2].id).to.equal(2n);
+            expect(all_project[2].name).to.equal("project2");
+            expect(all_project[2].description).to.equal("test2");
         });
-        it("showProjectsFilterDeadline", async function () {
+        it("showAvailableProject", async function () {
             //對特定project 加入donor
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder] = await hre.viem.getWalletClients();
-            const now = await NoneMoney.read.getCurrentTimestamp();
-            const now_10 = now * 10n;
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project", "test", 100n, 110n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 105n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project", "test", 100n, 110n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             );
-            const filter_project =
-                await NoneMoney.read.showProjectsFilterDeadline();
-            expect(filter_project[0][0]).to.equal(0n); //id
-            expect(filter_project[1][0]).to.equal("project"); //project_name
-            expect(filter_project[2][0]).to.equal(100n); //start date
-            expect(filter_project[3][0]).to.equal(now_10); //deadline
-            expect(filter_project[4][0]).to.equal(2000000000000000n); //target
-            expect(filter_project[5][0]).to.equal(0n); //get
-            expect(filter_project[0][1]).to.equal(2n);
+            const avaliable_project = await NoneMoney.read.showAvailableProject(
+                [106n]
+            );
+
+            expect(avaliable_project[0].id).to.equal(0n);
+            expect(avaliable_project[0].name).to.equal("project");
+            expect(avaliable_project[0].description).to.equal("test");
+            expect(avaliable_project[0].holder_account).to.equal(
+                getAddress(holder.account.address)
+            );
+            expect(avaliable_project[0].state).to.equal(0);
+            expect(avaliable_project[0].start_date_timestamp).to.equal(100n);
+            expect(avaliable_project[0].deadline_timestamp).to.equal(110n);
+            expect(avaliable_project[0].target_money).to.equal(
+                2000000000000000n
+            );
+
+            expect(avaliable_project[1].id).to.equal(2n);
         });
         it("showHoldersProject", async function () {
             const { NoneMoney } = await loadFixture(deployMainContract);
-            const [holder, holder2] = await hre.viem.getWalletClients();
-            const now = await NoneMoney.read.getCurrentTimestamp();
-            const now_10 = now * 10n;
+            const [holder1, holder2] = await hre.viem.getWalletClients();
+
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
-                    account: holder.account.address
+                    account: holder1.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder2.account.address
                 }
             );
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, now_10, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
-                    account: holder.account.address
+                    account: holder1.account.address
                 }
             );
             const holder1_have_project =
-                await NoneMoney.read.showHoldersProject([
-                    holder.account?.address
+                await NoneMoney.read.showProjectByHolders([
+                    holder1.account?.address
                 ]);
-            expect(holder1_have_project[0][0]).to.equal(0n); //id
-            expect(holder1_have_project[1][0]).to.equal("project"); //project_name
-            expect(holder1_have_project[2][0]).to.equal(0); //project_state
-            expect(holder1_have_project[3][0]).to.equal(100n); //start date
-            expect(holder1_have_project[4][0]).to.equal(now_10); //deadline
-            expect(holder1_have_project[5][0]).to.equal(2000000000000000n); //target
-            expect(holder1_have_project[6][0]).to.equal(0n); //get
-            expect(holder1_have_project[0][1]).to.equal(2n);
+            expect(holder1_have_project[0].id).to.equal(0n); //id
+            expect(holder1_have_project[0].name).to.equal("project");
+            expect(holder1_have_project[0].description).to.equal("test");
+            expect(holder1_have_project[0].holder_account).to.equal(
+                getAddress(holder1.account.address)
+            );
+            expect(holder1_have_project[0].state).to.equal(0);
+            expect(holder1_have_project[0].start_date_timestamp).to.equal(100n);
+            expect(holder1_have_project[0].deadline_timestamp).to.equal(101n);
+            expect(holder1_have_project[0].target_money).to.equal(
+                2000000000000000n
+            );
         });
     });
 
@@ -345,29 +344,26 @@ describe("test NoneMoney contract", function () {
             const { NoneMoney } = await loadFixture(deployMainContract);
             const [holder, donor1, donor2, donor3] =
                 await hre.viem.getWalletClients();
-
             await NoneMoney.write.addProject(
-                ["project", "test", 100n, 100n, 2000000000000000n],
+                ["project", "test", 100n, 101n, 2000000000000000n],
                 {
                     account: holder.account.address
                 }
             ); //project_id = 0;
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 50n,
                 account: donor1.account
             });
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 500n,
                 account: donor2.account
             });
-            await NoneMoney.write.addProjectDonor([0n], {
+            await NoneMoney.write.donate([0n], {
                 value: 70n,
                 account: donor3.account
             });
-
             const sort_project_donor =
                 await NoneMoney.read.sortProjectDonorByDonateMoney([0n]);
-
             expect(sort_project_donor[0][0]).to.equal(
                 getAddress(donor2.account.address)
             );
@@ -377,6 +373,36 @@ describe("test NoneMoney contract", function () {
             expect(sort_project_donor[0][2]).to.equal(
                 getAddress(donor1.account.address)
             );
+        });
+    });
+
+    describe("Test", function () {
+        it("testTime(only test time parameter)", async function () {
+            const { NoneMoney } = await loadFixture(deployMainContract);
+            const [holder] = await hre.viem.getWalletClients();
+            await NoneMoney.write.addProject(
+                ["project1", "test1", 100n, 200n, 2000000000000000n],
+                {
+                    account: holder.account.address
+                }
+            );
+
+            await NoneMoney.write.addProject(
+                ["project2", "test2", 100n, 120n, 2000000000000000n],
+                {
+                    account: holder.account.address
+                }
+            );
+            await NoneMoney.write.addProject(
+                ["project3", "test3", 100n, 200n, 2000000000000000n],
+                {
+                    account: holder.account.address
+                }
+            );
+            const project = await NoneMoney.read.showAvailableProject([150n]);
+
+            expect(project[0].id).to.equal(0n);
+            expect(project[1].id).to.equal(2n);
         });
     });
 });
