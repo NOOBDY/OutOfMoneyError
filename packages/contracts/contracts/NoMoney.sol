@@ -322,6 +322,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         Project[] memory return_p = _make_project_object(
             _filterDeadline_id_arr
         );
+
         return (return_p);
     }
 
