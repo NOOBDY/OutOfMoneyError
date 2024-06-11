@@ -1,7 +1,4 @@
-import {
-    loadFixture,
-    time
-} from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
+import { loadFixture } from "@nomicfoundation/hardhat-toolbox-viem/network-helpers";
 import { expect } from "chai";
 import hre from "hardhat";
 import { addProject } from "./util";
@@ -49,9 +46,6 @@ describe("showFinistProjectByHolder", () => {
             account: holder.account
         });
 
-        const state = await NoneMoney.read.holder_is_return([0n], {
-            account: holder.account
-        });
         const data = await NoneMoney.read.showFinistProjectByHolder({
             account: holder.account
         });
