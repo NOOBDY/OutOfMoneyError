@@ -13,8 +13,8 @@ contract FunctionInfo {
         string name;
         string description;
         State state;
-        uint256 start_date;
-        uint256 deadline;
+        uint256 start_date_timestamp;
+        uint256 deadline_timestamp;
         uint256 target_money;
         uint256 get_money;
         address holder_account;
@@ -35,8 +35,8 @@ contract INoneMoney {
         string name;
         string description;
         State state;
-        uint256 start_date;
-        uint256 deadline;
+        uint256 start_date_timestamp;
+        uint256 deadline_timestamp;
         uint256 target_money;
         uint256 get_money;
         address holder_account;
@@ -138,7 +138,7 @@ contract INoneMoney {
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (_now < donateProject_map[i].deadline) &&
+                (_now < donateProject_map[i].deadline_timestamp) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
@@ -163,7 +163,7 @@ contract INoneMoney {
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (_now > donateProject_map[i].deadline) &&
+                (_now > donateProject_map[i].deadline_timestamp) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;
@@ -213,13 +213,5 @@ contract INoneMoney {
         }
 
         return (new_hold_pj_arr);
-    }
-
-    function _showHolders()
-        internal
-        view
-        returns (address[] memory _holder_arr)
-    {
-        return (holder_arr);
     }
 }
