@@ -22,7 +22,7 @@ describe("GetSettleableProjectCountAddition", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.getRefundation([now], {
+        const data = await NoneMoney.read.getRefundationByDonor([now], {
             account: donor.account
         });
 

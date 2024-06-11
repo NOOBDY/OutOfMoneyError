@@ -181,7 +181,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     //////////////get///////////////
 
-    function getRefundation(
+    function getRefundationByDonor(
         uint256 _now
     )
         public
@@ -231,7 +231,6 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         return (return_p[0]);
     }
-
     /////////show////////////
 
     function showOverdueProjectByDonor(
