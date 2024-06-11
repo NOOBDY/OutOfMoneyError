@@ -233,7 +233,12 @@ contract INoneMoney {
         uint256 k = 0;
 
         for (uint256 i = 0; i < length; i++) {
-            if ((donateProject_map[i].deadline_timestamp < _now)) {
+            if (
+                (donateProject_map[i].deadline_timestamp < _now) &&
+                (donateProject_map[i].state != State.FINISH) &&
+                (donateProject_map[i].state !=
+                    State.GOAL_ACHIEVED_SETTLED_FINISH)
+            ) {
                 filter_arr[k] = i;
                 k += 1;
             }
