@@ -17,13 +17,15 @@ const showAllProject = cache(async () => {
         functionName: "showAllProject"
     });
 
-    const projects = data[0].map((v, i) => {
-        const deadline = new Date(Math.floor(Number(data[3][i]) * 1000));
+    const projects = data.map(v => {
+        const deadline = new Date(
+            Math.floor(Number(v.deadline_timestamp) * 1000)
+        );
         return {
-            id: v,
-            title: data[1][i],
-            goal: data[4][i],
-            current: data[5][i],
+            id: v.id,
+            title: v.name,
+            goal: v.target_money,
+            current: v.get_money,
             deadline: deadline
         } satisfies Project;
     });

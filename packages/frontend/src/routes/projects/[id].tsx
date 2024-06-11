@@ -49,16 +49,16 @@ export default function () {
             args: [id]
         });
 
-        const deadline = new Date(Number(data[5]) * 1000);
+        const deadline = new Date(Number(data.deadline_timestamp) * 1000);
 
-        setState(data[3] as State);
+        setState(data.state as State);
 
         return {
             id: id,
-            title: data[0],
-            description: data[1],
-            goal: data[6],
-            current: data[7],
+            title: data.name,
+            description: data.description,
+            goal: data.target_money,
+            current: data.get_money,
             deadline: deadline
         } satisfies Project;
     });
@@ -76,7 +76,7 @@ export default function () {
             const { request } = await simulateContract(config, {
                 abi: noneMoneyAbi,
                 address: contractAddress,
-                functionName: "addProjectDonor",
+                functionName: "donate",
                 args: [id],
                 account: values.address,
                 value: parseEther(values.value.toString())
