@@ -21,6 +21,20 @@ contract FunctionInfo {
         address holder_account;
         address[] donor_arr;
     }
+
+    struct SettleProject {
+        uint256 id;
+        string name;
+        string description;
+        State state;
+        uint256 start_date_timestamp;
+        uint256 deadline_timestamp;
+        uint256 target_money;
+        uint256 get_money;
+        address holder_account;
+        address[] donor_arr;
+        bool is_return_by_account;
+    }
 }
 
 contract INoneMoney {
@@ -53,7 +67,7 @@ contract INoneMoney {
 
     ///
 
-    function _is_return(
+    function _is_return_to_donor(
         uint256 _project_id,
         address _account
     ) internal view returns (bool) {
@@ -66,7 +80,9 @@ contract INoneMoney {
         return (project.donor_map[_account].is_return);
     }
 
-    function _is_return(uint256 _project_id) internal view returns (bool) {
+    function _is_return_to_holder(
+        uint256 _project_id
+    ) internal view returns (bool) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
             _project_id < donateProject_arr.length,
@@ -181,6 +197,34 @@ contract INoneMoney {
         return (result);
     }
 
+    function _showFinishProject()
+        internal
+        view
+        returns (uint256[] memory _DonateProjects_arr)
+    {
+        uint256 length = donateProject_arr.length;
+        uint256[] memory filter_arr = new uint256[](length);
+        uint256 k = 0;
+
+        for (uint256 i = 0; i < length; i++) {
+            if (
+                (donateProject_map[i].state == State.FINISH) ||
+                (donateProject_map[i].state ==
+                    State.GOAL_ACHIEVED_SETTLED_FINISH)
+            ) {
+                filter_arr[k] = i;
+                k += 1;
+            }
+        }
+
+        uint256[] memory result = new uint256[](k);
+        for (uint256 j = 0; j < k; j++) {
+            result[j] = filter_arr[j];
+        }
+
+        return (result);
+    }
+
     function _showProjectsAfterDeadline(
         uint256 _now
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
@@ -189,8 +233,30 @@ contract INoneMoney {
         uint256 k = 0;
 
         for (uint256 i = 0; i < length; i++) {
+            if ((donateProject_map[i].deadline_timestamp < _now)) {
+                filter_arr[k] = i;
+                k += 1;
+            }
+        }
+
+        uint256[] memory result = new uint256[](k);
+        for (uint256 j = 0; j < k; j++) {
+            result[j] = filter_arr[j];
+        }
+
+        return (result);
+    }
+
+    function _showOverdueCanSettleProjects(
+        uint256 _now
+    ) internal view returns (uint256[] memory _DonateProjects_arr) {
+        uint256 length = donateProject_arr.length;
+        uint256[] memory filter_arr = new uint256[](length);
+        uint256 k = 0;
+
+        for (uint256 i = 0; i < length; i++) {
             if (
-                (_now > donateProject_map[i].deadline_timestamp) &&
+                (donateProject_map[i].deadline_timestamp < _now) &&
                 (donateProject_map[i].state == State.CAN_DONATE)
             ) {
                 filter_arr[k] = i;

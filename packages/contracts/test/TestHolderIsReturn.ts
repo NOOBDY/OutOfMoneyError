@@ -8,7 +8,7 @@ async function deployMainContract() {
 }
 
 describe("HolderIsReturn", () => {
-    it("Test holder is this project holder is return true", async () => {
+    it("Test holder is this project holder settled is return true", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -32,7 +32,7 @@ describe("HolderIsReturn", () => {
         expect(state).to.be.true;
     });
 
-    it("Test holder is this project holder is return false", async () => {
+    it("Test holder is this project holder not settled is return false", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);

@@ -11,7 +11,7 @@ async function deployMainContract() {
 }
 
 describe("DonorIsReturn", () => {
-    it("Test donor in this project is return is return true", async () => {
+    it("Test donor in this project is settled is return true", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         const now = BigInt(await time.latest());
@@ -31,7 +31,7 @@ describe("DonorIsReturn", () => {
         expect(state).to.be.true;
     });
 
-    it("Test donor in this project not return is return false", async () => {
+    it("Test donor in this project not settled is return false", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
 
