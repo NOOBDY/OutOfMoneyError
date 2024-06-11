@@ -89,8 +89,8 @@ describe("ShowHolderProjectByAccount", () => {
             holder.account.address
         ]);
 
-        expect(data[0].start_date).to.be.equal(100n);
-        expect(data[1].start_date).to.be.equal(100n);
+        expect(data[0].start_date_timestamp).to.be.equal(100n);
+        expect(data[1].start_date_timestamp).to.be.equal(100n);
     });
     it("Test show settable project for donor should return correct project deadline array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -110,8 +110,8 @@ describe("ShowHolderProjectByAccount", () => {
             holder.account.address
         ]);
 
-        expect(data[0].deadline).to.be.equal(100n);
-        expect(data[1].deadline).to.be.equal(100n);
+        expect(data[0].deadline_timestamp).to.be.equal(100n);
+        expect(data[1].deadline_timestamp).to.be.equal(100n);
     });
     it("Test show settable project for donor should return correct project target_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);

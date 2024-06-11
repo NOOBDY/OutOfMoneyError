@@ -74,8 +74,8 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        expect(data[0].start_date).to.deep.equal(100n);
-        expect(data[1].start_date).to.deep.equal(100n);
+        expect(data[0].start_date_timestamp).to.deep.equal(100n);
+        expect(data[1].start_date_timestamp).to.deep.equal(100n);
     });
     it("Test show settable project for donor should return correct project deadline array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -96,8 +96,8 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        expect(data[0].deadline).to.deep.equal(100n);
-        expect(data[1].deadline).to.deep.equal(100n);
+        expect(data[0].deadline_timestamp).to.deep.equal(100n);
+        expect(data[1].deadline_timestamp).to.deep.equal(100n);
     });
     it("Test show settable project for donor should return correct project get_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);

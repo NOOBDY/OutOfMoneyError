@@ -88,7 +88,7 @@ describe("ShowAvailableProject", () => {
             account: holder.account.address
         });
 
-        expect(projects[0].start_date).to.be.equal(100n);
+        expect(projects[0].start_date_timestamp).to.be.equal(100n);
     });
     it("Test show available project should return correct deadline", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -99,7 +99,7 @@ describe("ShowAvailableProject", () => {
             account: holder.account.address
         });
 
-        expect(projects[0].deadline).to.be.equal(200n);
+        expect(projects[0].deadline_timestamp).to.be.equal(200n);
     });
     it("Test show available project should return correct target_money", async () => {
         const NoneMoney = await loadFixture(deployMainContract);

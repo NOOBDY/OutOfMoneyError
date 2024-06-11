@@ -127,7 +127,7 @@ describe("Add Project", () => {
 
         const project = await NoneMoney.read.getProjectByID([0n]);
 
-        expect(project.start_date).to.equal(100n);
+        expect(project.start_date_timestamp).to.equal(100n);
     });
     it("Test to add the project with correct parameter should have correct _deadline", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -147,7 +147,7 @@ describe("Add Project", () => {
 
         const project = await NoneMoney.read.getProjectByID([0n]);
 
-        expect(project.deadline).to.equal(100n);
+        expect(project.deadline_timestamp).to.equal(100n);
     });
     it("Test to add the project with correct parameter should have correct _target_money", async () => {
         const NoneMoney = await loadFixture(deployMainContract);

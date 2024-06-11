@@ -38,8 +38,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[0].start_date).to.deep.equal(100n);
-        expect(projects[1].start_date).to.deep.equal(100n);
+        expect(projects[0].start_date_timestamp).to.deep.equal(100n);
+        expect(projects[1].start_date_timestamp).to.deep.equal(100n);
     });
     it("Test show all project should return correct project deadline array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
@@ -49,8 +49,8 @@ describe("ShowAllProject", () => {
 
         const projects = await NoneMoney.read.showAllProject();
 
-        expect(projects[0].deadline).to.deep.equal(100n);
-        expect(projects[1].deadline).to.deep.equal(100n);
+        expect(projects[0].deadline_timestamp).to.deep.equal(100n);
+        expect(projects[1].deadline_timestamp).to.deep.equal(100n);
     });
     it("Test show all project should return correct project target_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
