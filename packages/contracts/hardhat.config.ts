@@ -1,5 +1,6 @@
 import { HardhatUserConfig, vars } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-chai-matchers";
 
 const XTT_PRIVATE_KEY = vars.get("XTT_PRIVATE_KEY");
 
