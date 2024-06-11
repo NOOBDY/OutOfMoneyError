@@ -3,11 +3,7 @@ pragma solidity ^0.8.0;
 import "./Info.sol";
 
 contract NoneMoney is INoneMoney, FunctionInfo {
-    address owner;
-
-    constructor() {
-        owner = msg.sender;
-    }
+    constructor() {}
 
     function addProject(
         string memory _name,

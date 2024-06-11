@@ -44,7 +44,6 @@ contract INoneMoney {
         address[] donor_arr; //donor id
     }
 
-    address owner;
     ///
     uint256[] donateProject_arr;
     mapping(uint256 => DonateProject) donateProject_map;
