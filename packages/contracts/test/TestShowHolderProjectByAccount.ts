@@ -8,7 +8,7 @@ async function deployMainContract() {
 }
 
 describe("ShowHolderProjectByAccount", () => {
-    it("Test show settable project for donor should return correct project ID array", async () => {
+    it("Test show project by holder should return correct project ID array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -29,7 +29,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].id).to.be.equal(0n);
         expect(data[1].id).to.be.equal(1n);
     });
-    it("Test show settable project for donor should return correct project name array", async () => {
+    it("Test show project by holder should return correct project name array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -50,7 +50,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].name).to.be.equal("name");
         expect(data[1].name).to.be.equal("name");
     });
-    it("Test show settable project for donor should return correct project state array", async () => {
+    it("Test show project by holder should return correct project state array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -71,7 +71,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].state).to.be.equal(0);
         expect(data[1].state).to.be.equal(0);
     });
-    it("Test show settable project for donor should return correct project start_date array", async () => {
+    it("Test show project by holder should return correct project start_date array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -92,7 +92,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].start_date_timestamp).to.be.equal(100n);
         expect(data[1].start_date_timestamp).to.be.equal(100n);
     });
-    it("Test show settable project for donor should return correct project deadline array", async () => {
+    it("Test show project by holder should return correct project deadline array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -113,7 +113,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].deadline_timestamp).to.be.equal(100n);
         expect(data[1].deadline_timestamp).to.be.equal(100n);
     });
-    it("Test show settable project for donor should return correct project target_money array", async () => {
+    it("Test show project by holder should return correct project target_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -134,7 +134,7 @@ describe("ShowHolderProjectByAccount", () => {
         expect(data[0].target_money).to.be.equal(20000000000000000n);
         expect(data[1].target_money).to.be.equal(20000000000000000n);
     });
-    it("Test show settable project for donor should return correct project get_money array", async () => {
+    it("Test show project by holder should return correct project get_money array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
