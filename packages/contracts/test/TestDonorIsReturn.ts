@@ -20,7 +20,6 @@ describe("Is_returned_donor", () => {
             value: 10000000000000000n,
             account: donor.account
         });
-
         await NoneMoney.write.settleOverdueProject([0n, now], {
             account: donor.account
         });
@@ -28,15 +27,14 @@ describe("Is_returned_donor", () => {
         const state = await NoneMoney.read.is_returned_donor([0n], {
             account: donor.account
         });
+
         expect(state).to.be.true;
     });
 
     it("Test is donor returned with not settled project should return false", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
-
         await addProject(NoneMoney, holder.account.address);
-
         await NoneMoney.write.donate([0n], {
             value: 10000000000000000n,
             account: donor.account
@@ -45,6 +43,7 @@ describe("Is_returned_donor", () => {
         const state = await NoneMoney.read.is_returned_donor([0n], {
             account: donor.account
         });
+
         expect(state).to.be.false;
     });
 
@@ -57,7 +56,6 @@ describe("Is_returned_donor", () => {
             value: 10000000000000000n,
             account: donor.account
         });
-
         await NoneMoney.write.settleOverdueProject([0n, now], {
             account: donor.account
         });

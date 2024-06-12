@@ -158,10 +158,10 @@ describe("showOverdueProjectByDonor", () => {
             value: 10000000000000000n,
             account: donor.account
         });
-
         await NoneMoney.write.settleOverdueProject([0n, now], {
             account: donor.account
         });
+
         const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
@@ -184,10 +184,10 @@ describe("showOverdueProjectByDonor", () => {
             value: 10000000000000000n,
             account: donor.account
         });
-
         await NoneMoney.write.settleOverdueProject([0n, now], {
             account: donor.account
         });
+
         const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });

@@ -20,7 +20,6 @@ describe("Is_returned_holder", () => {
             value: 10000000000000000n,
             account: donor2.account
         });
-
         await NoneMoney.write.settleFinishProject([0n], {
             account: holder.account
         });
@@ -47,6 +46,7 @@ describe("Is_returned_holder", () => {
         const state = await NoneMoney.read.is_returned_holder([0n], {
             account: holder.account
         });
+
         expect(state).to.be.false;
     });
 
@@ -63,7 +63,6 @@ describe("Is_returned_holder", () => {
             value: 10000000000000000n,
             account: donor2.account
         });
-
         await NoneMoney.write.settleFinishProject([0n], {
             account: holder.account
         });
