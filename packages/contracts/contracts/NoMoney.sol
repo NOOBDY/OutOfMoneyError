@@ -417,7 +417,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         address _account = msg.sender;
 
-        require(_is_holder(_project_id, _account), "not this project holder");
+        require(
+            _is_holder(_project_id, _account),
+            "The holder is not the donor of this project"
+        );
 
         return (_is_return_to_holder(_project_id));
     }
