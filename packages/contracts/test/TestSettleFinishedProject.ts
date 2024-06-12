@@ -34,7 +34,7 @@ describe("SettleFinishedProject", () => {
         expect(prevBalance < settledBalance).to.be.true;
     });
 
-    it("Test settle finished project with finished status twice time should revert", async () => {
+    it("Test settle finished project with repeat settle should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);

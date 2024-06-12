@@ -7,7 +7,7 @@ async function deployMainContract() {
     return await hre.viem.deployContract("NoneMoney", [], {});
 }
 
-describe("showFinistProjectByHolder", () => {
+describe("showFinishProjectByHolder", () => {
     it("Test show settable project for Holder should return correct project ID array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
@@ -23,7 +23,7 @@ describe("showFinistProjectByHolder", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showFinistProjectByHolder({
+        const data = await NoneMoney.read.showFinishProjectByHolder({
             account: holder.account
         });
         expect(data[0].id).to.equal(0n);
@@ -46,7 +46,7 @@ describe("showFinistProjectByHolder", () => {
             account: holder.account
         });
 
-        const data = await NoneMoney.read.showFinistProjectByHolder({
+        const data = await NoneMoney.read.showFinishProjectByHolder({
             account: holder.account
         });
         expect(data[0].id).to.equal(0n);

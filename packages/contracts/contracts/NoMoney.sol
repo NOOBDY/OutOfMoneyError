@@ -140,7 +140,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         project.donor_map[_donor_account].is_return = true;
 
         if (_is_settled(_project_id)) {
-            project.state = State.EXPIRED_SETTLED_FINISH;
+            project.state = State.EXPIRED_SETTLED;
         }
 
         return (true, all_return);
@@ -177,7 +177,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             revert("error return");
         }
 
-        project.state = State.GOAL_ACHIEVED_SETTLED_FINISH;
+        project.state = State.GOAL_SETTLED;
 
         return (true, 0);
     }
@@ -270,7 +270,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return (return_p);
     }
 
-    function showFinistProjectByHolder()
+    function showFinishProjectByHolder()
         public
         view
         returns (SettleProject[] memory return_project)
@@ -391,7 +391,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return (donor_arr, donate_money_arr);
     }
 
-    function donor_is_return(
+    function is_returned_donor(
         uint256 _project_id
     ) public view returns (bool is_return) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -401,12 +401,15 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         );
 
         address _account = msg.sender;
-        require(_is_donor(_project_id, _account), "not this project donor");
+        require(
+            _is_donor(_project_id, _account),
+            "The sender is not the donor of this project."
+        );
 
-        return (_is_return_to_donor(_project_id, _account));
+        return (_is_returned_to_donor(_project_id, _account));
     }
 
-    function holder_is_return(
+    function is_returned_holder(
         uint256 _project_id
     ) public view returns (bool is_return) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -419,10 +422,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         require(
             _is_holder(_project_id, _account),
-            "The holder is not the donor of this project"
+            "The holder is not the donor of this project."
         );
 
-        return (_is_return_to_holder(_project_id));
+        return (_is_returned_to_holder(_project_id));
     }
 
     //////////////////
@@ -485,7 +488,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             return_p[i].get_money = donateProject_map[_id].get_money;
             return_p[i].holder_account = donateProject_map[_id].holder_account;
             return_p[i].donor_arr = donateProject_map[_id].donor_arr;
-            return_p[i].is_return_by_account = _is_return_to_donor(
+            return_p[i].is_return_by_account = _is_returned_to_donor(
                 _id,
                 account
             );
@@ -515,7 +518,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             return_p[i].get_money = donateProject_map[_id].get_money;
             return_p[i].holder_account = donateProject_map[_id].holder_account;
             return_p[i].donor_arr = donateProject_map[_id].donor_arr;
-            return_p[i].is_return_by_account = _is_return_to_holder(_id);
+            return_p[i].is_return_by_account = _is_returned_to_holder(_id);
         }
 
         return (return_p);

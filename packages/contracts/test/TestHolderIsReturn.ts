@@ -7,8 +7,8 @@ async function deployMainContract() {
     return await hre.viem.deployContract("NoneMoney", [], {});
 }
 
-describe("HolderIsReturn", () => {
-    it("Test holder is this project holder settled is return true", async () => {
+describe("Is_returned_holder", () => {
+    it("Test is holder returned with already returned project should return true", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -25,14 +25,13 @@ describe("HolderIsReturn", () => {
             account: holder.account
         });
 
-        const state = await NoneMoney.read.holder_is_return([0n], {
+        const state = await NoneMoney.read.is_returned_holder([0n], {
             account: holder.account
         });
-
         expect(state).to.be.true;
     });
 
-    it("Test holder is this project holder not settled is return false", async () => {
+    it("Test is holder returned with not already returned project should return false", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
@@ -45,14 +44,14 @@ describe("HolderIsReturn", () => {
             account: donor2.account
         });
 
-        const state = await NoneMoney.read.holder_is_return([0n], {
+        const state = await NoneMoney.read.is_returned_holder([0n], {
             account: holder.account
         });
 
         expect(state).to.be.false;
     });
 
-    it("Test holder is not this project holder is revert", async () => {
+    it("Test is holder returned with wrong holder project should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, holder2, donor1, donor2] =
             await hre.viem.getWalletClients();
@@ -71,7 +70,7 @@ describe("HolderIsReturn", () => {
         });
 
         await expect(
-            NoneMoney.read.holder_is_return([0n], {
+            NoneMoney.read.is_returned_holder([0n], {
                 account: holder2.account
             })
         ).to.be.throw;

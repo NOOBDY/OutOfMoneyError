@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 enum State {
     CAN_DONATE,
     WAITING_SETTLE,
-    EXPIRED_SETTLED_FINISH,
-    GOAL_ACHIEVED_SETTLED_FINISH
+    EXPIRED_SETTLED,
+    GOAL_SETTLED
 }
 
 contract FunctionInfo {
@@ -77,7 +77,7 @@ contract INoneMoney {
         _;
     }
 
-    function _is_return_to_donor(
+    function _is_returned_to_donor(
         uint256 _project_id,
         address _account
     ) internal view returns (bool) {
@@ -90,7 +90,7 @@ contract INoneMoney {
         return (project.donor_map[_account].is_return);
     }
 
-    function _is_return_to_holder(
+    function _is_returned_to_holder(
         uint256 _project_id
     ) internal view returns (bool) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -100,7 +100,7 @@ contract INoneMoney {
         );
         DonateProject storage project = donateProject_map[_project_id];
 
-        if (project.state == State.GOAL_ACHIEVED_SETTLED_FINISH) {
+        if (project.state == State.GOAL_SETTLED) {
             return (true);
         }
         return (false);
@@ -219,8 +219,7 @@ contract INoneMoney {
         for (uint256 i = 0; i < length; i++) {
             if (
                 (donateProject_map[i].state == State.WAITING_SETTLE) ||
-                (donateProject_map[i].state ==
-                    State.GOAL_ACHIEVED_SETTLED_FINISH)
+                (donateProject_map[i].state == State.GOAL_SETTLED)
             ) {
                 filter_arr[k] = i;
                 k += 1;
@@ -246,8 +245,7 @@ contract INoneMoney {
             if (
                 (donateProject_map[i].deadline_timestamp < _now) &&
                 (donateProject_map[i].state != State.WAITING_SETTLE) &&
-                (donateProject_map[i].state !=
-                    State.GOAL_ACHIEVED_SETTLED_FINISH)
+                (donateProject_map[i].state != State.GOAL_SETTLED)
             ) {
                 filter_arr[k] = i;
                 k += 1;
