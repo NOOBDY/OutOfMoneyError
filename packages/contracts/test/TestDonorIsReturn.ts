@@ -27,7 +27,6 @@ describe("Is_returned_donor", () => {
         const state = await NoneMoney.read.is_returned_donor([0n], {
             account: donor.account
         });
-
         expect(state).to.be.true;
     });
 

@@ -47,7 +47,6 @@ describe("Is_returned_holder", () => {
         const state = await NoneMoney.read.is_returned_holder([0n], {
             account: holder.account
         });
-
         expect(state).to.be.false;
     });
 
