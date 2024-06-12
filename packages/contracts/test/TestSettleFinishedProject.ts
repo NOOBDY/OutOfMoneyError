@@ -33,6 +33,30 @@ describe("SettleFinishedProject", () => {
         );
         expect(prevBalance < settledBalance).to.be.true;
     });
+
+    it("Test settle finished project with repeat settle should revert", async () => {
+        const NoneMoney = await loadFixture(deployMainContract);
+        const [holder, donor1, donor2] = await hre.viem.getWalletClients();
+        await addProject(NoneMoney, holder.account.address);
+        await NoneMoney.write.donate([0n], {
+            value: 10000000000000000n,
+            account: donor1.account
+        });
+        await NoneMoney.write.donate([0n], {
+            value: 10000000000000000n,
+            account: donor2.account
+        });
+        await NoneMoney.write.settleFinishProject([0n], {
+            account: holder.account
+        });
+
+        await expect(
+            NoneMoney.write.settleFinishProject([0n], {
+                account: holder.account
+            })
+        ).to.be.throw;
+    });
+
     it("Test settle finished project with unfinished status should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1] = await hre.viem.getWalletClients();
@@ -48,6 +72,7 @@ describe("SettleFinishedProject", () => {
             })
         ).to.be.throw;
     });
+
     it("Test settle finished project with not-donor account should revert", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2] = await hre.viem.getWalletClients();
