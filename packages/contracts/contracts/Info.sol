@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 enum State {
     CAN_DONATE,
-    FINISH,
+    WAITING_SETTLE,
     EXPIRED_SETTLED_FINISH,
     GOAL_ACHIEVED_SETTLED_FINISH
 }
@@ -66,6 +66,16 @@ contract INoneMoney {
     address[] holder_arr;
 
     ///
+
+    modifier isProject(uint256 _project_id) {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
+
+        _;
+    }
 
     function _is_return_to_donor(
         uint256 _project_id,
@@ -208,7 +218,7 @@ contract INoneMoney {
 
         for (uint256 i = 0; i < length; i++) {
             if (
-                (donateProject_map[i].state == State.FINISH) ||
+                (donateProject_map[i].state == State.WAITING_SETTLE) ||
                 (donateProject_map[i].state ==
                     State.GOAL_ACHIEVED_SETTLED_FINISH)
             ) {
@@ -235,7 +245,7 @@ contract INoneMoney {
         for (uint256 i = 0; i < length; i++) {
             if (
                 (donateProject_map[i].deadline_timestamp < _now) &&
-                (donateProject_map[i].state != State.FINISH) &&
+                (donateProject_map[i].state != State.WAITING_SETTLE) &&
                 (donateProject_map[i].state !=
                     State.GOAL_ACHIEVED_SETTLED_FINISH)
             ) {

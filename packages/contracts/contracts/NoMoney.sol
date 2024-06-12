@@ -47,7 +47,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
     }
 
-    function donate(uint256 _project_id) public payable {
+    function donate(uint256 _project_id) public payable isProject(_project_id) {
         require(msg.value > 0, "Donation must be greater than 0");
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -95,7 +95,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 input_money -
                 (temp_money - target_money);
 
-            project.state = State.FINISH;
+            project.state = State.WAITING_SETTLE;
         }
     }
 
@@ -161,7 +161,10 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _is_holder(_project_id, msg.sender),
             "is not this project donor"
         );
-        require(project.state == State.FINISH, "this project can't settle");
+        require(
+            project.state == State.WAITING_SETTLE,
+            "this project can't settle"
+        );
 
         address payable _holder_account = payable(msg.sender);
 
@@ -429,7 +432,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return block.timestamp; //合約時間
     }
 
-    ///////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
 
     function _make_project_object(
         uint256[] memory _project_id_arr
