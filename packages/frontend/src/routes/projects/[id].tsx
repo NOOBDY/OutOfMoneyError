@@ -1,7 +1,7 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createResource, onMount } from "solid-js";
+import { Show, createMemo, createResource, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
@@ -13,6 +13,7 @@ import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
 import { useAccount } from "~/hooks/useAccount";
 import { toUnix } from "~/lib/unix";
+import { useDevMode } from "~/hooks/useDevMode";
 
 const DonateSchema = z.object({
     value: z.coerce.number().gt(0),
@@ -34,6 +35,7 @@ function NotFound() {
 export default function () {
     const config = useConfig();
     const params = useParams();
+    const devMode = useDevMode();
 
     const [account] = useAccount();
 
@@ -64,6 +66,12 @@ export default function () {
             owner: data.holder_account,
             donors: data.donor_arr
         } satisfies Project;
+    });
+
+    const overdue = createMemo(() => {
+        if (project.state === "ready") {
+            return new Date() > project().deadline;
+        }
     });
 
     onMount(() => {
@@ -168,7 +176,7 @@ export default function () {
 
                             <Show
                                 when={
-                                    new Date() < project.deadline &&
+                                    (devMode() || !overdue()) &&
                                     project.state === State.CAN_DONATE
                                 }
                             >
@@ -260,7 +268,7 @@ export default function () {
                                 </div>
                             </Show>
 
-                            <Show when={new Date() > project.deadline}>
+                            <Show when={overdue()}>
                                 <div class="w-full text-center">
                                     <p class="mb-4 font-mono text-lg">
                                         💀 Deadline Overdue 💀
