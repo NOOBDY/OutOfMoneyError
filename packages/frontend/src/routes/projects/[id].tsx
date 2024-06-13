@@ -1,7 +1,7 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createMemo, createResource, onMount } from "solid-js";
+import { Show, createResource, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
@@ -12,7 +12,7 @@ import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
 import { useAccount } from "~/hooks/useAccount";
-import { toUnix } from "~/lib/unix";
+import { fromUnix, toUnix } from "~/lib/unix";
 import { useDevMode } from "~/hooks/useDevMode";
 
 const DonateSchema = z.object({
@@ -53,7 +53,8 @@ export default function () {
             args: [id]
         });
 
-        const deadline = new Date(Number(data.deadline_timestamp) * 1000);
+        const deadline = fromUnix(data.deadline_timestamp);
+        const now = new Date();
 
         return {
             id: id,
@@ -64,14 +65,9 @@ export default function () {
             deadline: deadline,
             state: data.state,
             owner: data.holder_account,
-            donors: data.donor_arr
+            donors: data.donor_arr,
+            overdue: now > deadline
         } satisfies Project;
-    });
-
-    const overdue = createMemo(() => {
-        if (project.state === "ready") {
-            return new Date() > project().deadline;
-        }
     });
 
     onMount(() => {
@@ -165,6 +161,7 @@ export default function () {
                                         formatEther(project.current)
                                     )}
                                     goal={Number(formatEther(project.goal))}
+                                    active={!project.overdue}
                                 />
                             </div>
 
@@ -176,7 +173,7 @@ export default function () {
 
                             <Show
                                 when={
-                                    (devMode() || !overdue()) &&
+                                    (devMode() || !project.overdue) &&
                                     project.state === State.CAN_DONATE
                                 }
                             >
@@ -268,7 +265,7 @@ export default function () {
                                 </div>
                             </Show>
 
-                            <Show when={overdue()}>
+                            <Show when={project.overdue}>
                                 <div class="w-full text-center">
                                     <p class="mb-4 font-mono text-lg">
                                         💀 Deadline Overdue 💀

@@ -18,6 +18,8 @@ const showAllProject = cache(async () => {
         functionName: "showAllProject"
     });
 
+    const now = new Date();
+
     const projects = data.map(v => {
         const deadline = fromUnix(v.deadline_timestamp);
 
@@ -27,8 +29,10 @@ const showAllProject = cache(async () => {
             goal: v.target_money,
             current: v.get_money,
             deadline: deadline,
+            state: v.state,
             owner: v.holder_account,
-            donors: v.donor_arr
+            donors: v.donor_arr,
+            overdue: now > deadline
         } satisfies Project;
     });
 
@@ -50,6 +54,7 @@ function Card(props: Project) {
             <Progress
                 current={Number(formatEther(props.current))}
                 goal={Number(formatEther(props.goal))}
+                active={!props.overdue}
             />
         </div>
     );

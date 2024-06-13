@@ -19,4 +19,5 @@ export type Project = {
     state: State;
     owner: Address;
     donors: readonly Address[];
+    overdue: boolean;
 };
