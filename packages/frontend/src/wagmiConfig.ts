@@ -29,6 +29,6 @@ const dev = import.meta.env.VITE_DEV_MODE === "true";
 
 export const contractAddress = dev
     ? "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-    : "0xFA54F4e4677fD1595Ed19f1565CD37DD3B9e3E0A";
+    : "0x062575F20f2FF2a8DD6C99DA96654eE39b75b925";
 
 export const config = dev ? hardhatConfig : xttConfig;
