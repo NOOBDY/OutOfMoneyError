@@ -1,9 +1,13 @@
 import { Address } from "viem";
 
-export type State =
-    | 0 // CAN_DONATE
-    | 1 // FINISH
-    | 2; // EXPIRED_SETTLED_FINISH
+/* eslint-disable no-unused-vars */
+export enum State {
+    CAN_DONATE,
+    WAITING_SETTLE, // SUCCESS,
+    EXPIRED_SETTLED, // FAILED
+    GOAL_SETTLED // SUCCESS
+}
+/* eslint-enable no-unused-vars */
 
 export type Project = {
     id: bigint;
@@ -12,6 +16,7 @@ export type Project = {
     goal: bigint;
     current: bigint;
     deadline: Date;
+    state: State;
     owner: Address;
     donors: readonly Address[];
 };

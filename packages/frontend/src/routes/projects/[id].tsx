@@ -1,7 +1,7 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
-import { useParams } from "@solidjs/router";
+import { createAsync, useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createResource, createSignal, onMount } from "solid-js";
+import { Show, createResource, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
@@ -37,8 +37,6 @@ export default function () {
 
     const [account] = useAccount();
 
-    const [state, setState] = createSignal<State>();
-
     const [donateForm, { Form, Field }] = createForm<DonateForm>({
         validate: zodForm(DonateSchema),
         revalidateOn: "input"
@@ -55,8 +53,6 @@ export default function () {
 
         const deadline = new Date(Number(data.deadline_timestamp) * 1000);
 
-        setState(data.state as State);
-
         return {
             id: id,
             title: data.name,
@@ -64,9 +60,32 @@ export default function () {
             goal: data.target_money,
             current: data.get_money,
             deadline: deadline,
+            state: data.state,
             owner: data.holder_account,
             donors: data.donor_arr
         } satisfies Project;
+    });
+
+    const fundsReturned = createAsync(async () => {
+        const id = BigInt(params.id);
+
+        return readContract(config, {
+            abi: noneMoneyAbi,
+            address: contractAddress,
+            functionName: "is_returned_donor",
+            args: [id]
+        }).catch(() => false);
+    });
+
+    const fundsCollected = createAsync(async () => {
+        const id = BigInt(params.id);
+
+        return readContract(config, {
+            abi: noneMoneyAbi,
+            address: contractAddress,
+            functionName: "is_returned_holder",
+            args: [id]
+        }).catch(() => false);
     });
 
     onMount(() => {
@@ -96,7 +115,7 @@ export default function () {
         refetch();
     };
 
-    const settleFinishProject = async () => {
+    const collectFunds = async () => {
         try {
             const id = BigInt(params.id);
 
@@ -169,7 +188,7 @@ export default function () {
                                 </p>
                             </div>
 
-                            <Show when={state() === 0}>
+                            <Show when={project.state === State.CAN_DONATE}>
                                 <Form
                                     onSubmit={handleSubmit}
                                     class="flex flex-col space-y-4"
@@ -234,34 +253,39 @@ export default function () {
                                 </Form>
                             </Show>
 
-                            <Show when={state() === 1}>
+                            <Show
+                                when={
+                                    project.state === State.WAITING_SETTLE ||
+                                    project.state === State.GOAL_SETTLED
+                                }
+                            >
                                 <div class="w-full text-center">
                                     <p class="mb-4 font-mono text-lg">
                                         🎉 Goal Achieved! 🎉
                                     </p>
-                                    {/* TODO: hide when funds received */}
                                     <Show
-                                        when={project.owner === account.address}
+                                        when={
+                                            project.owner === account.address &&
+                                            project.state ===
+                                                State.WAITING_SETTLE
+                                        }
                                     >
-                                        <Button onClick={settleFinishProject}>
-                                            Receive Funds
+                                        <Button onClick={collectFunds}>
+                                            Collect Funds
                                         </Button>
                                     </Show>
                                 </div>
                             </Show>
 
-                            <Show
-                                when={
-                                    new Date() > project.deadline &&
-                                    state() !== 1
-                                }
-                            >
+                            <Show when={new Date() > project.deadline}>
                                 <div class="w-full text-center">
                                     <p class="mb-4 font-mono text-lg">
                                         💀 Deadline Overdue 💀
                                     </p>
                                     <Show
                                         when={
+                                            project.state !==
+                                                State.EXPIRED_SETTLED &&
                                             account.address &&
                                             project.donors.includes(
                                                 account.address
