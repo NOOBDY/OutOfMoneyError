@@ -1,7 +1,7 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
 import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
-import { Show, createResource, onMount } from "solid-js";
+import { For, Show, createResource, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
 import { z } from "zod";
 import { AddressDropdown } from "~/components/AddressDropdown";
@@ -180,121 +180,141 @@ export default function () {
                                 </p>
                             </div>
 
-                            <Show
-                                when={
-                                    (devMode() || !project.overdue) &&
-                                    project.state === State.CAN_DONATE
-                                }
-                            >
-                                <Form
-                                    onSubmit={handleSubmit}
-                                    class="flex flex-col space-y-4"
+                            <div class="mb-8">
+                                <Show
+                                    when={
+                                        (devMode() || !project.overdue) &&
+                                        project.state === State.CAN_DONATE
+                                    }
                                 >
-                                    <Field name="address">
-                                        {(field, props) => (
-                                            <div>
-                                                <AddressDropdown
-                                                    {...props}
-                                                    value={field.value}
-                                                />
-                                                {field.error && (
-                                                    <p class="text-red-600">
-                                                        {field.error}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </Field>
-
-                                    <Field name="value" type="number">
-                                        {(field, props) => (
-                                            <div class="flex flex-col">
-                                                <label
-                                                    for={field.name}
-                                                    class="font-mono"
-                                                >
-                                                    Value
-                                                </label>
-                                                <br />
-                                                <div class="flex">
-                                                    <input
+                                    <Form
+                                        onSubmit={handleSubmit}
+                                        class="flex flex-col space-y-4"
+                                    >
+                                        <Field name="address">
+                                            {(field, props) => (
+                                                <div>
+                                                    <AddressDropdown
                                                         {...props}
-                                                        id={field.name}
                                                         value={field.value}
-                                                        type="number"
-                                                        min={0}
-                                                        required
-                                                        class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
                                                     />
-                                                    <p class="border border-l-0 px-1 font-mono">
-                                                        ETH
-                                                    </p>
+                                                    {field.error && (
+                                                        <p class="text-red-600">
+                                                            {field.error}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                {field.error && (
-                                                    <p class="text-red-600">
-                                                        {field.error}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </Field>
+                                            )}
+                                        </Field>
 
-                                    <div class="mx-auto">
-                                        <Button
-                                            type="submit"
-                                            disabled={donateForm.invalid}
+                                        <Field name="value" type="number">
+                                            {(field, props) => (
+                                                <div class="flex flex-col">
+                                                    <label
+                                                        for={field.name}
+                                                        class="font-mono"
+                                                    >
+                                                        Value
+                                                    </label>
+                                                    <br />
+                                                    <div class="flex">
+                                                        <input
+                                                            {...props}
+                                                            id={field.name}
+                                                            value={field.value}
+                                                            type="number"
+                                                            min={0}
+                                                            required
+                                                            class="w-full border bg-neutral-100 px-2 dark:bg-neutral-800 dark:text-white"
+                                                        />
+                                                        <p class="border border-l-0 px-1 font-mono">
+                                                            ETH
+                                                        </p>
+                                                    </div>
+                                                    {field.error && (
+                                                        <p class="text-red-600">
+                                                            {field.error}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </Field>
+
+                                        <div class="mx-auto">
+                                            <Button
+                                                type="submit"
+                                                disabled={donateForm.invalid}
+                                            >
+                                                Donate
+                                            </Button>
+                                        </div>
+                                    </Form>
+                                </Show>
+
+                                <Show
+                                    when={
+                                        project.state ===
+                                            State.WAITING_SETTLE ||
+                                        project.state === State.GOAL_SETTLED
+                                    }
+                                >
+                                    <div class="w-full text-center">
+                                        <p class="mb-4 font-mono text-lg">
+                                            🎉 Goal Achieved! 🎉
+                                        </p>
+                                        <Show
+                                            when={
+                                                project.owner ===
+                                                    account.address &&
+                                                project.state ===
+                                                    State.WAITING_SETTLE
+                                            }
                                         >
-                                            Donate
-                                        </Button>
+                                            <Button onClick={collectFunds}>
+                                                Collect Funds
+                                            </Button>
+                                        </Show>
                                     </div>
-                                </Form>
-                            </Show>
+                                </Show>
 
-                            <Show
-                                when={
-                                    project.state === State.WAITING_SETTLE ||
-                                    project.state === State.GOAL_SETTLED
-                                }
-                            >
-                                <div class="w-full text-center">
-                                    <p class="mb-4 font-mono text-lg">
-                                        🎉 Goal Achieved! 🎉
-                                    </p>
-                                    <Show
-                                        when={
-                                            project.owner === account.address &&
-                                            project.state ===
-                                                State.WAITING_SETTLE
-                                        }
-                                    >
-                                        <Button onClick={collectFunds}>
-                                            Collect Funds
-                                        </Button>
-                                    </Show>
-                                </div>
-                            </Show>
+                                <Show when={project.overdue}>
+                                    <div class="w-full text-center">
+                                        <p class="mb-4 font-mono text-lg">
+                                            💀 Deadline Overdue 💀
+                                        </p>
+                                        <Show
+                                            when={
+                                                project.state !==
+                                                    State.EXPIRED_SETTLED &&
+                                                account.address &&
+                                                project.donors.includes(
+                                                    account.address
+                                                )
+                                            }
+                                        >
+                                            <Button
+                                                onClick={settleOverdueProject}
+                                            >
+                                                Settle Up
+                                            </Button>
+                                        </Show>
+                                    </div>
+                                </Show>
+                            </div>
 
-                            <Show when={project.overdue}>
-                                <div class="w-full text-center">
-                                    <p class="mb-4 font-mono text-lg">
-                                        💀 Deadline Overdue 💀
-                                    </p>
-                                    <Show
-                                        when={
-                                            project.state !==
-                                                State.EXPIRED_SETTLED &&
-                                            account.address &&
-                                            project.donors.includes(
-                                                account.address
-                                            )
-                                        }
-                                    >
-                                        <Button onClick={settleOverdueProject}>
-                                            Settle Up
-                                        </Button>
-                                    </Show>
-                                </div>
-                            </Show>
+                            <h2 class="font-mono text-lg">Donors</h2>
+
+                            <div class="space-y-1 overflow-auto px-0.5 pb-4">
+                                <For each={project.donors}>
+                                    {donor => (
+                                        <p>
+                                            <code class="rounded-sm bg-neutral-200 px-1 dark:bg-neutral-700">
+                                                {donor}
+                                            </code>
+                                        </p>
+                                    )}
+                                </For>
+                            </div>
                         </div>
                     </div>
                 </div>

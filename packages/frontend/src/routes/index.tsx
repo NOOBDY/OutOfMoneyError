@@ -113,7 +113,7 @@ export default function () {
                                 </h1>
                             </div>
 
-                            <p class="text-lg">
+                            <p class="md:text-lg">
                                 <code class="rounded-sm bg-neutral-200 px-1 dark:bg-neutral-700">
                                     {sugarDaddy.account}
                                 </code>{" "}
