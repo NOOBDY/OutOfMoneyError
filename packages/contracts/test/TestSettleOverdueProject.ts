@@ -54,7 +54,7 @@ describe("SettleOverdueProject", () => {
         const project = await NoneMoney.read.getProjectByID([0n]);
         expect(project.state).equal(0);
     });
-    it("Test settle overdue project with completed settle should keep status EXPIRED_SETTLED_FINIDH", async () => {
+    it("Test settle overdue project with completed settle should keep status EXPIRED_SETTLED", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor, donor2] = await hre.viem.getWalletClients();
         const now = BigInt(await time.latest());

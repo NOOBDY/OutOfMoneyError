@@ -10,7 +10,7 @@ async function deployMainContract() {
     return await hre.viem.deployContract("NoneMoney", [], {});
 }
 
-describe("ShowSettledProjectByAccount", () => {
+describe("showOverdueProjectByDonor", () => {
     it("Test show settable project for donor should return correct project ID array", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor] = await hre.viem.getWalletClients();
@@ -26,7 +26,7 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
@@ -48,7 +48,7 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
@@ -70,7 +70,7 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
@@ -92,7 +92,7 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
@@ -114,7 +114,7 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
@@ -136,11 +136,63 @@ describe("ShowSettledProjectByAccount", () => {
             account: donor.account
         });
 
-        const data = await NoneMoney.read.showSettledProjectByAccount([now], {
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
             account: donor.account
         });
 
         expect(data[0].target_money).to.deep.equal(20000000000000000n);
         expect(data[1].target_money).to.deep.equal(20000000000000000n);
+    });
+
+    it("Test show settable project for donor after settled should return correct project ID array ", async () => {
+        const NoneMoney = await loadFixture(deployMainContract);
+        const [holder, donor] = await hre.viem.getWalletClients();
+        const now = BigInt(await time.latest());
+        await addProject(NoneMoney, holder.account.address);
+        await addProject(NoneMoney, holder.account.address);
+        await NoneMoney.write.donate([0n], {
+            value: 10000000000000000n,
+            account: donor.account
+        });
+        await NoneMoney.write.donate([1n], {
+            value: 10000000000000000n,
+            account: donor.account
+        });
+        await NoneMoney.write.settleOverdueProject([0n, now], {
+            account: donor.account
+        });
+
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
+            account: donor.account
+        });
+
+        expect(data[0].id).to.equal(0n);
+        expect(data[1].id).to.equal(1n);
+    });
+
+    it("Test show settable project for donor after settled should return correct project is_return ", async () => {
+        const NoneMoney = await loadFixture(deployMainContract);
+        const [holder, donor] = await hre.viem.getWalletClients();
+        const now = BigInt(await time.latest());
+        await addProject(NoneMoney, holder.account.address);
+        await addProject(NoneMoney, holder.account.address);
+        await NoneMoney.write.donate([0n], {
+            value: 10000000000000000n,
+            account: donor.account
+        });
+        await NoneMoney.write.donate([1n], {
+            value: 10000000000000000n,
+            account: donor.account
+        });
+        await NoneMoney.write.settleOverdueProject([0n, now], {
+            account: donor.account
+        });
+
+        const data = await NoneMoney.read.showOverdueProjectByDonor([now], {
+            account: donor.account
+        });
+
+        expect(data[0].is_return_by_account).to.be.true;
+        expect(data[1].is_return_by_account).to.be.false;
     });
 });
