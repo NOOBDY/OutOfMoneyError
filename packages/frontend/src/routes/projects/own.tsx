@@ -2,7 +2,6 @@ import { createAsync } from "@solidjs/router";
 import { For, Show, createSignal } from "solid-js";
 import { Card } from "~/components/Card";
 import { useAccount } from "~/hooks/useAccount";
-import { useConfig } from "~/hooks/useConfig";
 import { showProjectByHolders } from "~/data/showProjectByHolders";
 
 function NoProjects() {
@@ -29,7 +28,6 @@ function NoProjects() {
 }
 
 export default function () {
-    const config = useConfig();
     const [account] = useAccount();
 
     const [showOwnProjects, setShowOwnProjects] = createSignal(false);
@@ -37,7 +35,7 @@ export default function () {
     const projects = createAsync(async () => {
         if (account.status !== "connected") return;
 
-        const projects = await showProjectByHolders(config, account.address);
+        const projects = await showProjectByHolders(account.address);
 
         setShowOwnProjects(projects.length > 0);
 
@@ -45,9 +43,9 @@ export default function () {
     });
 
     return (
-        <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
+        <div class="mx-auto flex flex-col px-4 md:w-2/3 xl:w-1/2">
             <Show when={showOwnProjects()} fallback={<NoProjects />}>
-                <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
+                <div class="h-12 font-mono md:mb-4">
                     <h1 class="text-2xl md:text-4xl">All Projects</h1>
                 </div>
 

@@ -1,39 +1,39 @@
 import { cache } from "@solidjs/router";
-import { Config, readContract } from "@wagmi/core";
+import { readContract } from "@wagmi/core";
 import { Address } from "viem";
 import { noneMoneyAbi } from "~/generated";
+import { useConfig } from "~/hooks/useConfig";
 import { fromUnix } from "~/lib/unix";
 import { Project } from "~/types";
 import { contractAddress } from "~/wagmiConfig";
 
-export const showProjectByHolders = cache(
-    async (config: Config, address: Address) => {
-        const now = new Date();
+export const showProjectByHolders = cache(async (address: Address) => {
+    const config = useConfig();
 
-        const data = await readContract(config, {
-            abi: noneMoneyAbi,
-            address: contractAddress,
-            functionName: "showProjectByHolders",
-            args: [address]
-        });
+    const now = new Date();
 
-        const projects = data.map(v => {
-            const deadline = fromUnix(v.deadline_timestamp);
+    const data = await readContract(config, {
+        abi: noneMoneyAbi,
+        address: contractAddress,
+        functionName: "showProjectByHolders",
+        args: [address]
+    });
 
-            return {
-                id: v.id,
-                title: v.name,
-                goal: v.target_money,
-                current: v.get_money,
-                deadline: deadline,
-                state: v.state,
-                owner: v.holder_account,
-                donors: v.donor_arr,
-                overdue: now > deadline
-            } satisfies Project;
-        });
+    const projects = data.map(v => {
+        const deadline = fromUnix(v.deadline_timestamp);
 
-        return projects;
-    },
-    "showProjectByHolders"
-);
+        return {
+            id: v.id,
+            title: v.name,
+            goal: v.target_money,
+            current: v.get_money,
+            deadline: deadline,
+            state: v.state,
+            owner: v.holder_account,
+            donors: v.donor_arr,
+            overdue: now > deadline
+        } satisfies Project;
+    });
+
+    return projects;
+}, "showProjectByHolders");

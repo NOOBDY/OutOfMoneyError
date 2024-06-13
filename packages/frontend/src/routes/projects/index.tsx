@@ -41,12 +41,12 @@ export default function () {
     const projects = createAsync(async () => showAllProject());
 
     return (
-        <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
-            <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
+        <div class="mx-auto flex flex-col px-4 md:w-2/3 xl:w-1/2">
+            <div class="h-12 font-mono md:mb-4">
                 <h1 class="text-2xl md:text-4xl">All Projects</h1>
             </div>
 
-            <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <For each={projects()}>{Card}</For>
             </div>
         </div>

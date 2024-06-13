@@ -49,10 +49,9 @@ export default function () {
     const ownProjects = createAsync(async () => {
         if (account.status !== "connected") return;
 
-        const projects = await showProjectByHolders(
-            config,
-            account.address
-        ).then(projects => projects.slice(0, 6));
+        const projects = await showProjectByHolders(account.address).then(
+            projects => projects.slice(0, 6)
+        );
 
         setShowOwnProjects(projects.length > 0);
 
@@ -87,6 +86,18 @@ export default function () {
                         <For each={ownProjects()}>{Card}</For>
                     </div>
                 </Show>
+            </div>
+
+            <div>
+                <div class="h-12 font-mono md:mb-4">
+                    <h1 class="text-2xl md:text-4xl">BIG Sugar Daddy</h1>
+                </div>
+
+                <p class="text-3xl">
+                    <code class="rounded-sm bg-neutral-200 px-2 dark:bg-neutral-700">
+                        {account.address}
+                    </code>
+                </p>
             </div>
         </div>
     );
