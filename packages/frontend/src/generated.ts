@@ -179,6 +179,37 @@ export const noneMoneyAbi = [
     },
     {
         type: "function",
+        inputs: [],
+        name: "getSugarDaddy",
+        outputs: [
+            {
+                name: "s",
+                internalType: "struct INoneMoney.SugarDaddy",
+                type: "tuple",
+                components: [
+                    { name: "exist", internalType: "bool", type: "bool" },
+                    {
+                        name: "account",
+                        internalType: "address",
+                        type: "address"
+                    },
+                    {
+                        name: "donate_money",
+                        internalType: "uint256",
+                        type: "uint256"
+                    },
+                    {
+                        name: "donate_project_id",
+                        internalType: "uint256",
+                        type: "uint256"
+                    }
+                ]
+            }
+        ],
+        stateMutability: "view"
+    },
+    {
+        type: "function",
         inputs: [
             { name: "_project_id", internalType: "uint256", type: "uint256" }
         ],
