@@ -41,6 +41,13 @@ contract INoneMoney {
     event give_money(bool success_holder);
     event return_money(bool success_donor);
 
+    struct SugarDaddy {
+        bool exist;
+        address account;
+        uint256 donate_money;
+        uint256 donate_project_id;
+    }
+
     struct Donor {
         uint256 donate_money;
         bool is_return;
@@ -64,17 +71,32 @@ contract INoneMoney {
     mapping(uint256 => DonateProject) donateProject_map;
     ///
     address[] holder_arr;
+    ///
+    SugarDaddy sugardaddy;
 
     ///
 
-    modifier isProject(uint256 _project_id) {
-        require(_project_id >= 0, "Project ID is not exist");
-        require(
-            _project_id < donateProject_arr.length,
-            "Project ID is not exist"
-        );
+    function _set_sugardaddy(
+        address _donor_account,
+        uint256 input_money,
+        uint256 _project_id
+    ) internal {
+        if (!sugardaddy.exist) {
+            sugardaddy.account = _donor_account;
+            sugardaddy.donate_money = input_money;
+            sugardaddy.donate_project_id = _project_id;
+            sugardaddy.exist = true;
+        } else {
+            if (input_money > sugardaddy.donate_money) {
+                sugardaddy.account = _donor_account;
+                sugardaddy.donate_money = input_money;
+                sugardaddy.donate_project_id = _project_id;
+            }
+        }
+    }
 
-        _;
+    function _get_sugardaddy() internal view returns (SugarDaddy memory) {
+        return (sugardaddy);
     }
 
     function _is_returned_to_donor(

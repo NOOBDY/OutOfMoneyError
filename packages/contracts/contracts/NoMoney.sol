@@ -47,7 +47,12 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         }
     }
 
-    function donate(uint256 _project_id) public payable isProject(_project_id) {
+    function donate(uint256 _project_id) public payable {
+        require(_project_id >= 0, "Project ID is not exist");
+        require(
+            _project_id < donateProject_arr.length,
+            "Project ID is not exist"
+        );
         require(msg.value > 0, "Donation must be greater than 0");
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -96,7 +101,11 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 (temp_money - target_money);
 
             project.state = State.WAITING_SETTLE;
+
+            input_money = input_money - (temp_money - target_money);
         }
+
+        _set_sugardaddy(_donor_account, input_money, _project_id);
     }
 
     function settleOverdueProject(
@@ -436,6 +445,11 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     function getCurrentTimestamp() public view returns (uint256) {
         return block.timestamp; //合約時間
+    }
+
+    function getSugarDaddy() public view returns (SugarDaddy memory s) {
+        SugarDaddy memory _s = _get_sugardaddy();
+        return (_s);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
