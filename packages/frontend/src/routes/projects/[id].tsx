@@ -1,5 +1,5 @@
 import { SubmitHandler, createForm, zodForm } from "@modular-forms/solid";
-import { createAsync, useParams } from "@solidjs/router";
+import { useParams } from "@solidjs/router";
 import { readContract, simulateContract, writeContract } from "@wagmi/core";
 import { Show, createResource, onMount } from "solid-js";
 import { Address, formatEther, parseEther } from "viem";
@@ -64,28 +64,6 @@ export default function () {
             owner: data.holder_account,
             donors: data.donor_arr
         } satisfies Project;
-    });
-
-    const fundsReturned = createAsync(async () => {
-        const id = BigInt(params.id);
-
-        return readContract(config, {
-            abi: noneMoneyAbi,
-            address: contractAddress,
-            functionName: "is_returned_donor",
-            args: [id]
-        }).catch(() => false);
-    });
-
-    const fundsCollected = createAsync(async () => {
-        const id = BigInt(params.id);
-
-        return readContract(config, {
-            abi: noneMoneyAbi,
-            address: contractAddress,
-            functionName: "is_returned_holder",
-            args: [id]
-        }).catch(() => false);
     });
 
     onMount(() => {
