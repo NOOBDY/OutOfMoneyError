@@ -10,6 +10,7 @@ import { fromUnix, toUnix } from "~/lib/unix";
 import { Project } from "~/types";
 import { contractAddress } from "~/wagmiConfig";
 import { showProjectByHolders } from "~/data/showProjectByHolders";
+import { formatEther } from "viem";
 
 export default function () {
     const config = useConfig();
@@ -58,6 +59,20 @@ export default function () {
         return projects;
     });
 
+    const [showSugarDaddy, setSugarDaddy] = createSignal(false);
+
+    const sugarDaddy = createAsync(async () => {
+        const data = await readContract(config, {
+            abi: noneMoneyAbi,
+            address: contractAddress,
+            functionName: "getSugarDaddy"
+        });
+
+        setSugarDaddy(data.exist);
+
+        return data;
+    });
+
     return (
         <div class="mx-auto flex flex-col space-y-8 px-4 md:w-2/3 xl:w-1/2">
             <div>
@@ -89,15 +104,31 @@ export default function () {
             </div>
 
             <div>
-                <div class="h-12 font-mono md:mb-4">
-                    <h1 class="text-2xl md:text-4xl">BIG Sugar Daddy</h1>
-                </div>
+                <Show when={showSugarDaddy() && sugarDaddy()} keyed>
+                    {sugarDaddy => (
+                        <>
+                            <div class="h-12 font-mono md:mb-4">
+                                <h1 class="text-2xl md:text-4xl">
+                                    BIG Sugar Daddy
+                                </h1>
+                            </div>
 
-                <p class="text-3xl">
-                    <code class="rounded-sm bg-neutral-200 px-2 dark:bg-neutral-700">
-                        {account.address}
-                    </code>
-                </p>
+                            <p class="text-lg">
+                                <code class="rounded-sm bg-neutral-200 px-1 dark:bg-neutral-700">
+                                    {sugarDaddy.account}
+                                </code>{" "}
+                                donated {formatEther(sugarDaddy.donate_money)}{" "}
+                                ETH in{" "}
+                                <Link
+                                    href={`/projects/${sugarDaddy.donate_project_id}`}
+                                >
+                                    Project{" "}
+                                    {sugarDaddy.donate_project_id.toString()}
+                                </Link>
+                            </p>
+                        </>
+                    )}
+                </Show>
             </div>
         </div>
     );
