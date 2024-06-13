@@ -7,7 +7,7 @@ export default function Nav() {
             <A href="/" class="p-2">
                 <h1 class="font-mono text-2xl">OutOfMoneyError</h1>
             </A>
-            <div class="absolute right-0 flex items-center p-4">
+            <div class="absolute right-0 flex items-baseline p-4">
                 <a
                     href="/projects/new"
                     class="min-w-32 border border-black px-4 pb-1 pt-0.5 font-mono

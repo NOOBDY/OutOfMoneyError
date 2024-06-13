@@ -136,14 +136,23 @@ export default function () {
         <Show when={project()} fallback={<NotFound />} keyed>
             {project => (
                 <div class="mx-auto px-4 lg:w-2/3">
-                    <h1 class="mb-4 font-mono text-3xl font-semibold">
+                    <h1 class="mb-2 font-mono text-3xl font-semibold">
                         {project.title}
                     </h1>
 
                     <div class="flex w-full flex-col lg:flex-row">
-                        <p class="mb-4 w-full grow break-words text-xl lg:mr-6 lg:w-3/5">
-                            {project.description}
-                        </p>
+                        <div class="w-full">
+                            <p class="mb-4">
+                                Created by:{" "}
+                                <code class="rounded-sm bg-neutral-200 px-1 dark:bg-neutral-700">
+                                    {project.owner}
+                                </code>
+                            </p>
+
+                            <p class="mb-4 w-full grow break-words text-xl lg:mr-6 lg:w-3/5">
+                                {project.description}
+                            </p>
+                        </div>
 
                         <div class="w-full lg:w-96">
                             <p class="text-md mb-4 font-mono">

@@ -1,18 +1,21 @@
 import { createAsync } from "@solidjs/router";
 import { readContract } from "@wagmi/core";
-import { For } from "solid-js";
+import { For, Show, createSignal } from "solid-js";
 import { Card } from "~/components/Card";
 import Link from "~/components/Link";
 import { noneMoneyAbi } from "~/generated";
+import { useAccount } from "~/hooks/useAccount";
 import { useConfig } from "~/hooks/useConfig";
 import { fromUnix, toUnix } from "~/lib/unix";
 import { Project } from "~/types";
 import { contractAddress } from "~/wagmiConfig";
+import { showProjectByHolders } from "~/data/showProjectByHolders";
 
 export default function () {
     const config = useConfig();
+    const [account] = useAccount();
 
-    const projects = createAsync(async () => {
+    const activeProjects = createAsync(async () => {
         const now = new Date();
 
         const data = await readContract(config, {
@@ -41,17 +44,49 @@ export default function () {
         return projects;
     });
 
+    const [showOwnProjects, setShowOwnProjects] = createSignal(false);
+
+    const ownProjects = createAsync(async () => {
+        if (account.status !== "connected") return;
+
+        const projects = await showProjectByHolders(
+            config,
+            account.address
+        ).then(projects => projects.slice(0, 6));
+
+        setShowOwnProjects(projects.length > 0);
+
+        return projects;
+    });
+
     return (
-        <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
-            <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
-                <h1 class="text-2xl md:text-4xl">Active Projects</h1>
-                <p class="text-md md:text-lg">
-                    <Link href="/projects">All projects</Link>
-                </p>
+        <div class="mx-auto flex flex-col space-y-8 px-4 md:w-2/3 xl:w-1/2">
+            <div>
+                <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
+                    <h1 class="text-2xl md:text-4xl">Active Projects</h1>
+                    <p class="text-md md:text-lg">
+                        <Link href="/projects">See all</Link>
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <For each={activeProjects()}>{Card}</For>
+                </div>
             </div>
 
-            <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <For each={projects()}>{Card}</For>
+            <div>
+                <Show when={showOwnProjects()}>
+                    <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
+                        <h1 class="text-2xl md:text-4xl">Your Projects</h1>
+                        <p class="text-md md:text-lg">
+                            <Link href="/projects/own">See all</Link>
+                        </p>
+                    </div>
+
+                    <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <For each={ownProjects()}>{Card}</For>
+                    </div>
+                </Show>
             </div>
         </div>
     );
