@@ -29,19 +29,19 @@ describe("GetSugarDaddy", () => {
 
         const s = await NoneMoney.read.getSugarDaddy();
 
-        expect(s.exit).to.be.true;
+        expect(s.exist).to.be.true;
         expect(s.account).to.equal(getAddress(donor2.account.address));
         expect(s.donate_project_id).to.equal(0n);
         expect(s.donate_money).to.equal(80000n);
     });
 
-    it("Test get contract should return sugardaddy.exit is false without donor", async () => {
+    it("Test get contract should return sugardaddy.exist is false without donor", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
 
         const s = await NoneMoney.read.getSugarDaddy();
 
-        expect(s.exit).to.be.false;
+        expect(s.exist).to.be.false;
     });
 });

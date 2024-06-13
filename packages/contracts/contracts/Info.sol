@@ -42,7 +42,7 @@ contract INoneMoney {
     event return_money(bool success_donor);
 
     struct SugarDaddy {
-        bool exit;
+        bool exist;
         address account;
         uint256 donate_money;
         uint256 donate_project_id;
@@ -81,11 +81,11 @@ contract INoneMoney {
         uint256 input_money,
         uint256 _project_id
     ) internal {
-        if (!sugardaddy.exit) {
+        if (!sugardaddy.exist) {
             sugardaddy.account = _donor_account;
             sugardaddy.donate_money = input_money;
             sugardaddy.donate_project_id = _project_id;
-            sugardaddy.exit = true;
+            sugardaddy.exist = true;
         } else {
             if (input_money > sugardaddy.donate_money) {
                 sugardaddy.account = _donor_account;
