@@ -1,85 +1,58 @@
 import { createAsync } from "@solidjs/router";
-import { GetAccountReturnType, getBalance } from "@wagmi/core";
-import { Match, Suspense, Switch } from "solid-js";
-import { formatEther } from "viem";
-import { Button } from "~/components/Button";
+import { readContract } from "@wagmi/core";
+import { For } from "solid-js";
+import { Card } from "~/components/Card";
 import Link from "~/components/Link";
-import { useAccount } from "~/hooks/useAccount";
+import { noneMoneyAbi } from "~/generated";
 import { useConfig } from "~/hooks/useConfig";
+import { fromUnix, toUnix } from "~/lib/unix";
+import { Project } from "~/types";
+import { contractAddress } from "~/wagmiConfig";
 
-type ConnectedAccount = Extract<GetAccountReturnType, { status: "connected" }>;
-
-type AccountProps = {
-    account: ConnectedAccount;
-};
-
-function Account(props: AccountProps) {
-    return <p class="font-mono">{props.account.address}</p>;
-}
-
-type BalanceProps = {
-    address: ConnectedAccount["address"];
-};
-
-function Balance(props: BalanceProps) {
+export default function () {
     const config = useConfig();
 
-    const getExchangeData = async (value: bigint) => {
-        const response = await fetch(
-            "https://api.coinbase.com/v2/exchange-rates?currency=ETH"
-        );
-        const data = await response.json();
-        return (
-            Number.parseFloat(formatEther(value)) * data["data"]["rates"]["TWD"]
-        );
-    };
+    const projects = createAsync(async () => {
+        const now = new Date();
 
-    const balanceString = createAsync(async () => {
-        const balance = await getBalance(config, { address: props.address });
-        return `${formatEther(balance.value)} ETH (${await getExchangeData(balance.value)} TWD)`;
+        const data = await readContract(config, {
+            abi: noneMoneyAbi,
+            address: contractAddress,
+            functionName: "showAvailableProject",
+            args: [toUnix(now)]
+        });
+
+        const projects = data.slice(0, 6).map(v => {
+            const deadline = fromUnix(v.deadline_timestamp);
+
+            return {
+                id: v.id,
+                title: v.name,
+                goal: v.target_money,
+                current: v.get_money,
+                deadline: deadline,
+                state: v.state,
+                owner: v.holder_account,
+                donors: v.donor_arr,
+                overdue: now > deadline
+            } satisfies Project;
+        });
+
+        return projects;
     });
 
     return (
-        <p class="font-mono">
-            <Suspense fallback={<p>Loading</p>}>{balanceString()}</Suspense>
-        </p>
-    );
-}
-
-export default function () {
-    const [account, { connect, disconnect }] = useAccount();
-
-    return (
         <div class="mx-auto flex flex-col space-y-2 px-4 md:w-2/3 xl:w-1/2">
-            <div>
-                <Link href="/projects">projects</Link>
+            <div class="flex h-12 items-baseline justify-between font-mono md:mb-4">
+                <h1 class="text-2xl md:text-4xl">Active Projects</h1>
+                <p class="text-md md:text-lg">
+                    <Link href="/projects">All projects</Link>
+                </p>
             </div>
 
-            <Switch fallback={<p>Connecting</p>}>
-                <Match when={account.status === "disconnected"}>
-                    <div class="mx-auto">
-                        <Button type="button" onClick={connect}>
-                            Connect
-                        </Button>
-                    </div>
-                </Match>
-
-                <Match when={account.status === "connected" && account} keyed>
-                    {account => (
-                        <>
-                            <Account account={account} />
-
-                            <Balance address={account.address} />
-
-                            <div class="mx-auto">
-                                <Button type="button" onClick={disconnect}>
-                                    Disconnect
-                                </Button>
-                            </div>
-                        </>
-                    )}
-                </Match>
-            </Switch>
+            <div class=" grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <For each={projects()}>{Card}</For>
+            </div>
         </div>
     );
 }
