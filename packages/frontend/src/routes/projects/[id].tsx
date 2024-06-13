@@ -64,7 +64,8 @@ export default function () {
             goal: data.target_money,
             current: data.get_money,
             deadline: deadline,
-            owner: data.holder_account
+            owner: data.holder_account,
+            donors: data.donor_arr
         } satisfies Project;
     });
 
@@ -238,11 +239,37 @@ export default function () {
                                     <p class="mb-4 font-mono text-lg">
                                         🎉 Goal Achieved! 🎉
                                     </p>
+                                    {/* TODO: hide when funds received */}
                                     <Show
                                         when={project.owner === account.address}
                                     >
                                         <Button onClick={settleFinishProject}>
                                             Receive Funds
+                                        </Button>
+                                    </Show>
+                                </div>
+                            </Show>
+
+                            <Show
+                                when={
+                                    new Date() > project.deadline &&
+                                    state() !== 1
+                                }
+                            >
+                                <div class="w-full text-center">
+                                    <p class="mb-4 font-mono text-lg">
+                                        💀 Deadline Overdue 💀
+                                    </p>
+                                    <Show
+                                        when={
+                                            account.address &&
+                                            project.donors.includes(
+                                                account.address
+                                            )
+                                        }
+                                    >
+                                        <Button onClick={settleOverdueProject}>
+                                            Settle Up
                                         </Button>
                                     </Show>
                                 </div>

@@ -13,4 +13,5 @@ export type Project = {
     current: bigint;
     deadline: Date;
     owner: Address;
+    donors: readonly Address[];
 };

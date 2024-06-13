@@ -27,7 +27,8 @@ const showAllProject = cache(async () => {
             goal: v.target_money,
             current: v.get_money,
             deadline: deadline,
-            owner: v.holder_account
+            owner: v.holder_account,
+            donors: v.donor_arr
         } satisfies Project;
     });
 
