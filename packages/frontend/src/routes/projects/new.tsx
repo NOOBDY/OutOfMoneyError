@@ -9,6 +9,8 @@ import { useConfig } from "~/hooks/useConfig";
 import { contractAddress } from "~/wagmiConfig";
 import { AddressDropdown } from "~/components/AddressDropdown";
 import { toUnix } from "~/lib/unix";
+import { untrack } from "solid-js";
+import { useDevMode } from "~/hooks/useDevMode";
 
 const NewProjectSchema = z.object({
     title: z.string().min(1, { message: "Title required" }),
@@ -26,10 +28,13 @@ const NewProjectSchema = z.object({
 type NewProjectForm = z.infer<typeof NewProjectSchema>;
 
 export default function () {
+    const devMode = useDevMode();
     const navigate = useNavigate();
     const config = useConfig();
     const [newProjectForm, { Form, Field }] = createForm<NewProjectForm>({
-        validate: zodForm(NewProjectSchema),
+        validate: untrack(() => devMode())
+            ? undefined
+            : zodForm(NewProjectSchema),
         revalidateOn: "input"
     });
 
@@ -38,27 +43,33 @@ export default function () {
         event
     ) => {
         event.preventDefault();
+        console.log(values);
 
         const now = new Date();
         const deadline = new Date(values.deadline);
+        const start = now > deadline ? deadline : now;
 
-        const { request } = await simulateContract(config, {
-            abi: noneMoneyAbi,
-            address: contractAddress,
-            functionName: "addProject",
-            args: [
-                values.title,
-                values.description,
-                toUnix(now),
-                toUnix(deadline),
-                parseEther(values.goal.toString())
-            ],
-            account: values.address
-        });
+        try {
+            const { request } = await simulateContract(config, {
+                abi: noneMoneyAbi,
+                address: contractAddress,
+                functionName: "addProject",
+                args: [
+                    values.title,
+                    values.description,
+                    toUnix(start),
+                    toUnix(deadline),
+                    parseEther(values.goal.toString())
+                ],
+                account: values.address
+            });
 
-        await writeContract(config, request);
+            await writeContract(config, request);
 
-        navigate("/projects");
+            navigate("/projects");
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     return (

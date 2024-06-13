@@ -166,7 +166,12 @@ export default function () {
                                 </p>
                             </div>
 
-                            <Show when={project.state === State.CAN_DONATE}>
+                            <Show
+                                when={
+                                    new Date() < project.deadline &&
+                                    project.state === State.CAN_DONATE
+                                }
+                            >
                                 <Form
                                     onSubmit={handleSubmit}
                                     class="flex flex-col space-y-4"
