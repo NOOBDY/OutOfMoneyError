@@ -105,7 +105,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             input_money = input_money - (temp_money - target_money);
         }
 
-        _set_sugerdaddy(_donor_account, input_money, _project_id);
+        _set_sugardaddy(_donor_account, input_money, _project_id);
     }
 
     function settleOverdueProject(
@@ -447,8 +447,8 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         return block.timestamp; //合約時間
     }
 
-    function getSugerDaddy() public view returns (SugarDaddy memory s) {
-        SugarDaddy memory _s = _get_sugerdaddy();
+    function getSugarDaddy() public view returns (SugarDaddy memory s) {
+        SugarDaddy memory _s = _get_sugardaddy();
         return (_s);
     }
 

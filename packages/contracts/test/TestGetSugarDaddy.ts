@@ -8,8 +8,8 @@ async function deployMainContract() {
     return await hre.viem.deployContract("NoneMoney", [], {});
 }
 
-describe("GetSugerDaddy", () => {
-    it("Test get contract should return sugarydaddy with have donor", async () => {
+describe("GetSugarDaddy", () => {
+    it("Test get contract should return sugardaddy with have donor", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder, donor1, donor2, donor3] =
             await hre.viem.getWalletClients();
@@ -27,7 +27,7 @@ describe("GetSugerDaddy", () => {
             account: donor3.account
         });
 
-        const s = await NoneMoney.read.getSugerDaddy();
+        const s = await NoneMoney.read.getSugarDaddy();
 
         expect(s.exit).to.be.true;
         expect(s.account).to.equal(getAddress(donor2.account.address));
@@ -35,12 +35,12 @@ describe("GetSugerDaddy", () => {
         expect(s.donate_money).to.equal(80000n);
     });
 
-    it("Test get contract should return sugarydaddy.exit is false without donor", async () => {
+    it("Test get contract should return sugardaddy.exit is false without donor", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
         const [holder] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
 
-        const s = await NoneMoney.read.getSugerDaddy();
+        const s = await NoneMoney.read.getSugarDaddy();
 
         expect(s.exit).to.be.false;
     });

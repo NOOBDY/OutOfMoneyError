@@ -76,7 +76,7 @@ contract INoneMoney {
 
     ///
 
-    function _set_sugerdaddy(
+    function _set_sugardaddy(
         address _donor_account,
         uint256 input_money,
         uint256 _project_id
@@ -95,7 +95,7 @@ contract INoneMoney {
         }
     }
 
-    function _get_sugerdaddy() internal view returns (SugarDaddy memory) {
+    function _get_sugardaddy() internal view returns (SugarDaddy memory) {
         return (sugardaddy);
     }
 
