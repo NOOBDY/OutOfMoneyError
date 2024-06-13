@@ -37,8 +37,7 @@ describe("GetSugerDaddy", () => {
 
     it("Test get contract should return sugarydaddy.exit is false without donor", async () => {
         const NoneMoney = await loadFixture(deployMainContract);
-        const [holder, donor1, donor2, donor3] =
-            await hre.viem.getWalletClients();
+        const [holder] = await hre.viem.getWalletClients();
         await addProject(NoneMoney, holder.account.address);
 
         const s = await NoneMoney.read.getSugerDaddy();
