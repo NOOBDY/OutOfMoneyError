@@ -1,13 +1,13 @@
 import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start/router";
-import { FlowProps, Suspense } from "solid-js";
+import { ErrorBoundary, FlowProps, Suspense } from "solid-js";
 import "./app.css";
 import Nav from "~/components/Nav";
 import { DarkModeProvider } from "~/providers/DarkModeProvider";
 import Footer from "./components/Footer";
 import { useDarkMode } from "./hooks/useDarkMode";
 import { WagmiProvider } from "~/providers/WagmiProvider";
-import { sepoliaConfig } from "~/wagmiConfig";
+import { config } from "~/wagmiConfig";
 
 function Background(props: FlowProps) {
     const [darkMode] = useDarkMode();
@@ -28,11 +28,13 @@ export default function App() {
         <Router
             root={props => (
                 <DarkModeProvider defaultDarkMode={true}>
-                    <WagmiProvider config={sepoliaConfig}>
+                    <WagmiProvider config={config}>
                         <Background>
                             <Nav />
                             <div class="grow">
-                                <Suspense>{props.children}</Suspense>
+                                <ErrorBoundary fallback={err => err}>
+                                    <Suspense>{props.children}</Suspense>
+                                </ErrorBoundary>
                             </div>
                             <Footer />
                         </Background>

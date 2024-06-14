@@ -24,6 +24,7 @@ export function useAccount(): UseAccountReturnType {
     });
 
     onMount(async () => {
+        if (account.status === "connected") return;
         await reconnect(config, { connectors: [injected()] });
     });
 
