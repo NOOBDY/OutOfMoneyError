@@ -105,7 +105,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 input_money -
                 (temp_money - target_money);
 
-            project.state = State.WAITING_SETTLE; //changa state
+            project.state = State.WAITING_SETTLE; //change state
 
             input_money = input_money - (temp_money - target_money);
         }
