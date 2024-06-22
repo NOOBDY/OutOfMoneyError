@@ -350,9 +350,9 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         view
         returns (Project[] memory return_project)
     {
-        uint256[] memory _arr = _showDonateProjectsID();
+        uint256[] memory _arr = _showDonateProjectsID(); //get id
 
-        Project[] memory return_p = _make_project_object(_arr);
+        Project[] memory return_p = _make_project_object(_arr); //change to format
 
         return (return_p);
     }
@@ -524,6 +524,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function _make_settleproject_object_holder(
+        //just to copy all value to return format
         uint256[] memory _project_id_arr
     ) private view returns (SettleProject[] memory return_project) {
         uint256 k = _project_id_arr.length;

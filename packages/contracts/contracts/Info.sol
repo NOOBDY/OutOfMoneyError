@@ -3,15 +3,17 @@ pragma solidity ^0.8.0;
 //this file is include some easy function, or not important function, all of then are provate function
 enum State {
     //to set state
-    CAN_DONATE,
-    WAITING_SETTLE,
-    EXPIRED_SETTLED,
-    GOAL_SETTLED
+    CAN_DONATE, // The state where donations can be accepted.
+    WAITING_SETTLE, // The state indicating the project is awaiting settlement.
+    EXPIRED_SETTLED, //The state for projects that have expired and been settled.
+    GOAL_SETTLED //after WAITING_SETTLE,The state for projects that have reached their funding goal and been settled.
 }
 
 contract FunctionInfo {
     //this contract is to set show function return format
     //for wrap function return information
+    //use struct to retrun, can let front easy to use data, make function return more data
+    //but if use arr to return every vlaue, like id[],name[]...uh,use too much meomry,solidity will unhappy
     struct Project {
         uint256 id;
         string name;
