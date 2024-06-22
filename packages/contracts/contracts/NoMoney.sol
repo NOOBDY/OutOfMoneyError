@@ -17,7 +17,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         require(bytes(_name).length > 0, "Project name is required");
         require(
             _target_money >= 1000000000000000,
-            "Set _target_money must be greater than 1000000000000000"
+            "Set _target_money must be greater than 1000000000000000" //to ensure if sub handle fee , holder stii can get money
         );
 
         require(_deadline > 0, "Set _deadline must be greater than 0");
@@ -29,7 +29,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         uint256 _id = donateProject_arr.length;
 
         DonateProject storage p = donateProject_map[_id];
-
+        //init project
         p.holder_account = _holder_account;
         p.name = _name;
         p.description = _description;
@@ -40,7 +40,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         p.target_money = _target_money;
         p.get_money = 0;
 
-        donateProject_arr.push(_id);
+        donateProject_arr.push(_id); //add project id in arr
 
         if (!_is_holder(_holder_account)) {
             holder_arr.push(_holder_account);
@@ -53,6 +53,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _project_id < donateProject_arr.length,
             "Project ID is not exist"
         );
+        //ensure project havn't problem
         require(msg.value > 0, "Donation must be greater than 0");
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -74,6 +75,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         uint256 target_money = project.target_money;
 
         if (project.donor_map[_donor_account].donate_money == 0) {
+            //if this donor never donate before, add to arr
             project.donor_arr.push(_donor_account);
         }
 
@@ -82,10 +84,13 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         ) {
             project.donor_map[_donor_account].donate_money += input_money;
             project.get_money = temp_money;
+            //if after donate money, it < target money
         } else if (project.state == State.CAN_DONATE) {
+            //if after donate money, it >= target money
             project.get_money = target_money;
 
             if ((temp_money - target_money) > 0) {
+                //return money if exceed
                 (bool success_donor, ) = _donor_account.call{
                     value: (temp_money - target_money)
                 }("");
@@ -95,17 +100,17 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                     revert("return money error");
                 }
             }
-
+            //donate = input - (temp_ - target_)
             project.donor_map[_donor_account].donate_money +=
                 input_money -
                 (temp_money - target_money);
 
-            project.state = State.WAITING_SETTLE;
+            project.state = State.WAITING_SETTLE; //changa state
 
             input_money = input_money - (temp_money - target_money);
         }
 
-        _set_sugardaddy(_donor_account, input_money, _project_id);
+        _set_sugardaddy(_donor_account, input_money, _project_id); //cal sugardaddy
     }
 
     function settleOverdueProject(
@@ -117,7 +122,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
             _project_id < donateProject_arr.length,
             "Project ID is not exist"
         );
-
+        //storage project, can change value and store in contract
         DonateProject storage project = donateProject_map[_project_id];
         address _donor_account = msg.sender;
 
@@ -138,17 +143,19 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         uint256 all_return = _get_donate_money(_project_id, _donor_account);
 
-        address payable clear_donor = payable(_donor_account);
+        address payable clear_donor = payable(_donor_account); //change to payable
         (bool success_return, ) = clear_donor.call{value: (all_return)}("");
 
         emit return_money(success_return);
         if (!success_return) {
-            revert("error return");
+            revert("error return"); //to ensure if fail, revert func
         }
 
         project.donor_map[_donor_account].is_return = true;
 
         if (_is_settled(_project_id)) {
+            //if project is all settled to every donor
+            //change settle func state
             project.state = State.EXPIRED_SETTLED;
         }
 
@@ -167,7 +174,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         DonateProject storage project = donateProject_map[_project_id];
 
         require(
-            _is_holder(_project_id, msg.sender),
+            _is_holder(_project_id, msg.sender), //should holder account
             "is not this project donor"
         );
         require(
@@ -179,11 +186,11 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         (bool success_return, ) = _holder_account.call{
             value: ((project.get_money / 100) * 95)
-        }("");
+        }(""); //5% handle fee
 
         emit return_money(success_return);
         if (!success_return) {
-            revert("error return");
+            revert("error return"); //if fail, function revert
         }
 
         project.state = State.GOAL_SETTLED;
@@ -201,7 +208,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         returns (
             bool have_settled_project,
             uint256 project_count,
-            uint256 sum_return
+            uint256 sum_return //just retrun all we need to return and project count
         )
     {
         address _donor_account = msg.sender;
@@ -222,7 +229,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 _sum_return += _get_donate_money(_project_id, _donor_account);
                 _project_count += 1;
                 _have_settled_project = true;
-            }
+            } //cal
         }
 
         return (_have_settled_project, _project_count, _sum_return);
@@ -230,6 +237,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
     ////////////////////
     function getProjectByID(
+        //use id to search project information
         uint256 _project_id
     ) public view returns (Project memory return_project) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -252,7 +260,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
 
         uint256[] memory _filterDeadline_id_arr = _showProjectsAfterDeadline(
             _now
-        );
+        ); //get id of filter project
         uint256 length = _filterDeadline_id_arr.length;
         uint256 k = 0;
 
@@ -263,7 +271,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
                 _settled_project_id_arr[k] = _filterDeadline_id_arr[i];
                 k += 1;
             }
-        }
+        } //filter if donor donated before or not
 
         uint256[] memory _have_project_arr = new uint256[](k);
 
@@ -274,7 +282,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
         SettleProject[] memory return_p = _make_settleproject_object_donor(
             _have_project_arr,
             _donor_account
-        );
+        ); //to wrap return value
 
         return (return_p);
     }
@@ -401,6 +409,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function is_returned_donor(
+        //is this donor returned or not
         uint256 _project_id
     ) public view returns (bool is_return) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -419,6 +428,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function is_returned_holder(
+        //is this holder returned or not
         uint256 _project_id
     ) public view returns (bool is_return) {
         require(_project_id >= 0, "Project ID is not exist");
@@ -448,13 +458,14 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function getSugarDaddy() public view returns (SugarDaddy memory s) {
-        SugarDaddy memory _s = _get_sugardaddy();
+        SugarDaddy memory _s = _get_sugardaddy(); //let platform get SugarDaddy information
         return (_s);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////
 
     function _make_project_object(
+        //just to copy all value to return format
         uint256[] memory _project_id_arr
     ) private view returns (Project[] memory return_project) {
         uint256 k = _project_id_arr.length;
@@ -481,6 +492,7 @@ contract NoneMoney is INoneMoney, FunctionInfo {
     }
 
     function _make_settleproject_object_donor(
+        //just to copy all value to return format
         uint256[] memory _project_id_arr,
         address account
     ) private view returns (SettleProject[] memory return_project) {

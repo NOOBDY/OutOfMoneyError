@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
+//this file is include some easy function, or not important function, all of then are provate function
 enum State {
+    //to set state
     CAN_DONATE,
     WAITING_SETTLE,
     EXPIRED_SETTLED,
@@ -9,6 +10,8 @@ enum State {
 }
 
 contract FunctionInfo {
+    //this contract is to set show function return format
+    //for wrap function return information
     struct Project {
         uint256 id;
         string name;
@@ -23,6 +26,7 @@ contract FunctionInfo {
     }
 
     struct SettleProject {
+        //for return settled by account
         uint256 id;
         string name;
         string description;
@@ -32,12 +36,13 @@ contract FunctionInfo {
         uint256 target_money;
         uint256 get_money;
         address holder_account;
-        address[] donor_arr;
-        bool is_return_by_account;
+        address[] donor_arr; //*
+        bool is_return_by_account; //*
     }
 }
 
 contract INoneMoney {
+    //this contract is declare basic operation in the nonemoney
     event give_money(bool success_holder);
     event return_money(bool success_donor);
 
@@ -77,16 +82,19 @@ contract INoneMoney {
     ///
 
     function _set_sugardaddy(
+        //set big sugarday o flatform
         address _donor_account,
         uint256 input_money,
         uint256 _project_id
     ) internal {
         if (!sugardaddy.exist) {
+            //if sugarday not exist,set infonation
             sugardaddy.account = _donor_account;
             sugardaddy.donate_money = input_money;
             sugardaddy.donate_project_id = _project_id;
             sugardaddy.exist = true;
         } else {
+            //if sugarday exist,comapre who donate much more then other
             if (input_money > sugardaddy.donate_money) {
                 sugardaddy.account = _donor_account;
                 sugardaddy.donate_money = input_money;
@@ -100,6 +108,7 @@ contract INoneMoney {
     }
 
     function _is_returned_to_donor(
+        //judge return to donor or not
         uint256 _project_id,
         address _account
     ) internal view returns (bool) {
@@ -113,7 +122,7 @@ contract INoneMoney {
     }
 
     function _is_returned_to_holder(
-        uint256 _project_id
+        uint256 _project_id //judge return to holder or not
     ) internal view returns (bool) {
         require(_project_id >= 0, "Project ID is not exist");
         require(
@@ -138,6 +147,7 @@ contract INoneMoney {
     }
 
     function _is_holder(
+        //is holder or not
         uint256 _project_id,
         address _account
     ) internal view returns (bool) {
@@ -183,7 +193,7 @@ contract INoneMoney {
             _project_id < donateProject_arr.length,
             "_project_id not exist"
         );
-
+        //to judge is this account donate this project before or not?
         DonateProject storage project = donateProject_map[_project_id];
         Donor storage donor = project.donor_map[_account];
         if (donor.donate_money == 0) {
@@ -205,7 +215,7 @@ contract INoneMoney {
     }
 
     function _showAvailableProject(
-        uint256 _now
+        uint256 _now //show all of project which can donate
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
         uint256 length = donateProject_arr.length;
         uint256[] memory filter_arr = new uint256[](length);
@@ -229,6 +239,7 @@ contract INoneMoney {
         return (result);
     }
 
+    //show finish project use id arr
     function _showFinishProject()
         internal
         view
@@ -250,12 +261,14 @@ contract INoneMoney {
 
         uint256[] memory result = new uint256[](k);
         for (uint256 j = 0; j < k; j++) {
+            //filter id
             result[j] = filter_arr[j];
         }
 
         return (result);
     }
 
+    //show overdue project use id arr but not settled
     function _showProjectsAfterDeadline(
         uint256 _now
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
@@ -282,6 +295,7 @@ contract INoneMoney {
         return (result);
     }
 
+    //show overdue project
     function _showOverdueCanSettleProjects(
         uint256 _now
     ) internal view returns (uint256[] memory _DonateProjects_arr) {
@@ -307,6 +321,7 @@ contract INoneMoney {
         return (result);
     }
 
+    //show all project
     function _showDonateProjectsID()
         internal
         view
@@ -315,6 +330,7 @@ contract INoneMoney {
         return (donateProject_arr);
     }
 
+    //show project of holder
     function _showProjectByHolders(
         address _account
     ) internal view returns (uint256[] memory _hold_project_arr) {
