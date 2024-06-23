@@ -1,13 +1,26 @@
 import { A } from "@solidjs/router";
 import { DarkModeToggle } from "~/components/DarkModeToggle";
+import { useAccount } from "~/hooks/useAccount";
+import { Button } from "./Button";
+import { Show } from "solid-js";
 
 export default function Nav() {
+    const [account, { connect, disconnect }] = useAccount();
+
     return (
         <nav class="relative flex h-20 items-center justify-start px-2 md:justify-center">
             <A href="/" class="p-2">
                 <h1 class="font-mono text-2xl">OutOfMoneyError</h1>
             </A>
             <div class="absolute right-0 flex items-baseline p-4">
+                <div class="mr-4">
+                    <Show
+                        when={account.status === "connected"}
+                        fallback={<Button onClick={connect}>Connect</Button>}
+                    >
+                        <Button onClick={disconnect}>Disconnect</Button>
+                    </Show>
+                </div>
                 <div class="hidden md:block">
                     <a
                         href="/projects/new"
