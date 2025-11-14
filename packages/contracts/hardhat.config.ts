@@ -1,17 +1,15 @@
-import { HardhatUserConfig, vars } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox-viem";
 import "@nomicfoundation/hardhat-chai-matchers";
-
-const XTT_PRIVATE_KEY = vars.get("XTT_PRIVATE_KEY");
 
 const config: HardhatUserConfig = {
     solidity: "0.8.24",
     networks: {
-        xtt: {
-            url: "https://eth.noobdy.com",
-            accounts: [XTT_PRIVATE_KEY]
+        hardhat: {}, // 本地虛擬鏈
+        localhost: {
+            // 連 npx hardhat node
+            url: "http://127.0.0.1:8545"
         }
     }
 };
-
 export default config;
